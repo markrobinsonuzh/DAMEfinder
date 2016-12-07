@@ -1,0 +1,15 @@
+Package: DAMEfinder
+Type: Package
+Title: Finds DAMEs - Differential Allelicly MEthylated regions
+Version: 0.1.0
+Authors@R: c(person("Dania", "Machlab", role = c("aut", "cre"),
+                     email = "dania.machlab@gmail.com"),
+              person("Mark", "Robinson", role = "aut", email="mark.robinson@imls.uzh.ch"))
+Maintainer: Dania Machlab <dania.machlab@gmail.com>
+Description: Piggybacking on the region finding capabilities of 'bumphunter',
+    'DAMEfinder' offers functionality for taking methtuple outputs, calculating
+    ASM scores and computing DAMEs and statistical significance of them using
+    permutations to generate a null distribution.
+License: GPL (>= 2)
+LazyData: TRUE
+RoxygenNote: 5.0.1
