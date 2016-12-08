@@ -2,15 +2,17 @@
 % Please edit documentation in R/read_tuples.R
 \name{read_tuples}
 \alias{read_tuples}
-\title{Title}
+\title{Read in list of methtuple files and filter out according to set min_cov and max_gap}
 \usage{
 read_tuples(files, sample_names = seq.int(1:length(files)),
-  min_coverage = 10, max_gap = 150, ...)
+  min_coverage = 10, max_gap = 150, verbose = TRUE)
 }
 \arguments{
-\item{...}{}
+\item{max_gap}{}
+
+\item{verbose}{}
 }
 \description{
-Title
+Read in list of methtuple files and filter out according to set min_cov and max_gap
 }
 

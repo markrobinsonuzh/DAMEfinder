@@ -15,9 +15,10 @@
 #'
 #' @examples
 calc_asm <- function(sample_list, beta=0.5, a=0.2, return_matrix=TRUE, ...) {
+
   # Add 1 to every count and calculate odds ratio
-  ASM_sample_list <- parallel::mclapply(sample_list, process,
-                                        mc.cores = min(length(sample_list), ceiling(parallel::detectCores()/6)))
+  ASM_sample_list <- lapply(sample_list, calc_logodds)
+  
 
   # calculate ASM score per tuple per sample
   for (i in 1:length(ASM_sample_list)) {

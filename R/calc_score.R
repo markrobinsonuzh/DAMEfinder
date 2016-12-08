@@ -23,17 +23,10 @@ calc_score <- function(beta, a, df) {
 #' @export
 #'
 #' @examples
-process <- function(s) {
-  s$strand <- "*"
-  s$MM <- s$MM + 1
-  s$MU <- s$MU + 1
-  s$UM <- s$UM + 1
-  s$UU <- s$UU + 1
-  s$cov <- s$cov + 4
-  # calc log odds ratio
-  ratio <- (s$MM*s$UU)/(s$MU*s$UM)
-  s$log_odds_ratio <-  log(ratio, base=10)
-  return(s)
+calc_logodds <- function(s, eps=1) {
+  ratio <- with(s, ( (MM+eps)*(UU+eps) ) / ( (MU+eps)*(UM+eps) ) )
+  s$logodds <- log10(ratio)
+  s
 }
 
 
