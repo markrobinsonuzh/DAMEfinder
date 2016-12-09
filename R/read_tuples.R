@@ -30,6 +30,8 @@ read_tuples <- function(files, sample_names=seq.int(1:length(files)), min_covera
     UM = readr::col_integer(),
     UU = readr::col_integer()
   )
+  
+  names(files) <- sample_names
     
   methtuple_list <- lapply(files, function(u) {
     if(verbose) message("Reading ",u)

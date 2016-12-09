@@ -14,47 +14,153 @@
 #' @export
 #'
 #' @examples
-calc_asm <- function(sample_list, beta=0.5, a=0.2, return_matrix=TRUE, ...) {
+calc_asm <- function(sample_list, beta=0.5, a=0.2, return_matrix=TRUE, 
+                     order_by_midpoint=TRUE, verbose=TRUE) {
 
-  # Add 1 to every count and calculate odds ratio
-  ASM_sample_list <- lapply(sample_list, calc_logodds)
+  if(verbose) message("Calculating log odds.")
+  sample_list <- lapply(sample_list, calc_logodds)
+
+  if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
+  sample_list <- lapply(sample_list, function(u) {
+    if(verbose) message(".", appendLF=FALSE)
+    calc_score(u, beta=beta, a=a)
+  })
+  if(verbose) message(" done.")
   
-
-  # calculate ASM score per tuple per sample
-  for (i in 1:length(ASM_sample_list)) {
-    df <- ASM_sample_list[[i]]
-    df$ASM_score <- calcScore(beta,a,df)
-    ASM_sample_list[[i]] <- df
-  }
-
-  # If return_matrix is TRUE, calculate a matrix of scores across samples, otherwise return list of samples
   if (return_matrix) {
 
+    if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
     # get key of unique tuples
-    all_pos <- do.call("rbind", ASM_sample_list)
-    all_pos <- all_pos[,c("chr","pos1","pos2")]
-    key <- paste0(all_pos$chr,'.',all_pos$pos1, '.', all_pos$pos2)
-    key <- unique(key)
-
+    all_keys <- lapply(sample_list, function(u) {
+      if(verbose) message(".", appendLF=FALSE)
+      paste0(u$chr,'.',u$pos1, '.', u$pos2)
+    })
+    key <- unique(unlist(all_keys))
+    if(verbose) message(" done.")
+    
     # get matrix of ASM scores across all samples
-    score_matrix <- matrix(data=NA, nrow=length(key), ncol=length(ASM_sample_list))
-    colnames(score_matrix) <- names(ASM_sample_list)
-    rownames(score_matrix) <- key
-
-    for (i in 1:length(ASM_sample_list)) {
-      df <- ASM_sample_list[[i]]
-      key_s <- paste0(df$chr, '.', df$pos1, '.', df$pos2)
-      m <- match(key, key_s)
-      ind <- m[which(!is.na(m))]
-      ind_m <- which(!is.na(m))
-      score_matrix[ind_m,i] <- df$ASM_score[ind]
+    if(verbose) message("Assembling table: ", appendLF = FALSE)
+    asm <- mapply( function(df,k){
+      if(verbose) message(".", appendLF=FALSE)
+      m <- match(key, k)
+      df$asm_score[m]
+    }, sample_list, all_keys)
+    rownames(asm) <- key
+    colnames(asm) <- names(sample_list)
+    if(verbose) message(" done.")
+    
+    if( order_by_midpoint) {
+      asm <- order_pos_by_median(asm)
     }
-    return(score_matrix)
-
+    
+    return(asm)
   }
-  else {
-    return(ASM_sample_list)
-  }
-
+  sample_list
 }
 
+
+
+#' Get a vector of the posterior scores for all positions given beta and a
+#'
+#' @param beta
+#' @param a
+#' @param df
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calc_score <- function(df, beta, a) {
+  weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
+  df$asm_score <- df$logodds*weights
+  df
+}
+
+#' Calculate the odds ratio
+#'
+#' @param s
+#'
+#' @return
+#' @export
+#'
+#' @examples
+calc_logodds <- function(s, eps=1) {
+  ratio <- with(s, ( (MM+eps)*(UU+eps) ) / ( (MU+eps)*(UM+eps) ) )
+  s$logodds <- log10(ratio)
+  s
+}
+
+
+
+#' Transform the ASM scores
+#'
+#' @param x
+#'
+#' @return
+#' @export
+#'
+#' @examples
+transform_scores <- function(x) {
+  modulus_sqrt(x)
+}
+
+
+
+#' Function to calculate signed square root (aka modulus square root)
+#'
+#' @param values
+#'
+#' @return
+#' @export
+#'
+#' @examples
+modulus_sqrt <- function(values) {
+  sign(values)*sqrt(abs(values))
+}
+
+
+
+# calculate the weight per site given beta and a
+#' Title
+#'
+#' @param beta
+#' @param MM
+#' @param UU
+#' @param a
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#'
+calc_weight <- function(MM, UU, beta=0.5, a=.2) {
+  s1 <- beta+MM
+  s2 <- beta+UU
+  pbeta(.5+a, shape1=s1, shape2=s2)-pbeta(.5-a, shape1=s1, shape2=s2)
+}
+
+
+
+#' Title
+#'
+#' @param score_matrix
+#'
+#' @return
+#' @export
+#'
+#' @examples
+order_pos_by_median <- function(score_matrix) {
+  
+  # set median of each tuple as the genomic position
+  pos <- rownames(score_matrix)
+  ss <- limma::strsplit2(pos, ".", fixed=TRUE)
+  chr <- ss[,1]
+  pos1 <- as.numeric(ss[,2])
+  pos2 <- as.numeric(ss[,3])
+  midpt <- (pos1+pos2)/2
+  
+  # sort the score matrix by median position (important for regionFinder and bumphunting)
+  o <- order(chr, midpt)
+  score_matrix[o,]
+  
+}
