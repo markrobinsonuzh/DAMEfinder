@@ -4,10 +4,14 @@
 \alias{get_tstats}
 \title{Title}
 \usage{
-get_tstats(sm_t, design, ...)
+get_tstats(sm_t, design, method = "robust", coef = 2)
 }
 \arguments{
-\item{...}{}
+\item{design}{}
+
+\item{method}{}
+
+\item{coef}{}
 }
 \description{
 Title

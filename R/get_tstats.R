@@ -20,8 +20,10 @@ get_tstats <- function(sm_t, design, method="robust", coef=2) {
 
 #' Title
 #'
+#' @param Q 
+#' @param verbose 
+#' @param maxGap 
 #' @param betas
-#' @param ...
 #'
 #' @return
 #' @export
@@ -30,15 +32,13 @@ get_tstats <- function(sm_t, design, method="robust", coef=2) {
 get_smoothed_tstats <- function(betas, Q=0.9, verbose=TRUE, maxGap=300) {
   
   rows <- names(betas)
-  chr <- limma::strsplit2(rows, ".", fixed=T)[,1]
-  pos1 <- as.numeric(limma::strsplit2(rows, ".", fixed=T)[,2])
-  pos2 <- as.numeric(limma::strsplit2(rows, ".", fixed=T)[,3])
-  midpt <- floor((pos2 - pos1)/2)
-  pos <- pos1 + midpt
+  ss <- limma::strsplit2(rows, ".", fixed=TRUE)
+  chr <- ss[,1]
+  midpt <- (as.numeric(ss[,2])+as.numeric(ss[,3]))/2
+
+  pns <- bumphunter::clusterMaker(chr, midpt, maxGap=maxGap)
   
-  pns <- bumphunter::clusterMaker(chr, pos, )
-  
-  smooth <- bumphunter::smoother(y = betas, x = pos, cluster = pns, 
+  smooth <- bumphunter::smoother(y = betas, x = midpt, cluster = pns, 
                                  smoothFunction = loessByCluster,
                                  verbose = verbose)
   smooth$fitted
