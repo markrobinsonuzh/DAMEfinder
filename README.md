@@ -11,7 +11,7 @@ source("https://bioconductor.org/biocLite.R")
 biocLite(c("SummarizedExperiment","limma","bumphunter"))
 ```
 
-And, DAMEfinder can be installing (assuming you already have devtools) using:
+And, DAMEfinder can be installed (assuming you already have devtools) using:
 ```{r}
 devtools::install_github("markrobinsonuzh/DAMEfinder")
 ```
