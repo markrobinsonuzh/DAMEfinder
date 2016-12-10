@@ -1,7 +1,7 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 0.1.6
+Version: 0.1.7
 Authors@R: c(person("Dania", "Machlab", role = c("aut", "cre"),
                      email = "dania.machlab@gmail.com"),
               person("Mark", "Robinson", role = "aut", email="mark.robinson@imls.uzh.ch"))
