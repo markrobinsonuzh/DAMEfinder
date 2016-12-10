@@ -51,15 +51,16 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
   asm <- transform(asm)
   
   ss <- limma::strsplit2(rownames(asm),".",fixed=TRUE)
-  gr <- GenomicRanges::GRanges(ss[,1], IRanges(as.numeric(ss[,2]),
-                                               as.numeric(ss[,3])))
+  gr <- GenomicRanges::GRanges(ss[,1], 
+                               IRanges::IRanges(as.numeric(ss[,2]),
+                                                as.numeric(ss[,3])))
   names(gr) <- rownames(asm)
   gr$midpt <- (start(gr)+end(gr))/2
 
-  sa <- SummarizedExperiment::SummarizedExperiment(assays=SimpleList(asm=asm),
+  sa <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(asm=asm),
                                                    rowRanges=gr)  
   if(verbose) message("Returning SummarizedExperiment with ",nrow(asm), " CpG pairs", appendLF = FALSE)
-  o <- order(seqnames(sa),gr$midpt)
+  o <- order(GenomeInfoDb::seqnames(sa),gr$midpt)
   sa[o]
 }
 

@@ -12,24 +12,24 @@
 #' @examples
 get_tstats <- function(sa, design, method="robust", maxGap=300, coef=2, verbose=TRUE) {
   
-  asm <- assays(sa)[["asm"]]
+  asm <- SummarizedExperiment::assays(sa)[["asm"]]
   
   # moderated t-statistic using specified column in the design matrix
   if(verbose) message("Calculating moderated t-statistics.")
   fit <- limma::lmFit(asm, design, method = method)
   fit2 <- limma::eBayes(fit)
-  mcols(sa)$tstat <- fit2$t[, coef]
+  S4Vectors::mcols(sa)$tstat <- fit2$t[, coef]
 
   # smooth moderated t-stats
   if(verbose) message("Smoothing moderated t-statistics.")
-  midpt <- mcols(sa)$midpt  
-  mcols(sa)$cluster <- pns <- bumphunter::clusterMaker(seqnames(sa), 
-                                                       midpt, maxGap=maxGap)
+  midpt <- S4Vectors::mcols(sa)$midpt  
+  S4Vectors::mcols(sa)$cluster <- pns <- bumphunter::clusterMaker(GenomeInfoDb::seqnames(sa), 
+                                                                  midpt, maxGap=maxGap)
   
-  smooth <- bumphunter::smoother(y = mcols(sa)$tstat, x = midpt, 
+  smooth <- bumphunter::smoother(y = S4Vectors::mcols(sa)$tstat, x = midpt, 
                                  cluster = pns, 
-                                 smoothFunction = loessByCluster,
+                                 smoothFunction = bumphunter::loessByCluster,
                                  verbose = verbose)
-  mcols(sa)$smooth_tstat <- smooth$fitted[,1]
+  S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[,1]
   sa
 }
