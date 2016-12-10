@@ -8,7 +8,7 @@ These can be installed with the following commands:
 
 ```{r}
 source("https://bioconductor.org/biocLite.R")
-biocLite(c("SummarizedExperiment","limma","bumphunter"))
+biocLite(c("SummarizedExperiment","limma","bumphunter","readr","devtools"))
 ```
 
 And, DAMEfinder can be installed (assuming you already have devtools) using:
