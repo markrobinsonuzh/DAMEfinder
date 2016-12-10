@@ -1,31 +1,24 @@
 #' Title
 #'
-#' @param nm
-#' @param smoothed_betas
+#' @param Q 
+#' @param maxGap 
 #' @param verbose
-#' @param ...
+#' @param sa 
 #'
 #' @return
 #' @export
 #'
 #' @examples
-find_dames <- function(nm, smoothed_betas, verbose=TRUE, ...) {
+find_dames <- function(sa, Q=0.9, maxGap=300, verbose=TRUE) {
 
-  chr <- limma::strsplit2(nm, ".", fixed=T)[,1]
-  pos1 <- as.numeric(limma::strsplit2(nm, ".", fixed=T)[,2])
-  pos2 <- as.numeric(limma::strsplit2(nm, ".", fixed=T)[,3])
-  midpt <- floor((pos2 - pos1)/2)
-  pos <- pos1 + midpt
-
-  pns <- bumphunter::clusterMaker(chr, pos, maxGap = 300)
-
-  Q <- 0.9
   # Detect DAMEs
-  K <- quantile(abs(smoothed_betas),Q, na.rm=T)
-  dames <- bumphunter::regionFinder(x = smoothed_betas, chr = chr, pos = pos, cluster = pns,
-                        cutoff = K, verbose = verbose)
-
-
+  sm_tstat <- mcols(sa)$smooth_tstat
+  K <- quantile(sm_tstat,Q, na.rm=TRUE)
+  rf <- bumphunter::regionFinder(x = sm_tstat, chr = as.character(seqnames(sa)), 
+                           pos = mcols(sa)$midpt, cluster = mcols(sa)$cluster,
+                           cutoff = K, verbose = verbose)
+  if(verbose) message(nrow(rf), " DAMEs found.")
+  rf
 }
 
 

@@ -4,10 +4,14 @@
 \alias{find_dames}
 \title{Title}
 \usage{
-find_dames(nm, smoothed_betas, verbose = TRUE, ...)
+find_dames(sa, Q = 0.9, maxGap = 300, verbose = TRUE)
 }
 \arguments{
-\item{...}{}
+\item{sa}{}
+
+\item{Q}{}
+
+\item{maxGap}{}
 }
 \description{
 Title

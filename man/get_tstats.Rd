@@ -4,12 +4,15 @@
 \alias{get_tstats}
 \title{Title}
 \usage{
-get_tstats(sm_t, design, method = "robust", coef = 2)
+get_tstats(sa, design, method = "robust", maxGap = 300, coef = 2,
+  verbose = TRUE)
 }
 \arguments{
-\item{design}{}
+\item{sa}{}
 
 \item{method}{}
+
+\item{maxGap}{}
 
 \item{coef}{}
 }

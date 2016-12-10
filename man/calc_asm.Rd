@@ -4,11 +4,13 @@
 \alias{calc_asm}
 \title{Title}
 \usage{
-calc_asm(sample_list, beta = 0.5, a = 0.2, return_matrix = TRUE,
-  order_by_midpoint = TRUE, verbose = TRUE)
+calc_asm(sample_list, beta = 0.5, a = 0.2, transform = modulus_sqrt,
+  verbose = TRUE)
 }
 \arguments{
-\item{...}{}
+\item{transform}{}
+
+\item{verbose}{}
 }
 \description{
 Title
