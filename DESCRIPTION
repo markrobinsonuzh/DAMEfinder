@@ -1,7 +1,7 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 0.1.9
+Version: 0.1.10
 Authors@R: c(person("Dania", "Machlab", role = c("aut", "cre"),
                      email = "dania.machlab@gmail.com"),
               person("Mark", "Robinson", role = "aut", email="mark.robinson@imls.uzh.ch"))
@@ -14,3 +14,4 @@ License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Imports: GenomeInfoDb, GenomicRanges, IRanges, S4Vectors, readr, SummarizedExperiment, limma, bumphunter
+Imports: 
