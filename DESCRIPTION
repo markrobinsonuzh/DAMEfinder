@@ -13,5 +13,5 @@ Description: Piggybacking on the region finding capabilities of 'bumphunter',
 License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Imports: GenomeInfoDb, GenomicRanges, IRanges, S4Vectors, readr, SummarizedExperiment, limma, bumphunter
+Imports: stats, GenomeInfoDb, GenomicRanges, IRanges, S4Vectors, readr, SummarizedExperiment, limma, bumphunter
 
