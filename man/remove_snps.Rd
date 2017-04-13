@@ -16,4 +16,3 @@ remove_snps(df, snp_key = NULL, verbose = TRUE)
 \description{
 Title
 }
-

@@ -2,14 +2,24 @@
 % Please edit documentation in R/calc_asm.R
 \name{modulus_sqrt}
 \alias{modulus_sqrt}
-\title{Function to calculate signed square root (aka modulus square root)}
+\title{Get Modulus Square Root}
 \usage{
 modulus_sqrt(values)
 }
 \arguments{
-\item{values}{}
+\item{values}{Vector or matrix of ASM scores where each column is a sample. These values
+are transformed with a square root transformation that preserves the sign.}
+}
+\value{
+Vector or matrix of transformed scores.
 }
 \description{
 Function to calculate signed square root (aka modulus square root)
 }
+\examples{
+v <- c(-1,1.5,0,-2.1,4.3)
+modulus_sqrt(v)
+[1] -1.000000  1.224745  0.000000 -1.449138  2.073644
 
+
+}

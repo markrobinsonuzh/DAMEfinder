@@ -2,17 +2,30 @@
 % Please edit documentation in R/read_tuples.R
 \name{read_tuples}
 \alias{read_tuples}
-\title{Read in list of methtuple files and filter out according to set min_cov and max_gap}
+\title{Read in list of methtuple files}
 \usage{
 read_tuples(files, sample_names = seq.int(1:length(files)),
   min_coverage = 10, max_gap = 150, verbose = TRUE)
 }
 \arguments{
-\item{max_gap}{}
+\item{files}{List of methtuple files}
 
-\item{verbose}{}
+\item{sample_names}{Names of files in the list. If none are provided, the files are given a number
+as a name.}
+
+\item{min_coverage}{The minimum coverage per tuple. Tuples with a coverage < min_coverage are 
+filtered out. The default is set to 10.}
+
+\item{max_gap}{The maximum allowed distance between two positions in a tuple. Only distances that
+are <= max_gap are kept. The default is set to 150 base pairs.}
+
+\item{verbose}{If the function should be verbose.}
+}
+\value{
+A list of data frames, where each data frame corresponds to one file.
 }
 \description{
-Read in list of methtuple files and filter out according to set min_cov and max_gap
+This function reads in a list of files obtained from the methtuple tool. It filters out tuples
+based on the set minimum coverage (min_cov) and the maximum allowed distance (max_gap) between 
+two genomic positions in a tuple.
 }
-

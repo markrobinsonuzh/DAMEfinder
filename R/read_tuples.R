@@ -5,15 +5,23 @@
 # ordered by chr, pos1, pos2
 
 
-#' Read in list of methtuple files and filter out according to set min_cov and max_gap
+#' Read in list of methtuple files
+#' 
+#' This function reads in a list of files obtained from the methtuple tool. It filters out tuples
+#' based on the set minimum coverage (min_cov) and the maximum allowed distance (max_gap) between 
+#' two genomic positions in a tuple.  
+#' 
+#' 
+#' @param files List of methtuple files
+#' @param sample_names Names of files in the list. If none are provided, the files are given a number
+#' as a name.
+#' @param min_coverage The minimum coverage per tuple. Tuples with a coverage < min_coverage are 
+#' filtered out. The default is set to 10.
+#' @param verbose If the function should be verbose.
+#' @param max_gap The maximum allowed distance between two positions in a tuple. Only distances that
+#' are <= max_gap are kept. The default is set to 150 base pairs.
 #'
-#' @param files
-#' @param sample_names
-#' @param min_coverage
-#' @param verbose 
-#' @param max_gap
-#'
-#' @return
+#' @return A list of data frames, where each data frame corresponds to one file. 
 #' @export
 #'
 #' @examples
