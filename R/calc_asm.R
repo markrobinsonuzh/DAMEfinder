@@ -98,7 +98,6 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
 #' @export
 #'
 #' @examples
-<<<<<<< HEAD
 #' # Get list of samples containing tuple count information
 #' sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
 #' 
@@ -108,10 +107,7 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
 #' # Calculate ASM score
 #' sample1 <- calc_score(sample1, beta=0.5, a=0.2)
 #' 
-calc_score <- function(df, beta, a) {
-=======
 calc_score <- function(df, beta = 0.5, a = 0.2) {
->>>>>>> 17f26edaa81a38b863de967164f5f7c087e87f63
   weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
   df$asm_score <- df$logodds*weights
   df
