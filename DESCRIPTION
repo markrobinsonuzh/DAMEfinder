@@ -1,7 +1,7 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 0.1.12
+Version: 0.1.14
 Authors@R: c(person("Dania", "Machlab", role = c("aut", "cre"),
                      email = "dania.machlab@gmail.com"),
               person("Mark", "Robinson", role = "aut", email="mark.robinson@imls.uzh.ch"))
@@ -12,6 +12,7 @@ Description: Piggybacking on the region finding capabilities of 'bumphunter',
     permutations to generate a null distribution.
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports: stats, GenomeInfoDb, GenomicRanges, IRanges, S4Vectors, readr, SummarizedExperiment, limma, bumphunter
-
+VignetteBuilder: knitr
+Suggests: BiocStyle, knitr, rmarkdown

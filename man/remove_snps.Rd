@@ -2,18 +2,24 @@
 % Please edit documentation in R/read_tuples.R
 \name{remove_snps}
 \alias{remove_snps}
-\title{Title}
+\title{Remove tuples overlapping with SNPs}
 \usage{
 remove_snps(df, snp_key = NULL, verbose = TRUE)
 }
 \arguments{
-\item{df}{}
+\item{df}{Data frame for a sample resulting from the read_tuples function where each row is a tuple, 
+and the columns indicates the tuple positions on the genome, the counts for the different
+methylation states, the coverage, and the distance between the two positions in a tuple.}
 
-\item{snp_key}{}
+\item{snp_key}{Vector of SNPs where each element represents the SNP positions as a character in 
+the form of "chr.SNP_position". For example a SNP on position 231 in chr12 would be represented 
+as "chr12.231".}
 
-\item{verbose}{}
+\item{verbose}{If the function should be verbose.}
+}
+\value{
+The same data frame as the input but without the tuples overlapping with SNPs.
 }
 \description{
-Title
+Remove tuples overlapping with SNPs
 }
-
