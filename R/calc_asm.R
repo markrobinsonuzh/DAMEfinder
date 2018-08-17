@@ -214,4 +214,3 @@ calc_weight <- function(MM, UU, beta=0.5, a=.2) {
   s2 <- beta+UU
   stats::pbeta(.5+a, shape1=s1, shape2=s2)-stats::pbeta(.5-a, shape1=s1, shape2=s2)
 }
-

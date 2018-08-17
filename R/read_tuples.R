@@ -62,13 +62,17 @@ read_tuples <- function(files, sample_names=seq.int(1:length(files)), min_covera
 }
 
 
-#' Title
+#' Remove tuples overlapping with SNPs
 #'
-#' @param df 
-#' @param snp_key 
-#' @param verbose 
+#' @param df Data frame for a sample resulting from the read_tuples function where each row is a tuple, 
+#' and the columns indicates the tuple positions on the genome, the counts for the different
+#' methylation states, the coverage, and the distance between the two positions in a tuple.
+#' @param snp_key Vector of SNPs where each element represents the SNP positions as a character in 
+#' the form of "chr.SNP_position". For example a SNP on position 231 in chr12 would be represented 
+#' as "chr12.231".
+#' @param verbose If the function should be verbose.
 #'
-#' @return
+#' @return The same data frame as the input but without the tuples overlapping with SNPs.
 #' @export
 #'
 #' @examples

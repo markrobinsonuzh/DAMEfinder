@@ -45,6 +45,8 @@ find_dames <- function(sa, Q=0.9, maxGap=300, verbose=TRUE) {
                                  pos = S4Vectors::mcols(sa)$midpt,
                                  cluster = S4Vectors::mcols(sa)$cluster,
                                  cutoff = K, verbose = verbose)
+  rf <- rf[,c("chr", "start", "end", "area")]
+  rownames(rf) <- paste0("DAME", seq(from = 1, to = nrow(rf), by = 1))
   if(verbose) message(nrow(rf), " DAMEs found.")
   rf
 }
