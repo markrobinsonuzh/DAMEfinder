@@ -4,7 +4,7 @@
 \alias{calc_score}
 \title{Calculate ASM scores}
 \usage{
-calc_score(df, beta, a)
+calc_score(df, beta = 0.5, a = 0.2)
 }
 \arguments{
 \item{df}{data frame of a sample containing all information per tuple (MM,UU,UM and MU counts,

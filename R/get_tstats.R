@@ -39,10 +39,10 @@ get_tstats <- function(sa, design, method="ls", maxGap=300, coef=2, verbose=TRUE
   S4Vectors::mcols(sa)$cluster <- pns <- bumphunter::clusterMaker(GenomeInfoDb::seqnames(sa), 
                                                                   midpt, maxGap=maxGap)
   
-  smooth <- bumphunter::smoother(y = S4Vectors::mcols(sa)$tstat, x = midpt, 
-                                 cluster = pns, 
-                                 smoothFunction = bumphunter::loessByCluster,
-                                 verbose = verbose)
-  S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[,1]
+  #smooth <- bumphunter::smoother(y = S4Vectors::mcols(sa)$tstat, x = midpt, 
+  #                               cluster = pns, 
+  #                               smoothFunction = bumphunter::loessByCluster,
+  #                               verbose = verbose)
+  #S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[,1]
   sa
 }
