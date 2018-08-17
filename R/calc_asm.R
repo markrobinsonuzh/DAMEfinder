@@ -1,5 +1,5 @@
 
-# B # Calculate ASM score for a list of samples in the output format of the result of read_tuples
+# Calculate ASM score for a list of samples in the output format of the result of read_tuples
 # This functions uses the following other functions: process, calcScore, calcWeight
 
 #' Calculate ASM Score
@@ -24,6 +24,7 @@
 #'
 #' @examples
 calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbose=TRUE) {
+
 
   if(verbose) message("Calculating log odds.")
   sample_list <- lapply(sample_list, calc_logodds)
@@ -59,6 +60,44 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
   if(verbose) message("Transforming.")
   asm <- transform(asm)
 
+  # get matrix of coverage, and tuple methylation
+  if(verbose) message("Assembling coverage tables: ", appendLF = FALSE)
+  coverage <- mapply( function(df,k){
+    if(verbose) message(".", appendLF=FALSE)
+    m <- match(key, k)
+    df$cov[m]
+  }, sample_list, all_keys)
+
+
+  #MM
+  MM <- mapply( function(df,k){
+    if(verbose) message(".", appendLF=FALSE)
+    m <- match(key, k)
+    df$MM[m]
+  }, sample_list, all_keys)
+
+  #MU
+  MU <- mapply( function(df,k){
+    if(verbose) message(".", appendLF=FALSE)
+    m <- match(key, k)
+    df$MU[m]
+  }, sample_list, all_keys)
+
+  #UM
+  UM <- mapply( function(df,k){
+    if(verbose) message(".", appendLF=FALSE)
+    m <- match(key, k)
+    df$UM[m]
+  }, sample_list, all_keys)
+
+  #UU
+  UU <- mapply( function(df,k){
+    if(verbose) message(".", appendLF=FALSE)
+    m <- match(key, k)
+    df$UU[m]
+  }, sample_list, all_keys)
+
+  #Get ranges
   ss <- limma::strsplit2(rownames(asm),".",fixed=TRUE)
   gr <- GenomicRanges::GRanges(ss[,1],
                                IRanges::IRanges(as.numeric(ss[,2]),
@@ -66,8 +105,15 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
   names(gr) <- rownames(asm)
   gr$midpt <- floor((GenomicRanges::start(gr)+GenomicRanges::end(gr))/2)
 
-  sa <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(asm=asm),
+  #Build object
+  sa <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(asm=asm,
+                                                                                cov = coverage,
+                                                                                MM = MM,
+                                                                                MU = MU,
+                                                                                UM = UM,
+                                                                                UU = UU),
                                                    rowRanges=gr)
+
   if(verbose) message("Returning SummarizedExperiment with ",nrow(asm), " CpG pairs", appendLF = FALSE)
   o <- order(GenomeInfoDb::seqnames(sa),gr$midpt)
   sa[o]
@@ -107,9 +153,9 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
 #' # Calculate ASM score
 #' sample1 <- calc_score(sample1, beta=0.5, a=0.2)
 #'
-calc_score <- function(df, beta, a) {
+calc_score <- function(df, beta = 0.5, a = 0.2) {
   weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
-  df$asm_score <- df$logodds*weights
+  df$asm_score <- df$logodds*weights #changed
   df
 }
 
