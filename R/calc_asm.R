@@ -145,13 +145,13 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
 #'
 #' @examples
 #' # Get list of samples containing tuple count information
-#' sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
+#' #sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
 #'
 #' # Calculate log odds ratio per tuple for the first sample in the list
-#' sample1 <- calc_logodds(sample_list[[1]])
+#' # sample1 <- calc_logodds(sample_list[[1]])
 #'
 #' # Calculate ASM score
-#' sample1 <- calc_score(sample1, beta=0.5, a=0.2)
+#' # sample1 <- calc_score(sample1, beta=0.5, a=0.2)
 #'
 calc_score <- function(df, beta = 0.5, a = 0.2) {
   weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
@@ -175,8 +175,7 @@ calc_score <- function(df, beta = 0.5, a = 0.2) {
 #' @export
 #'
 #' @examples
-#' sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
-#' sample1 <- calc_logodds(sample_list[[1]])
+#'
 calc_logodds <- function(s, eps=1) {
   ratio <- with(s, ( (MM+eps)*(UU+eps) ) / ( (MU+eps)*(UM+eps) ) )
   s$logodds <- log10(ratio)
@@ -197,7 +196,7 @@ calc_logodds <- function(s, eps=1) {
 #' @examples
 #' v <- c(-1,1.5,0,-2.1,4.3)
 #' modulus_sqrt(v)
-#' [1] -1.000000  1.224745  0.000000 -1.449138  2.073644
+#'
 #'
 #'
 modulus_sqrt <- function(values) {
@@ -246,13 +245,13 @@ modulus_sqrt <- function(values) {
 #'
 #' @examples
 #' weight1 <- calc_weight(MM=50, UU=50)
-#' [1] 0.9999716
+#' 0.9999716
 #'
 #' weight2 <- calc_weight(MM=20, UU=60)
-#' [1] 0.1646916
+#' 0.1646916
 #'
 #' weight3 <- calc_weight(MM=2, UU=3)
-#' [1] 0.6260661
+#' 0.6260661
 #'
 #'
 calc_weight <- function(MM, UU, beta=0.5, a=.2) {

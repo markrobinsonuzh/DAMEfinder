@@ -19,6 +19,7 @@
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
 #' @importFrom S4Vectors mcols
+#' @importFrom S4Vectors mcols<-
 #'
 #'
 #' @export
@@ -46,7 +47,7 @@ for(samp in 1:length(sample_names)){
     if(length(grep(t, c(as.character(1:21), "X", "Y"))) == 0){
       message("Bad chrom")
       return(NULL)
-      next
+      #next
       }
     if(t != chrom){message(sprintf("Processing chromosome %s",t))}
     chrom <- t
@@ -67,7 +68,7 @@ for(samp in 1:length(sample_names)){
     if(length(ref.reads) <= 1 | length(alt.reads) <= 1){
       message("0 or 1 read in one or both alleles")
       return(NULL)
-      next
+      #next
     }
 
     ####get reference and CpG positions####---------------------------------------
@@ -85,7 +86,7 @@ for(samp in 1:length(sample_names)){
     if(length(cgsite) < 1){
       message("No CpG sites associated to this SNP")
       return(NULL)
-      next
+      #next
     }
     mepos <- cgsite/nchar(dna) #location of CpG sites
 
@@ -167,7 +168,7 @@ for(samp in 1:length(sample_names)){
     }
 
     #Build GRanges
-    GR <- GenomicAlignments::GRanges(gsub("chr","",chrom), IRanges::IRanges(start = left + cgsite, width = 1))
+    GR <- GenomicRanges::GRanges(gsub("chr","",chrom), IRanges::IRanges(start = left + cgsite, width = 1))
     mcols(GR)$cov.ref <- ref.cov
     mcols(GR)$cov.alt <- alt.cov
     mcols(GR)$meth.ref <- ref.meth
@@ -179,7 +180,6 @@ for(samp in 1:length(sample_names)){
                                         mcols(GR)$cov.alt) >= coverage) >= 2
     if(sum(filt) < 2){
       return(NULL)
-      break
     }
 
     gr <- GR[filt]

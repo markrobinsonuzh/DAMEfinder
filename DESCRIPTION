@@ -6,8 +6,8 @@ Authors@R: c(person("Stephany", "Orjuela", role = c("aut", "cre"), email = "sorj
              person("Dania", "Machlab", role = "aut", email = "dania.machlab@gmail.com"),
              person("Mark", "Robinson", role = "aut", email = "mark.robinson@imls.uzh.ch"))
 Maintainer: Stephany Orjuela <sorjuelal@gmail.com>
-Description: 'DAMEfinder' offers functionality for taking methtuple or bismark outputs to
-    calculate ASM scores and compute DAMEs. It also offers nice visualization of methyl-circle plots
+Description: 'DAMEfinder' offers functionality for taking methtuple or bismark outputs to calculate ASM scores and compute DAMEs. 
+        It also offers nice visualization of methyl-circle plots.
 License: GPL (>= 2)
 LazyData: TRUE
 RoxygenNote: 6.1.0
@@ -19,13 +19,16 @@ Imports:
   S4Vectors, 
   readr, 
   SummarizedExperiment, 
-  limma, 
-  bumphunter, 
   GenomicAlignments,
   stringr,
+  plyr,
   vcfR,
   parallel,
   ggplot2,
-  Rsamtools
+  Rsamtools,
+  BiocGenerics,
+  methods,
+  limma, 
+  bumphunter
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown

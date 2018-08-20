@@ -14,17 +14,16 @@
 #'
 #' @return Plot
 #' @examples
-#' snp <- GRanges(19, IRanges(267039, width = 1))
-#' cpgsite <- GRanges(19, IRanges(266998, width = 1))
-#' bam.files <- list.files("Shared_taupo/steph/CRC.bismark.bams/", "_pe.dedupl_s.bam$")
-#' bam.files <- paste0("Shared_taupo/steph/CRC.bismark.bams/", bam.files)
-#' ref.file <- "data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
-#' vcf.file <- "Shared_taupo/steph/CRC.vcfs/NORM1.het.snp.raw.vcf"
+#' #snp <- GRanges(19, IRanges(267039, width = 1))
+#' #cpgsite <- GRanges(19, IRanges(266998, width = 1))
+#' #bam.files <- list.files("Shared_taupo/steph/CRC.bismark.bams/", "_pe.dedupl_s.bam$")
+#' #bam.files <- paste0("Shared_taupo/steph/CRC.bismark.bams/", bam.files)
+#' #ref.file <- "data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
+#' #vcf.file <- "Shared_taupo/steph/CRC.vcfs/NORM1.het.snp.raw.vcf"
 #'
-#' methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.files[5],
-#' ref.file = ref.file, letter.size = 2.5, cpgsite = cpgsite)
+#' #methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.files[5],
+#' #ref.file = ref.file, letter.size = 2.5, cpgsite = cpgsite)
 #'
-#' @importFrom S4Vectors mcols
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
 #' @importFrom BiocGenerics start
@@ -85,7 +84,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   #idx <- scanFaIndex(fa)
   dna <- Rsamtools::scanFa(fa, param=window)
 
-  cgsite <- stingr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
+  cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
   if(length(cgsite) < 1){
     stop("No CpG sites associated to this SNP")
@@ -98,7 +97,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   conversion <- vapply(alns.pairs, function(x){
 
     #change C locations for G locations if reference context is different
-    if(mcols(x)$XG[1] == "GA"){
+    if(S4Vectors::mcols(x)$XG[1] == "GA"){
       cgsite <- cgsite + 1
     }
 
@@ -255,7 +254,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, ref.fi
   conversion <- vapply(alns.pairs, function(x){
 
     #change C locations for G locations if reference context is different
-    if(mcols(x)$XG[1] == "GA"){
+    if(S4Vectors::mcols(x)$XG[1] == "GA"){
       cgsite <- cgsite + 1
     }
 

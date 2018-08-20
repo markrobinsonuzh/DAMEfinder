@@ -32,14 +32,14 @@ Draws CpG site methylation status as points, in reads containing a specific SNP.
 Generates one plot per bam file.
 }
 \examples{
-snp <- GRanges(19, IRanges(267039, width = 1))
-cpgsite <- GRanges(19, IRanges(266998, width = 1))
-bam.files <- list.files("Shared_taupo/steph/CRC.bismark.bams/", "_pe.dedupl_s.bam$")
-bam.files <- paste0("Shared_taupo/steph/CRC.bismark.bams/", bam.files)
-ref.file <- "data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
-vcf.file <- "Shared_taupo/steph/CRC.vcfs/NORM1.het.snp.raw.vcf"
+#snp <- GRanges(19, IRanges(267039, width = 1))
+#cpgsite <- GRanges(19, IRanges(266998, width = 1))
+#bam.files <- list.files("Shared_taupo/steph/CRC.bismark.bams/", "_pe.dedupl_s.bam$")
+#bam.files <- paste0("Shared_taupo/steph/CRC.bismark.bams/", bam.files)
+#ref.file <- "data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
+#vcf.file <- "Shared_taupo/steph/CRC.vcfs/NORM1.het.snp.raw.vcf"
 
-methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.files[5],
-ref.file = ref.file, letter.size = 2.5, cpgsite = cpgsite)
+#methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.files[5],
+#ref.file = ref.file, letter.size = 2.5, cpgsite = cpgsite)
 
 }

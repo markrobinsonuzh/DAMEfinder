@@ -10,11 +10,11 @@ calc_asm(sample_list, beta = 0.5, a = 0.2, transform = modulus_sqrt,
 \arguments{
 \item{sample_list}{List of samples returned from read_tuples}
 
-\item{beta}{The beta parameter used to calculate the weight in the ASM score. calc_weight uses 
+\item{beta}{The beta parameter used to calculate the weight in the ASM score. calc_weight uses
 this parameter in the pbeta function. The default is set to 0.5.}
 
 \item{a}{The distance from 0.5 we allow for, where 0.5 is a perfect MM:UU balance for a tuple.
-In the default mode this value is set to 0.2, and we account for the instances where the balance 
+In the default mode this value is set to 0.2, and we account for the instances where the balance
 is between 0.3 and 0.7.}
 
 \item{transform}{Transform the calculated ASM scores. We use the modulus square root function
@@ -27,7 +27,7 @@ calculating the t-statistic with limma::lmFit in the get_tstats function.}
 A SummarizedExperiment of ASM scores where the rows are all the tuples and the columns the sample names.
 }
 \description{
-This function takes in a list of samples resulting from the read_tuples function and returns a 
-SummarizedExperiment of Allele-Specific Methylation (ASM) scores, where each row is a tuple and 
+This function takes in a list of samples resulting from the read_tuples function and returns a
+SummarizedExperiment of Allele-Specific Methylation (ASM) scores, where each row is a tuple and
 each column is a sample.
 }

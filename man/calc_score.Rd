@@ -10,34 +10,34 @@ calc_score(df, beta = 0.5, a = 0.2)
 \item{df}{data frame of a sample containing all information per tuple (MM,UU,UM and MU counts,
 as well as the log odds ratio per tuple) needed for the ASM score.}
 
-\item{beta}{parameter for the calc_weight function. It's the alpha and beta values for the 
+\item{beta}{parameter for the calc_weight function. It's the alpha and beta values for the
 Beta function.}
 
-\item{a}{parameter for the calc_weight function. The weight will be the probability that the 
+\item{a}{parameter for the calc_weight function. The weight will be the probability that the
 MM/(MM+UU) ratio lies between 0.5-a and 0.5+a.}
 }
 \value{
 The same object with an additional column for the ASM score.
 }
 \description{
-This function calculates the ASM score for every tuple in a given sample. The ASM score is a 
-multiplication of the log odds ratio by a weight that reflects the extent of allele-specific 
+This function calculates the ASM score for every tuple in a given sample. The ASM score is a
+multiplication of the log odds ratio by a weight that reflects the extent of allele-specific
 methylation. This weight is obtained with the calc_weight function. For details on this weight
 check the calc_weight function in DAMEfinder.
 }
 \details{
-This function returns an allele-specific methylation (ASM) score for every given tuple in 
-a sample. The ASM score is a product of the log odds ratio and a weight reflecting a measure of 
+This function returns an allele-specific methylation (ASM) score for every given tuple in
+a sample. The ASM score is a product of the log odds ratio and a weight reflecting a measure of
 allele-specificity using the MM and UU counts.
 }
 \examples{
 # Get list of samples containing tuple count information
-sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
+#sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
 
 # Calculate log odds ratio per tuple for the first sample in the list
-sample1 <- calc_logodds(sample_list[[1]])
+# sample1 <- calc_logodds(sample_list[[1]])
 
 # Calculate ASM score
-sample1 <- calc_score(sample1, beta=0.5, a=0.2)
+# sample1 <- calc_score(sample1, beta=0.5, a=0.2)
 
 }

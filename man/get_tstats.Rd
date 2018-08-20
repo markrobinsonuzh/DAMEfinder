@@ -11,27 +11,28 @@ get_tstats(sa, design, method = "ls", maxGap = 300, coef = 2,
 \item{sa}{The matrix containing ASM scores where each row and column correspond to a tuple and
 sample respectively.}
 
-\item{method}{The method to be used in limma's lmFit. The default is set to "ls" but one can 
+\item{design}{Experiment design matrix}
+
+\item{method}{The method to be used in limma's lmFit. The default is set to "ls" but one can
 also set it to "robust", which is recommended on a real data set.}
 
 \item{maxGap}{The maximum allowed gap between genomic positions for clustering of genomic
 regions to be used in smoothing. The default is set to 300.}
 
-\item{coef}{}
+\item{coef}{Columm taken from limma "fit"}
+
+\item{verbose}{Set verbose}
 }
 \value{
 A vector of smoothed t-Statistics.
 }
 \description{
-This function calculates a moderated t-Statistic per tuple using limma's lmFit and eBayes 
-functions. It then smoothes the obtained t-Statistics using bumphunter's smoother function. 
+This function calculates a moderated t-Statistic per tuple using limma's lmFit and eBayes
+functions. It then smoothes the obtained t-Statistics using bumphunter's smoother function.
 The smoothing is done on genomic clusters consisting of CpGs that are close to each other.
 The midpoint of the two genomic positions in each tuple is used as the genomic position of
 that tuple, to apply smoothing on consecutive positions (or tuples). The function takes a
-matrix containing ASM scores per tuple across samples and a design matrix in which the 
-sample conditions are specified. The t-Statistic reflects a measure of difference in 
+matrix containing ASM scores per tuple across samples and a design matrix in which the
+sample conditions are specified. The t-Statistic reflects a measure of difference in
 ASM scores between the different sample conditions for every tuple.
-}
-\examples{
-tStatistics <- get_tstats(ASM_score_matrix, dsgn)
 }

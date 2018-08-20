@@ -7,7 +7,7 @@
 calc_logodds(s, eps = 1)
 }
 \arguments{
-\item{s}{A data frame that contains the MM,UU,UM, and MU counts for each CpG tuple for a 
+\item{s}{A data frame that contains the MM,UU,UM, and MU counts for each CpG tuple for a
 particular sample. It is the resulting object of the read_tuples function in DAMEfinder.}
 
 \item{eps}{Count added to each of the MM,UU,UM and MU counts to be sure that we don't divide
@@ -22,6 +22,5 @@ methylated and 'U' for unmethylated. 'MM' reflects the count for instances the C
 at both positions. The higher the MM and UU counts for that CpG pair, the higher the log odds ratio.
 }
 \examples{
-sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
-sample1 <- calc_logodds(sample_list[[1]])
+
 }

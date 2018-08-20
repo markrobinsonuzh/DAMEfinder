@@ -19,7 +19,7 @@ Function to calculate signed square root (aka modulus square root)
 \examples{
 v <- c(-1,1.5,0,-2.1,4.3)
 modulus_sqrt(v)
-[1] -1.000000  1.224745  0.000000 -1.449138  2.073644
+
 
 
 }

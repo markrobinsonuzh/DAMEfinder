@@ -50,13 +50,13 @@ This posterior also follows a beta distribution \eqn{\sim Beta(\alpha'=MM+0.5, \
 }
 \examples{
 weight1 <- calc_weight(MM=50, UU=50)
-[1] 0.9999716
+0.9999716
 
 weight2 <- calc_weight(MM=20, UU=60)
-[1] 0.1646916
+0.1646916
 
 weight3 <- calc_weight(MM=2, UU=3)
-[1] 0.6260661
+0.6260661
 
 
 }

@@ -14,13 +14,15 @@ calc_derivedasm(rds_files, cores = 1, verbose = T)
 \item{verbose}{If the function should be verbose.}
 }
 \value{
-SummarizedExperiment containing in assays: (FIX)
-- der.ASM = matrix with SNP-based ASM
-- snp.table = Matrix with SNP associated to the CpG site
-- ref.cov = Coverage of the "reference" allele
-- alt.cov = Coevarage of the "alternative" allele
-- ref.meth = Methylated reads from the "reference" allele
-- alt.meth = Methylated reads from the "alternative" allele
+SummarizedExperiment containing in assays:
+\itemize{
+\item der.ASM: matrix with SNP-based ASM
+\item snp.table: Matrix with SNP associated to the CpG site
+\item ref.cov: Coverage of the "reference" allele
+\item alt.cov: Coevarage of the "alternative" allele
+\item ref.meth: Methylated reads from the "reference" allele
+\item alt.meth: Methylated reads from the "alternative" allele
+}
 }
 \description{
 Combines all the \emph{GRangeslist} generated in \code{\link{split_bams}} into a
