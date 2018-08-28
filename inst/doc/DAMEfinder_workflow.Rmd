@@ -1,13 +1,15 @@
 ---
 title: "DAMEfinder Workflow"
 author: 
+- name: Stephany Orjuela
+  email: sorjuelal@gmail.com
 - name: Dania Machlab
   email: dania.machlab@gmail.com
 - name: Mark Robinson
   email: mark.robinson@imls.uzh.ch
 package: DAMEfinder
 output: 
-  BiocStyle::html_document2
+  BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{DAMEfinder Workflow}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,24 +18,189 @@ vignette: >
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# DAMEfinder Overview
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+\textit{something about ASM, types of ASM, humans bla bla} \textit{also something about BS-seq (take it from the proposal?)}. We focus on cases of ASM in which there is an imbalance in the methylation level between two alleles.
+
+DAMEfinder runs in two modes: \textbf{SNP-based} (exhaustive-mode) and \textbf{tuple-based} (fast-mode). 
+
+![](figure/DAMEfinder_workflow.png)
+
+## Get bam files
+In order to run any of the two modes, you must obtain aligned `bam` files using [`bismark`](http://www.bioinformatics.babraham.ac.uk/projects/bismark/). Here we demonstrate how to generate these starting from paired-end `fastq` files of bisulfite-treated reads:
+
+```{bash eval=FALSE}
+#Check quality of reads
+fastqc -t 2  sample1_R1.fastq.gz sample1_R2.fastq.gz
+	
+#Trim reads to remove bad quality regions and adapter sequence
+trim_galore --paired sample1_R1.fastq.gz sample2_R2.fastq.gz
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+To trim the reads we use [`Trim Galore`](https://github.com/FelixKrueger/TrimGalore) and specify the use of paired reads. By default it will remove any adapter sequence it recognizes. Please refer to the [user guide](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md) for further specifications.
+
+```{bash eval=FALSE}
+#Build bisulfite reference 
+bismark_genome_preparation <path_to_genome_folder>
+
+#run Bismark
+bismark -B sample1 --genome <path_to_genome_folder> -1 sample1_R1_val_1.fq.gz -2 sample1_R2_val_2.fq.gz
+
+#deduplicate (optional)
+deduplicate_bismark -p --bam sample1_pe.bam
+
+#sort and index files
+samtools sort -m 20G -O bam -T _tmp -o sample1_pe.dedupl_s.bam sample1_pe.deduplicated.bam
+samtools index file1_pe.dedupl_s.bam
+```
+
+Before the alignment, you must download a reference fasta file from [Ensembl](https://www.ensembl.org/info/data/ftp/index.html) or [Gencode](https://www.gencodegenes.org/), and generate a bisulfite converted reference. For this we use `bismark_genome_preparation` from the `bismark` suite, and specify the folder that contains the `fasta` file with its index file.
+Depending on the library type and kit used to obtains the reads, you may want to deduplicate your bam files (e.g. TruSeq). Please refer to the [user guide](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html) for further explanation and specifications.
+
+
+# SNP-based (aka slow-mode)
+
+To run the SNP-based mode, you need to additionally have a `vcf` file including the heterozygous SNPs per sample. If you do not have this, we recommend using the tuple-based mode, or running [`Bis-SNP`](http://people.csail.mit.edu/dnaase/bissnp2011/) to obtain variant calls from bisulfite-converted reads. 
+?include example to run Bis-SNP?
+
+
+
+
+# tuple-based (aka fast-mode)
+
+Before running the tuple-based mode, you must obtain files from the `methtuple` tool to input them in the `read_tuples` function.
+
+
+## Run Methtuple on bam files
+
+Methtuple requires the input bam files of PE reads to be sorted by query name. For more information on the options in `methtuple`, refer to the user [guide](https://github.com/PeteHaitch/methtuple). There is the option, for example, of skipping a number of bases from either end of each read. This is usefult to avoid the first few bases that show methylation bias. The `--sc` option combines strand information.
+
+```{bash eval=FALSE}
+# Sort bam file by query name
+samtools sort -n -@ 10 -m 20G -O bam -T _tmp -o sample1_pe_sorted.bam sample1_pe.deduplicated.bam
+
+# Run methtuple
+methtuple --sc --gzip -m 2 sample1_pe_sorted.bam
+```
+
+
+## Example Workflow 
+
+### Read methtuple files 
+
+Not use simulated data, use a small set of real data, chr19 or something. 
+
+\texit{We copy all the files available in the extdata folder of the package which contains the methtuple files we will use in this example. The files are the result of simulated data and encompass a small section of chr14 and contain allele-scpecifically methylated regions in the normal samples, some of which are lost in the adenoma samples.}
+
+
+```{r eval=FALSE}
+library(DAMEfinder)
+
+file.copy(system.file(package="DAMEfinder", "extdata"), ".", recursive=TRUE)
+meta_data <- read.table("extdata/metadata.txt", header = TRUE)
+file_list <- list.files(path = "extdata/", pattern = ".tsv.gz")
+m <- match(file_list, meta_data$methtuplefile)
+file_list <- paste0("extdata/", file_list)
+names(file_list) <- meta_data$shortname[m]
+
+file_list
+
+```
+
+```{r eval=FALSE}
+
+sample_list <- read_tuples(files = file_list, sample_names = names(file_list))
+
+head(sample_list$"adenoma1")
+
+```
+
+read_tuples returns a list of data frames, with each data frame corresponding to one sample. Each row in the data frame displays a tuple. The chromosome name and starnd are shown followed by pos1 and pos2 which refer to the genomic positions of the first and second CpG in the tuple. The MM, MU, UM, and UU counts of the tuple are displayed where M stands for methylated and U for unmethylated. For example, UM shows the read counts for the instances where pos1 is unmethylated and pos2 is methylated. The cover and distance between the two genomic positions in the tuple are shown under "cov" and "inter_dist" respectively.
+
+### TODO: fix this to take a vcfile with common SNPs and only take tuples that are close to a SNP: Remove SNPs 
+
+On a real data set, tuples that contain CpGs corresponding to SNPs ought to be removed using the remove_snps function. Since the example data set is a simulated one, there is no need to apply the step in our workflow. We demonstrate the use of the function below. A snp_key must be supplied as input, which contains all the SNPs in the following form: 'chr.position.'. For example, "chr5.7382".
+
+
+```{r eval=FALSE}
+
+sample_list_no_snps <- parallel::mclapply(sample_list, remove_snps, mc.cores=6)
+```
+
+
+### Calculate ASM Score
+
+The calc_asm function takes in the list of samples and outputs a matrix where each row is a tuple and each column is a sample. This matrix contains allele-specific methylation (ASM) scores. The ASM score is a measure of the extent of allele-specific methylation. Equations \@ref(eq:asmGeneral), \@ref(eq:asmWeight) and \@ref(eq:asmTheta) show how the score is calculated. The log odds ratio in equation \@ref(eq:asmGeneral) provides a higher score, the more MM and UU counts the tuple has, rather than random methylations of UM and MU. The weight further adds allele-scpecificity where a rather balanced MM:UU count provides the tuple with a higher score.
+
+\begin{equation}
+    ASM^{(i)} = log{ \Big\{ \frac{X_{MM}^{(i)} \cdot X_{UU}^{(i)}}{X_{MU}^{(i)} \cdot X_{UM}^{(i)}} \Big\} \cdot w_i }
+    (\#eq:asmGeneral)
+\end{equation}
+
+\begin{equation}
+    w_i = P(0.5-\epsilon < \theta < 0.5+\epsilon~|~ X_{MM}^{(i)}, X_{UU}^{(i)}, \beta_1, \beta_2)
+    (\#eq:asmWeight)
+\end{equation}
+
+\begin{equation}
+    \theta^{(i)} | X_{MM}^{(i)}, X_{UU}^{(i)},\beta_1, \beta_2 \sim Beta(\beta_1+X_{MM}^{(i)}, \beta_2+X_{UU}^{(i)})
+    (\#eq:asmTheta)
+\end{equation}
+
+
+where $\theta^{(i)}$ represents the moderated proportion of MM to MM+UU alleles. The weight, $w_i$ is set such that the observed split between MM and UU alleles can depart somewhat from 50/50, while fully methylated or unmethylated tuples, which represents evidence for absence of allele-specificity, are attenuated to 0.  The degree of allowed departure can be set according to $\epsilon$, the deviation from 50/50 allowed and the level of moderation, $\beta_1$ and $\beta_2$.  For example, the degree of mixture of subpopulations may play a role (e.g., allele-specificity may not happen on all subpopulations).
+
+```{r eval=FALSE}
+
+ASM_score_matrix <- calc_asm(sample_list = sample_list)
+
+```
+
+
+At this point, the user may want to remove rows (tuples) in the ASM_score_matrix, where all samples of one condition have NA values. One can also set a minimum number of samples to have counts per tuple as a further restriction. However, removing tuples that have NA values in all samples of a particular condition is a necessary step.
+
+comment: add this to the function?
+
+## Get t-Statistics per tuple
+
+Next, we obtain a moderated t-statistic per tuple that reflects a measure of difference between the two conditions being comapred. The t-Statistic is smoothed using smoother function from bumphunter. The midpoint of the two positions in each tuple is set as the genomic position of every tuple in the smoothing process.
+
+```{r eval=FALSE}
+
+# Make a design matrix that specifies the two conditions per sample
+cols <- rep(1,ncol(ASM_score_matrix))
+n <- grep("normal", colnames(ASM_score_matrix))
+cols[n] <- 0
+
+mod <- matrix(data=c(rep(1,ncol(ASM_score_matrix)), cols), ncol = 2)
+mod
+
+# Get t-Statistics
+tStatistics <- get_tstats(ASM_score_matrix, mod, method = "ls")
+
+```
+
+### Find DAMEs
+
+Finally, we detect regions that show differential allele-specific methylation. The regionFinder function from bumphunter is used in this process. cutoff explain how it's set
+
+```{r eval=FALSE}
+
+dames <- find_dames(tStatistics)
+
+head(dames)
+
+```
+
+
+# Visualization
+
+Show methylCirclePlot function
