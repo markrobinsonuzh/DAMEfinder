@@ -14,15 +14,11 @@
 #'
 #' @return Plot
 #' @examples
-#' #snp <- GRanges(19, IRanges(267039, width = 1))
-#' #cpgsite <- GRanges(19, IRanges(266998, width = 1))
-#' #bam.files <- list.files("Shared_taupo/steph/CRC.bismark.bams/", "_pe.dedupl_s.bam$")
-#' #bam.files <- paste0("Shared_taupo/steph/CRC.bismark.bams/", bam.files)
-#' #ref.file <- "data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
-#' #vcf.file <- "Shared_taupo/steph/CRC.vcfs/NORM1.het.snp.raw.vcf"
+#' #bam_files <- "../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
+#' #vcf_files <- "../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
+#' #sample_names <- "NORM1"
+#' #reference_file <- "../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
 #'
-#' #methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.files[5],
-#' #ref.file = ref.file, letter.size = 2.5, cpgsite = cpgsite)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -47,8 +43,9 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
 
   message("Getting reads")
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
-                                    param = Rsamtools::ScanBamParam(what = c("flag","mapq","mrnm","mpos","isize","seq","qual"),
+                                    param = Rsamtools::ScanBamParam(
                                                          tag= c("MD","XM","XR","XG"),
+                                                         mapqFilter = 40,
                                                          which=snp),
                                     use.names = TRUE)
 
@@ -81,7 +78,6 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
   fa <- open(Rsamtools::FaFile(ref.file))
-  #idx <- scanFaIndex(fa)
   dna <- Rsamtools::scanFa(fa, param=window)
 
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
@@ -90,7 +86,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     stop("No CpG sites associated to this SNP")
   }
 
-  mepos <- cgsite/nchar(dna) #location of CpG sites
+  mepos <- cgsite / Biostrings::nchar(dna) #location of CpG sites
 
   ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
   message("Getting meth state per read-pair")
@@ -110,7 +106,8 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
 
     for(pair in 1:2){
 
-      tag <- getMD(x[pair])
+      something <- mcols(x[pair])$MD
+      tag <- getMD(something)
       MDtag <- tag$MDtag
       nucl.num <- tag$nucl.num
 
@@ -164,7 +161,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   #and cpg of interest
   if(!is.null(cpgsite)){
     cpg.start <- start(cpgsite) - left + 1
-  }else{cpg.start = NA}
+  }else{cpg.start = 0}
 
   #### plot ####---------------------------------------------------------------------------------
 
@@ -173,7 +170,8 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
                   read=rep(1:length(alns.pairs), each=length(cgsite)),
-                  value=as.vector(conversion))
+                  value=as.vector(conversion),
+                  stringsAsFactors = F)
 
   #data for segments
   reads <- d$read
@@ -190,12 +188,13 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     max(newd$CpG[vals], snp.start)
   })
 
-  d2 <- unique(data.frame(xstart, xend, reads))
+  d2 <- unique(data.frame(xstart, xend, reads, stringsAsFactors = F))
   d2$snp <- c(rep("a", length(alt.reads)), rep("r", length(ref.reads)))
 
   #To manually scale the colors
   cols <- c("#0E4071", "#d55e00", "#0E4071", "#d55e00")
   names(cols) <- c("a", "r", alt, ref)
+
 
   ggplot() +
     scale_shape_identity() +
@@ -208,17 +207,32 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     guides(color=FALSE)
 }
 
-#' @describeIn methylCirclePlot Draws CpG site methylation status as points, in reads containing a specific CpG site.
+#' Draw methylation circle plot without SNP
 #'
+#' Draws CpG site methylation status as points, in reads containing a specific CpG site.
+#' Generates one plot per bam file.
+#'
+#' @param cpgsite GRanges object containing a single CpG site location of interest
+#' @param bam.file bismark bam file path
+#' @param ref.file fasta reference file path
+#' @param dame (optional) GRanges object containing a region to plot
+#' @return Plot
 #' @examples
-#' methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.files[5], ref.file = ref.file,
-#' dame = NULL)
 #'
+#' @importFrom GenomicRanges GRanges
+#' @importFrom IRanges IRanges
+#' @importFrom BiocGenerics start
+#' @importFrom BiocGenerics end
+#' @importFrom GenomeInfoDb seqnames
+#' @import ggplot2
+#'
+#' @export
 methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, ref.file = ref.file, dame = NULL){
 
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
-                                    param = Rsamtools::ScanBamParam(tag= c("MD","XM","XR","XG"),
-                                                         which=cpgsite),
+                                    param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
+                                                                    mapqFilter = 40,
+                                                                    which = cpgsite),
                                     use.names = TRUE)
   alns <- unlist(alns.pairs)
   ####get reference and CpG positions####--------------------------------------------------------
@@ -247,7 +261,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, ref.fi
     stop("No CpG sites in these reads")
   }
 
-  mepos <- cgsite/nchar(dna) #location of CpG sites
+  mepos <- cgsite / Biostrings::nchar(dna) #location of CpG sites
 
   ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
   message("Getting meth state per read-pair")
@@ -267,7 +281,8 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, ref.fi
 
     for(pair in 1:2){
 
-      tag <- getMD(x[pair])
+      something <- mcols(x[pair])$MD
+      tag <- getMD(something)
       MDtag <- tag$MDtag
       nucl.num <- tag$nucl.num
 

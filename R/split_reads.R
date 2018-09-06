@@ -11,21 +11,26 @@
 #' @examples
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
+#' @importFrom S4Vectors mcols
 #'
 #'
 #' @export
 splitReads <- function(alns, v, snp){
 
-  #Use MD tag from bam to check wich reads have the ref or alt allele
-  alleles <- vapply(alns, function(x){
+  fullMD <- mcols(alns)$MD
+  fullstart <- start(alns)
+  snp.loc <- start(snp)
+
+  #Use MD tag from bam to check which reads have the ref or alt allele
+  alleles <- mapply(function(a, x, snp.loc){
 
     #extract matches and mismatches from MD tag
-    tag <- getMD(x)
+    tag <- getMD(a)
     MDtag <- tag$MDtag
     nucl.num <- tag$nucl.num
 
     #Get right location of snp in sequence of read
-    snp.start <- start(snp) - start(x) + 1
+    snp.start <- snp.loc - x + 1
 
     #Get the snp (location) from the specific read
     count <- 0
@@ -35,9 +40,10 @@ splitReads <- function(alns, v, snp){
       if(count >= snp.start){break}
     }
     return(MDtag[i])
-  }, character(1))
+  }, a = fullMD, x = fullstart, MoreArgs = list(snp.loc = snp.loc), USE.NAMES = F)
 
   #Get read names from alt and ref reads
+  names(alleles) <- names(alns)
   ref.reads <- sort(names(which(alleles != v)))
   alt.reads <- sort(names(which(alleles == v)))
 
@@ -50,7 +56,7 @@ splitReads <- function(alns, v, snp){
 #' Takes a GenomicAlignments object containing the MDtag, and transforms it
 #' into a vector of characters and numbers
 #'
-#' @param y GenomicAlignments object containing an MDtag
+#' @param a Vector of MDtags (single characters)
 #'
 #' @return A named list of vectors, each vector a parsed version of MDtag:
 #' - nucl.num: Numeric representation of MDtag.
@@ -58,13 +64,10 @@ splitReads <- function(alns, v, snp){
 #'
 #' @examples
 #'
-#' @importFrom S4Vectors mcols
 #'
 #'
 #' @export
-getMD <- function(y){
-
-  a <- mcols(y)$MD
+getMD <- function(a){
 
   #extract matches and mismatches from MD tag
   numbers <- as.integer(stringr::str_extract_all(a, "[0-9]{1,}")[[1]])

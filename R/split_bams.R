@@ -11,10 +11,10 @@
 #' @param vcf_files List of vcf files.
 #' @param sample_names Names of files in the list.
 #' @param reference_file fasta file used to generate the bam files.
-#' @param coverage Minimum number of reads covering a CpG site on each allele. default = 2
-#' @param cores Number of cores to use. See package {parallel} for description of core. default = 1
+#' @param coverage Minimum number of reads covering a CpG site on each allele. Default = 2.
+#' @param cores Number of cores to use. See package {parallel} for description of core. Default = 1.
 #'
-#' @return A list of GRanges for each sample. Each list is saved in separate .rds files
+#' @return A list of GRanges for each sample. Each list is saved in a separate .rds file.
 #' @examples
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
@@ -23,7 +23,7 @@
 #'
 #'
 #' @export
-split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 2, cores = 1){
+split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 1, cores = 1){
 
 message("Reading reference file")
 fa <- open(Rsamtools::FaFile(reference_file))
@@ -31,32 +31,34 @@ fa <- open(Rsamtools::FaFile(reference_file))
 for(samp in 1:length(sample_names)){
 
   message(sprintf("Running sample %s", sample_names[samp]))
-  chrom <- "1"
 
   message("Reading VCF file")
   vcf <- vcfR::getFIX(vcfR::read.vcfR(vcf_files[samp], verbose = FALSE))
   bam.file <- bam_files[samp]
 
-  message(sprintf("Processing chromosome %s",chrom))
-
+  #message(sprintf("Processing chromosome %s",chrom))
+  message("Extracting methylation per SNP")
   snp.table <- parallel::mcmapply(function(t, u, v){
 
     #Appearently applying to a GRanges takes too long ? so I will create one each time
     snp <- GenomicRanges::GRanges(seqnames = t, IRanges::IRanges(start = as.integer(u), width = 1))
 
+
     if(length(grep(t, c(as.character(1:21), "X", "Y"))) == 0){
       message("Bad chrom")
       return(NULL)
-      #next
       }
-    if(t != chrom){message(sprintf("Processing chromosome %s",t))}
+
+    #message(sprintf("Processing chromosome %s",t))
+    #message(".")
     chrom <- t
 
     #Get the reads that align to the specified SNP
     alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
                                       param = Rsamtools::ScanBamParam(
-                                        tag= c("MD","XM","XR","XG"),
-                                        which=snp),
+                                        tag = c("MD","XM","XR","XG"),
+                                        mapqFilter = 40,
+                                        which = snp),
                                       use.names = TRUE)
 
     alns <- unlist(alns.pairs) #unpaired
@@ -88,11 +90,10 @@ for(samp in 1:length(sample_names)){
       return(NULL)
       #next
     }
-    mepos <- cgsite/nchar(dna) #location of CpG sites
+    mepos <- cgsite / Biostrings::nchar(dna) #location of CpG sites
 
     ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
     conversion <- vapply(alns.pairs, function(x){
-
       #change C locations for G locations if reference context is different
       if(mcols(x)$XG[1] == "GA"){
         cgsite <- cgsite + 1
@@ -106,7 +107,8 @@ for(samp in 1:length(sample_names)){
 
       for(pair in 1:2){
 
-        tag <- getMD(x[pair])
+        something <- mcols(x[pair])$MD
+        tag <- getMD(something)
         MDtag <- tag$MDtag
         nucl.num <- tag$nucl.num
 
@@ -179,6 +181,7 @@ for(samp in 1:length(sample_names)){
     filt <- BiocGenerics::rowSums(cbind(mcols(GR)$cov.ref,
                                         mcols(GR)$cov.alt) >= coverage) >= 2
     if(sum(filt) < 2){
+      message("No CpG sites sufficiently covered")
       return(NULL)
     }
 
@@ -188,7 +191,7 @@ for(samp in 1:length(sample_names)){
   },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F, mc.cores = cores)
 
   message(sprintf("Saving results for sample %s", sample_names[samp]))
-  saveRDS(snp.table, file = sprintf("snp.table.full.%s.rds", sample_names[samp]))
+  saveRDS(snp.table, file = sprintf("snp.table.%s.rds", sample_names[samp]))
 
 }
 }

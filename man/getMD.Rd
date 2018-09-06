@@ -4,10 +4,10 @@
 \alias{getMD}
 \title{MDtag parser}
 \usage{
-getMD(y)
+getMD(a)
 }
 \arguments{
-\item{y}{GenomicAlignments object containing an MDtag}
+\item{a}{Vector of MDtags (single characters)}
 }
 \value{
 A named list of vectors, each vector a parsed version of MDtag:
@@ -19,5 +19,7 @@ Takes a GenomicAlignments object containing the MDtag, and transforms it
 into a vector of characters and numbers
 }
 \examples{
+
+
 
 }
