@@ -5,7 +5,7 @@ DATA_PATH_DIR <- "../../inst/extdata/"
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
 #bam_files <- sapply(c("NORM1_chr19.bam", "CRC1_chr19.bam"), get_data_path)
-bam_files <- get_data_path("NORM1_chr19.bam")
+bam_files <- get_data_path("NORM1_chr19_trim.bam")
 
 #vcf_files <- sapply(c("NORM1.chr19.moretrim.vcf", "CRC1.chr19.moretrim.vcf"), get_data_path)
 vcf_files <- get_data_path("NORM1.chr19.moretrim.vcf")
