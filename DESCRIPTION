@@ -29,6 +29,7 @@ Imports:
   BiocGenerics,
   methods,
   limma, 
-  bumphunter
+  bumphunter,
+  Biostrings
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown
