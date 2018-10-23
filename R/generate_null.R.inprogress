@@ -1,0 +1,235 @@
+
+control <- 5:8
+treat <- 1:4
+maxPerms <- 10
+
+cols <- c(rep(1,length(treat)),rep(0,length(control)))
+mod <- matrix(data = c(rep(1,BiocGenerics::ncol(ASM_score_matrix)), cols), ncol = 2)
+sampleSize <- table(mod[,2])
+
+#Performing balanced permutations of condition across samples to generate a
+#null distribution of region test statistics
+
+perms <- combn(seq(1, nrow(mod)), min(sampleSize))
+
+# Remove redundant permutations (if balanced) <---- ask if this is right
+if (length(unique(table(mod[,2]))) == 1){
+    perms <- perms[, seq_len(ncol(perms)/2)]
+  }
+
+# restrict to unique permutations that don't include any
+# groups consisting of all identical conditions
+rmv <- NULL
+for (p in seq_len(ncol(perms))){
+  if (length(unique(mod[perms[,p],2])) == 1){
+    rmv <- c(rmv, p)
+  }
+}
+if (length(rmv) > 0 )
+  perms <- perms[,-rmv]
+
+# subsample permutations based on similarity to original partition
+# gives preference to those with the least similarity
+
+#In case maxPerms smaller than actual number permutations
+if (maxPerms < ncol(perms)) {
+  similarity <- apply(perms, 2, function(x) {
+    max(table(mod[x,2]))
+  })
+  perms.all <- perms
+  perms <- NULL
+  levs <- sort(unique(similarity))
+  l <- 1
+  num <- 0
+  while(!(num == maxPerms) && l <= length(levs)) {
+    keep <- sample(which(similarity == levs[l]),
+                   min(maxPerms-num, sum(similarity == levs[l])) )
+    perms <- cbind(perms, perms.all[,keep])
+    l <- l + 1
+    num <- ncol(perms)
+  }
+}
+
+
+# Now rerun on permuted designs and concatenate results
+    for (j in seq_len(ncol(perms))) {
+      if (verbose) {
+        message("\nBeginning permutation ", j)
+      }
+      reorder <- perms[, j]
+      designr <- mod
+
+      if (length(unique(design[, coeff[1]])) == 2 &&
+          length(coeff) == 1 &&
+          !nrow(perms) == nrow(designr)) {
+        designr[, coeff] <- 0
+        designr[reorder, coeff] <- 1
+        pData(bs)[[testCovariate]] <- levs[1]
+        pData(bs)[[testCovariate]][reorder] <- levs[2]
+
+        if (!all(sort(pData.orig[[testCovariate]]) ==
+                 sort(pData(bs)[[testCovariate]]))){
+          designr[, coeff] <- 1
+          designr[reorder, coeff] <- 0
+          pData(bs)[[testCovariate]] <- levs[2]
+          pData(bs)[[testCovariate]][reorder] <- levs[1]
+        }
+
+        xr <- NULL
+        for (rd in seq_len(nrow(pData.orig))) {
+          match <- which(pData.orig[[testCovariate]] %in%
+                           pData(bs)[rd,][[testCovariate]])
+          taken <- which(match %in% xr)
+          if (length(taken) > 0)
+            match <- match[-taken]
+          if (length(match) > 0)
+            xr <- c(xr, match[1])
+        }
+        if(length(coeff.adj) > 0){
+          pData(bs)[,adjustCovariate] <-
+            pData.orig[xr,adjustCovariate]
+        }
+      } else {
+        designr[, coeff] <- designr[reorder, coeff]
+        pData(bs) <- pData.orig[reorder, , drop = FALSE]
+      }
+
+      # if matchCovariate is not null, restrict permutations such that
+      # null comparisons are balanced for the values of
+      # pData$matchCovariate this avoids comparison of,
+      # say two different individuals in the null, that the comparison of
+      # interest is tissue type. Not matching would mean the null is
+      # really not null
+      if (!is.null(matchCovariate)) {
+        permLabel <- paste0(paste0(pData(bs)[designr[, coeff[1]] == 1,
+                                             mC], collapse = "_"),
+                            "vs", paste0(pData(bs)[(1 - designr[, coeff[1]]) == 1,
+                                                   mC], collapse = "_"))
+
+        c1 <- unlist(strsplit(permLabel, "vs"))[1]
+        c2 <- unlist(strsplit(permLabel, "vs"))[2]
+
+        c1 <- unlist(strsplit(c1, "_"))
+        c2 <- unlist(strsplit(c2, "_"))
+
+        keepPerm <- 1 * (sum(c1 %in% c2) > 0 &&
+                           sum(c2 %in% c1) > 0)
+
+        if (keepPerm == 0) {
+          if (verbose) {
+            message(paste0("Skipping permutation ",
+                           gsub("vs", " vs ", permLabel)))
+          }
+          next
+        }
+      } else {
+        permLabel <- j
+      }
+
+      res.flip.p <- bumphunt(bs=bs, design = designr,
+                             coeff = coeff,
+                             coeff.adj = coeff.adj,
+                             minInSpan = minInSpan,
+                             minNumRegion = minNumRegion, cutoff = cutoff,
+                             maxGap = maxGap, maxGapSmooth = maxGapSmooth,
+                             smooth = smooth, bpSpan = bpSpan,
+                             verbose = verbose, parallel = parallel,
+                             block = block, blockSize = blockSize,
+                             chrsPerChunk = chrsPerChunk, fact = fact)
+
+      if (verbose) {
+        message("* ", j, " out of ", ncol(perms),
+                " permutations completed (",
+                nrow(res.flip.p), " null candidates)")
+      }
+
+      if (!is.null(res.flip.p)) {
+        res.flip.p$permNum <- permLabel
+        FLIP <- rbind(FLIP, res.flip.p)
+      }
+    }
+
+    # restore original pData
+    pData(bs) <- pData.orig
+
+    # if no candidates were found in permutation
+    # provide informative error message
+    if (is.null(FLIP)){
+      warning("No candidate regions found in permutation, so inference ",
+              "can't be carried out. ",
+              "Try decreasing the cutoff, or running on a larger ",
+              "dataset if you are currently using a subset.")
+      OBS$pval <- NA
+      OBS$qval <- NA
+    }else if (nrow(FLIP) < 0.05*nrow(OBS)){
+      message("Note: Very few null candidate regions were found.",
+              "For more accurate and sensitive inference, ",
+              "try decreasing the cutoff, or running on a larger ",
+              "dataset if you are currently using a subset.")
+    }
+
+    if (!is.null(FLIP)){
+      # if there are more than 1 million candidate null regions,
+      # take a random sample
+      # of 1 million of them
+      if (nrow(FLIP) > 1e+06) {
+        rs <- sample(seq_len(nrow(FLIP)), 1e+06, replace = FALSE)
+        FLIP <- FLIP[rs, ]
+      }
+
+      # which column of results to use as test statistic ?
+      # check statistic name
+      if (!(stat %in% c(colnames(OBS), "avg"))) {
+        stop("Specified '", stat,
+             "' as the test statistic which is not ",
+             "in the results. Please specify a valid name from one of ",
+             "L, area, beta, or stat")
+      } else if (stat == "avg") {
+        OBS$avg <- OBS$area/OBS$L
+        FLIP$avg <- FLIP$area/FLIP$L
+      }
+
+      whichStatO <- which(colnames(OBS) == stat)
+      whichStatF <- which(colnames(FLIP) == stat)
+
+      # Faster way to compute the p-values that doesn't use multiple cores
+      # Step 1: sort the permuted statistics vector
+      perm.ordered <- c(sort(abs(FLIP[, whichStatF]),
+                             method = "quick"), Inf)
+
+      # Step 2: find the first instance in the sorted vector where the
+      # permuted value is greater than the observed and use this to
+      # determine the number of permuted values that are greater than or
+      # equal to theobserved
+      pval <- rep(NA, nrow(OBS))
+      pval[!is.na(OBS[, whichStatO])] <- (1 +
+                                            vapply(abs(OBS[!is.na(OBS[, whichStatO]), whichStatO]),
+                                                   function(x) length(perm.ordered) - min(which(x <= perm.ordered)),
+                                                   numeric(1))) / (1 + sum(!is.na(FLIP[, whichStatF])))
+
+      # missing test statistics cause Inf for the p-value calculation
+      # instead propagate the missing values
+      pval[abs(pval) == Inf] <- NA
+
+      pval <- data.frame(x = pval, y = p.adjust(pval, method = "BH"))
+
+      OBS$pval <- pval$x
+      OBS$qval <- pval$y
+    }
+
+    # convert output into GRanges, with indexStart/indexEnd as IRanges
+    indexIR <- IRanges(OBS$indexStart, OBS$indexEnd)
+    OBS.gr <- makeGRangesFromDataFrame(OBS[,-c(4:5)],
+                                       keep.extra.columns = TRUE)
+    OBS.gr$index <- indexIR
+    names(OBS.gr) <- NULL
+
+    # sort on pval overall (currently sorted within chromsome)
+    OBS.gr <- OBS.gr[order(OBS.gr$pval, -abs(OBS.gr$stat)),]
+
+    return(OBS.gr)
+  } else {
+    message("No candidate regions pass the cutoff of ", unique(abs(cutoff)))
+    return(NULL)
+  }
+}
