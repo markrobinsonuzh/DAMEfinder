@@ -23,7 +23,7 @@
 #'
 #'
 #' @export
-split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 1, cores = 1){
+split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 2, cores = 1){
 
 message("Reading reference file")
 fa <- open(Rsamtools::FaFile(reference_file))
