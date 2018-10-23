@@ -16,8 +16,6 @@ sample_names <- "NORM1"
 reference_file <- get_data_path("19.fa")
 output_file <- "snp.table.NORM1.rds" #TODO make as an argument
 
-split_bams(bam_files, vcf_files, sample_names, reference_file)
-
 test_that("end to end split_bams", {
   split_bams(bam_files, vcf_files, sample_names, reference_file)
   GRanges_list <- try(readRDS(output_file))
