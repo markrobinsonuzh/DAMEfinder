@@ -106,7 +106,7 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, verbo
   gr$midpt <- floor((GenomicRanges::start(gr)+GenomicRanges::end(gr))/2)
 
   #Build object
-  sa <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(asm=asm,
+  sa <- SummarizedExperiment::SummarizedExperiment(assays=S4Vectors::SimpleList(asm=abs(asm),
                                                                                 cov = coverage,
                                                                                 MM = MM,
                                                                                 MU = MU,
