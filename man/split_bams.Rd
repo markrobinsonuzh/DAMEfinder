@@ -5,7 +5,7 @@
 \title{Detect allele-specific methylation from a bam file}
 \usage{
 split_bams(bam_files, vcf_files, sample_names, reference_file,
-  coverage = 1, cores = 1)
+  coverage = 2, cores = 1)
 }
 \arguments{
 \item{bam_files}{List of bam files.}

@@ -4,7 +4,7 @@
 \alias{find_dames}
 \title{Find DAMEs}
 \usage{
-find_dames(sa, Q = 0.9, maxGap = 300, verbose = TRUE)
+find_dames(sa, Q = 0.9, maxGap = 20, verbose = TRUE)
 }
 \arguments{
 \item{sa}{Vector of smoothed t-Statistics obtained from the get_stats function.}
