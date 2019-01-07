@@ -1,5 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
+*.rds
 DAMEfinder.Rproj
+DAMEfinder_git.Rproj
 inst/extdata/moredata

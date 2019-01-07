@@ -1,6 +1,7 @@
-context("split_bams")
+#install.packages("profvis")
+library(profvis)
 
-DATA_PATH_DIR <- "../../inst/extdata/"
+DATA_PATH_DIR <- "inst/extdata"
 
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
@@ -14,18 +15,16 @@ vcf_files <- get_data_path("NORM1.chr19.moretrim.vcf")
 sample_names <- "NORM1"
 
 reference_file <- get_data_path("19.fa")
-output_file <- "snp.table.NORM1.rds" #TODO make as an argument
+output_file <- "snp.table.NORM1.rds"
 
-test_that("end to end split_bams", {
+profvis({
   split_bams(bam_files, vcf_files, sample_names, reference_file)
-  GRanges_list <- try(readRDS(output_file))
-  expect_type(GRanges_list, "list")
-
-  #cleanup
-  if(file.exists(output_file)) file.remove(output_file) #make function?
 })
 
-#expect_type(XX, "list")
-#expect_s4_class(XX[[1]], "GRanges")
-
-x <- readRDS("snp.table.NORM1.rds")
+# split_bams(bam_files, vcf_files, sample_names, reference_file)
+# open(FaFile(reference_file))
+# 
+# fi <- FaFile(reference_file)
+# 
+# fl <- system.file("extdata", "ce2dict1.fa", package="Rsamtools", mustWork=TRUE)
+# fa <- open(FaFile(fl))  

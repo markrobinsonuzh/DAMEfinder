@@ -1,0 +1,38 @@
+
+#' Take inputs
+#'
+#' The function takes a bam (from bismark) and vcf file for each sample.
+#' For each SNP contained in the vcfile it calculates the proportion of
+#' methylated reads for each CpG site at each allele. At the end it returns
+#' (saves to working directory) a GRanges list, where each GRanges contains
+#' all the CpG sites overlapping the reads containing a specific SNP.
+#'
+#' @param bam_files List of bam files.
+#' @param vcf_files List of vcf files.
+#' @param sample_names Names of files in the list.
+#' @param reference_file fasta file used to generate the bam files.
+#' @param coverage Minimum number of reads covering a CpG site on each allele. Default = 2.
+#' @param cores Number of cores to use. See package {parallel} for description of core. Default = 1.
+#'
+#' @return A list of GRanges for each sample. Each list is saved in a separate .rds file.
+#' @examples
+#' @importFrom BiocGenerics start
+#' @importFrom BiocGenerics end
+#' @importFrom S4Vectors mcols
+#' @importFrom S4Vectors mcols<-
+#'
+#'
+#' @export
+
+read_fasta_file <- function(reference_file){
+  message("Reading reference file")
+  fa <- open(Rsamtools::FaFile(reference_file))
+}
+
+read_sample_spec_files <- function(bam_files, vcf_files, sample_names, samp){
+  message(sprintf("Running sample %s", sample_names[samp]))
+  message("Reading VCF file")
+  vcf <- vcfR::getFIX(vcfR::read.vcfR(vcf_files[samp], verbose = FALSE))
+  bam.file <- bam_files[samp]
+  
+}

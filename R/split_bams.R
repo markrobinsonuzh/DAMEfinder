@@ -57,7 +57,7 @@ for(samp in 1:length(sample_names)){
     alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
                                       param = Rsamtools::ScanBamParam(
                                         tag = c("MD","XM","XR","XG"),
-                                        mapqFilter = 40,
+                                        #mapqFilter = 40,
                                         which = snp),
                                       use.names = TRUE)
 
@@ -95,7 +95,8 @@ for(samp in 1:length(sample_names)){
     ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
     conversion <- vapply(alns.pairs, function(x){
       #change C locations for G locations if reference context is different
-      if(mcols(x)$XG[1] == "GA"){
+      XGcondition <- mcols(x)$XG[1]
+      if(XGcondition == "GA"){
         cgsite <- cgsite + 1
       }
 
@@ -106,7 +107,6 @@ for(samp in 1:length(sample_names)){
       read.end <- end(x) - left + 1 #end
 
       for(pair in 1:2){
-
         something <- mcols(x[pair])$MD
         tag <- getMD(something)
         MDtag <- tag$MDtag
