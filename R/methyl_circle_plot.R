@@ -29,7 +29,7 @@
 #'
 #' @export
 
-methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, letter.size = 2.5, sample.name = "sample1", cpgsite = NULL){
+methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, letter.size = 2.5, point.size = 3, sample.name = "sample1", cpgsite = NULL){
 
   message("Reading vcf file")
   if(!file.exists(paste0(sample.name,".RData"))){
@@ -37,7 +37,10 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     save(vcf, file = paste0(sample.name, ".RData"))
   } else {load(paste0(sample.name, ".RData"))}
 
-  snp.loc <- which(as.integer(vcf[,2]) == start(snp))
+  snp.loc <- which(as.integer(vcf[,2]) == start(snp) & vcf[,1] == levels(seqnames(snp)))
+  if(length(snp.loc) == 0){
+    stop("Sample does not contain SNP")
+  }
   ref <- vcf[,4][snp.loc]
   alt <- vcf[,5][snp.loc]
 
@@ -200,7 +203,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     scale_shape_identity() +
     theme_void() +
     geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads, colour = snp), size = 0.2) +
-    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", size=1) +
+    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", size=point.size) +
     geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape = letter, colour = letter), size=letter.size) +
     geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green")  +
     scale_color_manual(values = cols) +
@@ -227,7 +230,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
 #' @import ggplot2
 #'
 #' @export
-methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, ref.file = ref.file, dame = NULL){
+methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, point.size = 3, ref.file = ref.file, dame = NULL){
 
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
                                     param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
@@ -359,7 +362,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, ref.fi
     scale_shape_identity() +
     theme_void() +
     geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads), colour = "grey", size = 0.5) +
-    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", size=1) +
+    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", size=point.size) +
     geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green")  +
     guides(color=FALSE)
 }
