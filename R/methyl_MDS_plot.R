@@ -7,7 +7,8 @@
 #' @param x SummarizedExperiment, output from calc_derivedasm(). TODO: also for calc_asm()?
 #' @param top Number of top CpG sites used to calculate pairwise distances.
 #' @param coverage Minimum number of reads covering a CpG site on each allele. Default = 4.
-#' TODO: param colorbygroup TRUE or FALSE. the object should have group informationin colData
+#' @param color Vector of group labels same length as number of samples
+#' #TRUE or FALSE. the object should have group informationin colData
 #'
 #' @return Plot
 #' @examples
@@ -20,7 +21,7 @@
 #' 
 #' 
 #' 
-methyl_MDS_plot <- function(x, top = 1000, coverage = 4){
+methyl_MDS_plot <- function(x, top = 1000, coverage = 4, color){
   
   if(dim(SummarizedExperiment::rowData(x))[2] > 0){
     
@@ -65,10 +66,10 @@ methyl_MDS_plot <- function(x, top = 1000, coverage = 4){
     mds_meth <- stats::cmdscale(stats::as.dist(dd),2)
   }
   
-  df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2], names = colnames(x))
+  df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2], names = colnames(x), colby = color)
 
   ggplot(df)+
-    geom_point(data=df, aes(x=dim1, y=dim2), size=5, color = "steelblue") +
+    geom_point(data=df, aes(x=dim1, y=dim2), size=5, color = colby) +
     geom_text(data=, aes(x=dim1, y=dim2-.02, label = names), size=4)+
     theme_bw()
 }
