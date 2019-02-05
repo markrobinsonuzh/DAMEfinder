@@ -52,19 +52,21 @@ methyl_MDS_plot <- function(x, top = 1000, coverage = 4, color){
     if(any(bad)) methsTR <- methsTR[!bad,,drop=FALSE]
 
     #Grab top sites
-    nprobes <- BiocGenerics::nrow(methsTR)
-    nsamples <- BiocGenerics::ncol(methsTR)
-    top <- min(top,nprobes)
+    # nprobes <- BiocGenerics::nrow(methsTR)
+    # nsamples <- BiocGenerics::ncol(methsTR)
+    # top <- min(top,nprobes)
 
     #Distance measure is mean of top squared deviations for each pair of arrays
-    topindex <- nprobes-top+1L
-    dd <- matrix(0,nrow=nsamples,ncol=nsamples)
-    for (i in 2L:(nsamples))
-      for (j in 1L:(i-1L))
-        dd[i,j] <- sqrt(mean(sort.int((methsTR[,i]-methsTR[,j])^2,partial=topindex)[topindex:nprobes]))
+    # topindex <- nprobes-top+1L
+    # dd <- matrix(0,nrow=nsamples,ncol=nsamples)
+    # for (i in 2L:(nsamples))
+    #   for (j in 1L:(i-1L))
+    #     dd[i,j] <- sqrt(mean(sort.int((methsTR[,i]-methsTR[,j])^2,partial=topindex)[topindex:nprobes]))
 
     #multidimensional scaling
-    mds_meth <- stats::cmdscale(stats::as.dist(dd),2)
+    #mds_meth <- stats::cmdscale(stats::as.dist(dd),2)
+    
+    mds_meth <- limma::plotMDS(methsTR)$cmdscale.out
   }
 
   df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2], names = colnames(x), treat = color)

@@ -23,7 +23,7 @@
 #'
 #'
 #' @export
-split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 2, cores = 1){
+split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 4, cores = 1){
 
 message("Reading reference file")
 fa <- open(Rsamtools::FaFile(reference_file))
@@ -54,12 +54,25 @@ for(samp in 1:length(sample_names)){
     chrom <- t
 
     #Get the reads that align to the specified SNP
-    alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
-                                      param = Rsamtools::ScanBamParam(
-                                        tag = c("MD","XM","XR","XG"),
-                                        #mapqFilter = 40,
-                                        which = snp),
-                                      use.names = TRUE)
+    flags <-Rsamtools::scanBamFlag(
+      isPaired = T,
+      isProperPair = T,
+      isUnmappedQuery = F,
+      hasUnmappedMate = F,
+      isNotPassingQualityControls = F,
+      isDuplicate = F,
+      isSecondaryAlignment = F,
+      isSupplementaryAlignment = F)
+    
+    params <-  Rsamtools::ScanBamParam(
+      flag = flags,
+      tag = c("MD","XM","XR","XG"),
+      #mapqFilter = 20,
+      which = snp)
+    
+    alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file, 
+                                                         use.names = TRUE,
+                                                         param = params)
 
     alns <- unlist(alns.pairs) #unpaired
     split <- splitReads(alns, v, snp)

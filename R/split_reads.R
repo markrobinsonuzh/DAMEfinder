@@ -71,15 +71,27 @@ getMD <- function(a){
 
   #extract matches and mismatches from MD tag
   numbers <- as.integer(stringr::str_extract_all(a, "[0-9]{1,}")[[1]])
-  nucl <- stringr::str_extract_all(a, "[A-Z^]{1,2}")[[1]]
+  nucl <- stringr::str_extract_all(a, "[A-Z^]{1,}")[[1]]
   MDtag <- c(numbers, nucl)[order(c(seq_along(numbers)*2 - 1, seq_along(nucl)*2))]
+  second <- stringr::str_extract(MDtag, "[A-Z]{2,}")
+  
+  # Small fix for large insertions (letters next to each other)
+  if(any(!is.na(second))){
+    rem <- which(!is.na(second))
+    temp <- stringr::str_extract_all(MDtag[rem], "[A-Z]{1}")[[1]]
+    MDtag <- MDtag[-rem]
+    MDtag <- append(MDtag, temp, after = rem-1)
+  } 
 
   if(length(MDtag) == 1){
     nucl.num <- as.integer(MDtag)
   } else{
     nucl.num <- numeric(length(numbers)+length(nucl))
     nucl.num[seq(2,length(nucl.num), 2)] <- 1
-    nucl.num[nucl.num != 1] <- numbers
+    if(sum(nucl.num != 1) == length(numbers)){
+    nucl.num[nucl.num != 1] <- numbers } else{
+      message("I don't understand this error")
+    }
   }
   return(list(MDtag = MDtag, nucl.num = nucl.num))
 }
