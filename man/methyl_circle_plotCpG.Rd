@@ -5,12 +5,14 @@
 \title{Draw methylation circle plot without SNP}
 \usage{
 methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file,
-  ref.file = ref.file, dame = NULL)
+  point.size = 3, ref.file = ref.file, dame = NULL)
 }
 \arguments{
 \item{cpgsite}{GRanges object containing a single CpG site location of interest}
 
 \item{bam.file}{bismark bam file path}
+
+\item{point.size}{Size of methylation circles. Default = 3.}
 
 \item{ref.file}{fasta reference file path}
 

@@ -7,12 +7,12 @@
 find_dames(sa, Q = 0.9, maxGap = 20, verbose = TRUE)
 }
 \arguments{
-\item{sa}{Vector of smoothed t-Statistics obtained from the get_stats function.}
+\item{sa}{Vector of smoothed t-Statistics obtained from the \code{\link{get_tstats}} function.}
 
 \item{Q}{The percentile set to get a cutoff value K. K is the value on the Qth quantile
 of the absolute values of the given smoothed t-Statistics vector. The default is set to 0.9.}
 
-\item{maxGap}{Maximum gap between CpGs in a cluster.}
+\item{maxGap}{Maximum gap between CpGs in a cluster (in bp). Default = 20.}
 
 \item{verbose}{If the function should be verbose.}
 }
@@ -35,10 +35,6 @@ done per cluster.
 }
 }
 \description{
-This function finds Differentially Allele-specifically MEthylated regions (DAMEs).
-It uses the 'regionFinder' function from the bumphunter package. A region is set as
-a DAME if the smoothed t-Statistic, which is set as input to the function, exceeds
-a cutoff K. K is set as the value of the 0.9 quantile of the absolute t-Statistics vector.
-When the smoothed t-Stats in consecutive CpGs go above K or below -K, the region
-is set as a DAME.
+This function finds Differential Allele-specific MEthylated regions (DAMEs).
+It uses the \code{\link{regionFinder}} function from \code{bumphunter}.
 }

@@ -10,7 +10,7 @@ Description: 'DAMEfinder' offers functionality for taking methtuple or bismark o
         It also offers nice visualization of methyl-circle plots.
 License: GPL (>= 2)
 LazyData: TRUE
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 Imports:
   stats, 
   GenomeInfoDb, 

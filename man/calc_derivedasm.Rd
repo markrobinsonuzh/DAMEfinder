@@ -14,7 +14,7 @@ calc_derivedasm(rds_files, cores = 1, verbose = T)
 \item{verbose}{If the function should be verbose.}
 }
 \value{
-SummarizedExperiment containing in assays:
+\code{RangedSummarizedExperiment} containing in assays:
 \itemize{
 \item der.ASM: matrix with SNP-based ASM
 \item snp.table: Matrix with SNP associated to the CpG site
@@ -25,10 +25,10 @@ SummarizedExperiment containing in assays:
 }
 }
 \description{
-Combines all the \emph{GRangeslist} generated in \code{\link{split_bams}} into a
-\code{\link[SummarizedExperiment]{SummarizedExperiment}} object, and calculates
+Combines all the \code{GRangeslist} generated in \code{\link{split_bams}} into a
+\code{\link{RangedSummarizedExperiment}} object, and calculates
 SNP-based allele-specific methylation.
-TODO: Make accesor functions to all the assays in this object.
+TODO MAYBE: Make accesor functions to all the assays in this object.
 TODO: Doesn't work for one sample
 }
 \examples{
