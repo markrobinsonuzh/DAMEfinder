@@ -20,13 +20,15 @@
 #' @importFrom BiocGenerics end
 #' @importFrom S4Vectors mcols
 #' @importFrom S4Vectors mcols<-
-#'
+#' @importFrom GenomicRanges GRanges
+#' @importFrom IRanges IRanges
+#' @importFrom GenomicAlignments readGAlignmentPairs
 #'
 #' @export
 split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 4, cores = 1){
 
 message("Reading reference file")
-fa <- open(Rsamtools::FaFile(reference_file))
+fa <- open(Rsamtools::FaFile(reference_file, index = paste0(reference_file, ".fai")))
 
 for(samp in 1:length(sample_names)){
 
@@ -41,7 +43,7 @@ for(samp in 1:length(sample_names)){
   snp.table <- parallel::mcmapply(function(t, u, v){
 
     #Appearently applying to a GRanges takes too long ? so I will create one each time
-    snp <- GenomicRanges::GRanges(seqnames = t, IRanges::IRanges(start = as.integer(u), width = 1))
+    snp <- GRanges(seqnames = t, IRanges(start = as.integer(u), width = 1))
 
 
     if(length(grep(t, c(as.character(1:21), "X", "Y"))) == 0){
@@ -54,25 +56,25 @@ for(samp in 1:length(sample_names)){
     chrom <- t
 
     #Get the reads that align to the specified SNP
-    flags <-Rsamtools::scanBamFlag(
-      isPaired = T,
-      isProperPair = T,
-      isUnmappedQuery = F,
-      hasUnmappedMate = F,
-      isNotPassingQualityControls = F,
-      isDuplicate = F,
-      isSecondaryAlignment = F,
-      isSupplementaryAlignment = F)
+    # flags <- Rsamtools::scanBamFlag(
+    #   isPaired = T,
+    #   isProperPair = T,
+    #   isUnmappedQuery = F,
+    #   hasUnmappedMate = F,
+    #   isNotPassingQualityControls = F,
+    #   isDuplicate = F,
+    #   isSecondaryAlignment = F,
+    #   isSupplementaryAlignment = F)
     
-    params <-  Rsamtools::ScanBamParam(
-      flag = flags,
+    params <- Rsamtools::ScanBamParam(
+      #flag = flags,
       tag = c("MD","XM","XR","XG"),
       #mapqFilter = 20,
       which = snp)
     
-    alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file, 
-                                                         use.names = TRUE,
-                                                         param = params)
+    alns.pairs <- readGAlignmentPairs(bam.file, 
+                                      use.names = TRUE,
+                                      param = params)
 
     alns <- unlist(alns.pairs) #unpaired
     split <- splitReads(alns, v, snp)
@@ -91,7 +93,7 @@ for(samp in 1:length(sample_names)){
     #Get limits for calling methylation and grabing reference sequence
     left <- min(start(alns))
     right <- max(end(alns))
-    window <- GenomicRanges::GRanges(GenomeInfoDb::seqnames(snp), IRanges::IRanges(left, right))
+    window <- GRanges(GenomeInfoDb::seqnames(snp), IRanges(left, right))
 
     #open reference seq to get correct CpG locations within that reference chunk
     dna <- Rsamtools::scanFa(fa, param=window)
@@ -183,7 +185,7 @@ for(samp in 1:length(sample_names)){
     }
 
     #Build GRanges
-    GR <- GenomicRanges::GRanges(gsub("chr","",chrom), IRanges::IRanges(start = left + cgsite, width = 1))
+    GR <- GRanges(gsub("chr","",chrom), IRanges(start = left + cgsite, width = 1))
     mcols(GR)$cov.ref <- ref.cov
     mcols(GR)$cov.alt <- alt.cov
     mcols(GR)$meth.ref <- ref.meth
@@ -191,8 +193,8 @@ for(samp in 1:length(sample_names)){
     mcols(GR)$snp <- paste0(GenomeInfoDb::seqnames(snp),".",start(snp))
 
     #Keep CpG sites where each allele has at least 'coverage' reads.
-    filt <- BiocGenerics::rowSums(cbind(mcols(GR)$cov.ref,
-                                        mcols(GR)$cov.alt) >= coverage) >= 2
+    filt <- BiocGenerics::rowSums(cbind(GR$cov.ref,
+                                        GR$cov.alt) >= coverage) >= 2
     if(sum(filt) < 2){
       message("No CpG sites sufficiently covered")
       return(NULL)

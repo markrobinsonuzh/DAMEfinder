@@ -12,6 +12,7 @@
 #' @return A bigwig file for the sample chosen.
 #'
 #' @export
+#' @importFrom utils write.table
 #'
 #' @examples
 make_bigwig <- function(sample, score.obj, folder, chromsizes.file){

@@ -3,21 +3,23 @@
 #' Draws CpG site methylation status as points, in reads containing a specific SNP.
 #' Generates one plot per bam file.
 #'
-#' @param snp GRanges object containing SNP location
-#' @param cpgsite (optional) GRanges object containing a single CpG site location of interest
-#' @param vcf.file vcf file
-#' @param bam.file bismark bam file path
-#' @param ref.file fasta reference file path
-#' @param dame (optional) GRanges object containing a region to plot
-#' @param letter.size Size of alleles drawn in plot
-#' @param sample.name FIX: this is to save the vcf file to not generate it every time you run the function
+#' @param snp GRanges object containing SNP location.
+#' @param cpgsite (optional) GRanges object containing a single CpG site location of interest.
+#' @param vcf.file vcf file.
+#' @param bam.file bismark bam file path.
+#' @param ref.file fasta reference file path.
+#' @param dame (optional) GRanges object containing a region to plot.
+#' @param letter.size Size of alleles drawn in plot. Default = 2.5.
+#' @param point.size Size of methylation circles. Default = 3.
+#' @param sample.name FIX: this is to save the vcf file to not generate it every time you run the function.
 #'
 #' @return Plot
 #' @examples
 #' #bam_files <- "../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
 #' #vcf_files <- "../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
 #' #sample_names <- "NORM1"
-#' #reference_file <- "../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
+#' #reference_file <- 
+#' "../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
 #'
 #'
 #' @importFrom GenomicRanges GRanges
@@ -218,6 +220,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
 #' @param cpgsite GRanges object containing a single CpG site location of interest
 #' @param bam.file bismark bam file path
 #' @param ref.file fasta reference file path
+#' @param point.size Size of methylation circles. Default = 3.
 #' @param dame (optional) GRanges object containing a region to plot
 #' @return Plot
 #' @examples

@@ -1,17 +1,13 @@
 #' Find DAMEs
 #'
-#' This function finds Differentially Allele-specifically MEthylated regions (DAMEs).
-#' It uses the 'regionFinder' function from the bumphunter package. A region is set as
-#' a DAME if the smoothed t-Statistic, which is set as input to the function, exceeds
-#' a cutoff K. K is set as the value of the 0.9 quantile of the absolute t-Statistics vector.
-#' When the smoothed t-Stats in consecutive CpGs go above K or below -K, the region
-#' is set as a DAME.
+#' This function finds Differential Allele-specific MEthylated regions (DAMEs).
+#' It uses the \code{\link{regionFinder}} function from \code{bumphunter}.
 #'
 #' @param Q The percentile set to get a cutoff value K. K is the value on the Qth quantile
 #' of the absolute values of the given smoothed t-Statistics vector. The default is set to 0.9.
-#' @param maxGap Maximum gap between CpGs in a cluster.
+#' @param maxGap Maximum gap between CpGs in a cluster (in bp). Default = 20.
 #' @param verbose If the function should be verbose.
-#' @param sa Vector of smoothed t-Statistics obtained from the get_stats function.
+#' @param sa Vector of smoothed t-Statistics obtained from the \code{\link{get_tstats}} function.
 #'
 #' @return A data frame of detected DAMEs ordered by the area each DAME has above the cutoff K.
 #' The larger the area value, the more important the DAME. Each row refers to a DAME and the
@@ -29,6 +25,11 @@
 #' - L:
 #' - clusterL:
 #' @md
+#' 
+#' @section 
+#' A region is set as DAME if the smoothed t-Statistic, which is set as input to the function, 
+#' exceeds a cutoff K. K is set as the value of the 0.9 quantile of the absolute t-Statistics vector.
+#' When the smoothed t-Stats in consecutive CpGs go above K or below -K, the region is set as a DAME.
 #'
 #' @export
 #'
@@ -51,9 +52,10 @@ find_dames <- function(sa, Q=0.9, maxGap=20, verbose=TRUE) {
                                  pos = midpt,
                                  cluster = S4Vectors::mcols(sa)$cluster,
                                  cutoff = K,
+                                 maxGap = maxGap,
                                  verbose = verbose)
 
-  rf <- rf[,c("chr", "start", "end", "value", "area")]
+  #rf <- rf[,c("chr", "start", "end", "value", "area")]
   rownames(rf) <- paste0("DAME", seq(from = 1, to = nrow(rf), by = 1))
   if(verbose) message(nrow(rf), " DAMEs found.")
   rf
