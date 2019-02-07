@@ -1,5 +1,5 @@
 context("split_bams")
-library(DAMEfinder)
+#library(DAMEfinder)
 
 DATA_PATH_DIR <- "../../inst/extdata/"
 
