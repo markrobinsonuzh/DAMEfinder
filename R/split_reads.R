@@ -12,7 +12,8 @@
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
 #' @importFrom S4Vectors mcols
-#'
+#' @importFrom stringr str_extract_all
+#' @importFrom stringr str_extract
 #'
 #' @export
 splitReads <- function(alns, v, snp){
@@ -70,15 +71,15 @@ splitReads <- function(alns, v, snp){
 getMD <- function(a){
 
   #extract matches and mismatches from MD tag
-  numbers <- as.integer(stringr::str_extract_all(a, "[0-9]{1,}")[[1]])
-  nucl <- stringr::str_extract_all(a, "[A-Z^]{1,}")[[1]]
+  numbers <- as.integer(str_extract_all(a, "[0-9]{1,}")[[1]])
+  nucl <- str_extract_all(a, "[A-Z^]{1,}")[[1]]
   MDtag <- c(numbers, nucl)[order(c(seq_along(numbers)*2 - 1, seq_along(nucl)*2))]
-  second <- stringr::str_extract(MDtag, "[A-Z]{2,}")
+  second <- str_extract(MDtag, "[A-Z]{2,}")
   
   # Small fix for large insertions (letters next to each other)
   if(any(!is.na(second))){
     rem <- which(!is.na(second))
-    temp <- stringr::str_extract_all(MDtag[rem], "[A-Z]{1}")[[1]]
+    temp <- str_extract_all(MDtag[rem], "[A-Z]{1}")[[1]]
     MDtag <- MDtag[-rem]
     MDtag <- append(MDtag, temp, after = rem-1)
   } 
