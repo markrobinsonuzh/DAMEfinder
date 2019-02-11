@@ -5,24 +5,27 @@
 \title{Draw methylation circle plot}
 \usage{
 methyl_circle_plot(snp, vcf.file, bam.file, ref.file, dame = NULL,
-  letter.size = 2.5, sample.name = "sample1", cpgsite = NULL)
+  letter.size = 2.5, point.size = 3, sample.name = "sample1",
+  cpgsite = NULL)
 }
 \arguments{
-\item{snp}{GRanges object containing SNP location}
+\item{snp}{GRanges object containing SNP location.}
 
-\item{vcf.file}{vcf file}
+\item{vcf.file}{vcf file.}
 
-\item{bam.file}{bismark bam file path}
+\item{bam.file}{bismark bam file path.}
 
-\item{ref.file}{fasta reference file path}
+\item{ref.file}{fasta reference file path.}
 
-\item{dame}{(optional) GRanges object containing a region to plot}
+\item{dame}{(optional) GRanges object containing a region to plot.}
 
-\item{letter.size}{Size of alleles drawn in plot}
+\item{letter.size}{Size of alleles drawn in plot. Default = 2.5.}
 
-\item{sample.name}{FIX: this is to save the vcf file to not generate it every time you run the function}
+\item{point.size}{Size of methylation circles. Default = 3.}
 
-\item{cpgsite}{(optional) GRanges object containing a single CpG site location of interest}
+\item{sample.name}{FIX: this is to save the vcf file to not generate it every time you run the function.}
+
+\item{cpgsite}{(optional) GRanges object containing a single CpG site location of interest.}
 }
 \value{
 Plot
@@ -35,7 +38,8 @@ Generates one plot per bam file.
 #bam_files <- "../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
 #vcf_files <- "../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
 #sample_names <- "NORM1"
-#reference_file <- "../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
+#reference_file <- 
+"../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
 
 
 }

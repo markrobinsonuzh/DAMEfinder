@@ -1,7 +1,7 @@
 .Rproj.user
 .Rhistory
 .RData
-*.rds
+#*.rds
 *.RData
 DAMEfinder.Rproj
 DAMEfinder_git.Rproj
