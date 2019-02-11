@@ -1,7 +1,7 @@
 context("split_bams")
 #library(DAMEfinder)
 
-DATA_PATH_DIR <- "../../inst/extdata/"
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 

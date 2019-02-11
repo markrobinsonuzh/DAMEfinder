@@ -1,7 +1,7 @@
 context("test-methyl_circle_plot")
 library(GenomicRanges)
 
-DATA_PATH_DIR <- "../../inst/extdata/"
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
@@ -15,6 +15,7 @@ sample_names <- "NORM1"
 reference_file <- get_data_path("19.fa")
 
 snp <- GRanges(19, IRanges(388065, width = 1))
+cpgsite <- GRanges(19, IRanges(387982, width = 1))
 
 
 test_that("end to end methyl plot", {
@@ -35,7 +36,6 @@ test_that("end to end methyl plot", {
 })
 
 test_that("add CpG site", {
-  cpgsite <- GRanges(19, IRanges(387982, width = 1))
   p <- methyl_circle_plot(snp = snp,
                           vcf.file = vcf_files,
                           bam.file = bam_files,
@@ -53,7 +53,7 @@ test_that("add CpG site", {
 })
 
 test_that("end to end methyl_circle_plotCpG", {
-  methyl_circle_plotCpG(cpgsite = cpgsite,
+  p <- methyl_circle_plotCpG(cpgsite = cpgsite,
                         bam.file = bam_files,
                         ref.file = reference_file,
                         point.size = 2)

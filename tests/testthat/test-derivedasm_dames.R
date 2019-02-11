@@ -1,9 +1,10 @@
 context("test-derivedASM_dames")
-#library(DAMEfinder)
+library(DAMEfinder)
 library(SummarizedExperiment)
+library(limma)
 
 
-DATA_PATH_DIR <- "../../inst/extdata"
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
@@ -16,6 +17,7 @@ test_that("end to end calc_derivedasm", {
   expect_length(colnames(derASM), 8)
 })
 
+derASM <- calc_derivedasm(rds_files, cores = 1, verbose = T)
 
 test_that("all assays created", {
   expect_length(assays(derASM), 6)
@@ -29,6 +31,7 @@ test_that("end to end tstat calc", {
 
 #TODO: test different lmfit methods, and coefs
 
+derASMt <- get_tstats(derASM, 5:8, 1:4, minNum = 2, minInSpan = 2)
 
 test_that("all rowData fields created and matching", {
   expect_s4_class(rowData(derASMt), "DataFrame")
