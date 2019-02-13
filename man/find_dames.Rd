@@ -4,10 +4,21 @@
 \alias{find_dames}
 \title{Find DAMEs}
 \usage{
-find_dames(sa, Q = 0.9, maxGap = 20, verbose = TRUE)
+find_dames(sa, control, treat, samp.perc = 0.9, coverage = 5,
+  Q = 0.9, maxGap = 20, verbose = TRUE, ...)
 }
 \arguments{
 \item{sa}{Vector of smoothed t-Statistics obtained from the \code{\link{get_tstats}} function.}
+
+\item{control}{Index of columns corresponding to control samples.}
+
+\item{treat}{Index of columns corresponding to treatment samples.}
+
+\item{samp.perc}{At least this percentage of samples per group should have data
+(no NAs, coverage above threshold) per row. Default = 0.9.}
+
+\item{coverage}{Minimum number of reads covering a CpG site (sum of both alleles) or tuple.
+Default = 5.}
 
 \item{Q}{The percentile set to get a cutoff value K. K is the value on the Qth quantile
 of the absolute values of the given smoothed t-Statistics vector. The default is set to 0.9.}
@@ -15,6 +26,8 @@ of the absolute values of the given smoothed t-Statistics vector. The default is
 \item{maxGap}{Maximum gap between CpGs in a cluster (in bp). Default = 20.}
 
 \item{verbose}{If the function should be verbose.}
+
+\item{...}{arguments passed to \code{\link{loessByCluster}}}
 }
 \value{
 A data frame of detected DAMEs ordered by the area each DAME has above the cutoff K.
@@ -25,7 +38,8 @@ following information is provided in the columns:
 \item start: The start position of the DAME
 \item end: The end position of the DAME
 \item value:
-\item area: The area of the DAME beyond the exceeded cutoff K.
+\item area: The area of the DAME beyond the exceeded cutoff K.\
+\item pvalue?
 \item cluster: Then genomic cluster the DAME belongs to. Smoothing of the t-Statistics was
 done per cluster.
 \item indexStart:
@@ -37,4 +51,9 @@ done per cluster.
 \description{
 This function finds Differential Allele-specific MEthylated regions (DAMEs).
 It uses the \code{\link{regionFinder}} function from \code{bumphunter}.
+}
+\details{
+A region is set as DAME if the smoothed t-Statistic (from \code{\link{eBayes}}) exceeds a cutoff K.
+K is set as the value of the 0.9 quantile of the absolute t-stats vector. When the smoothed t-stats
+in consecutive CpGs go above K or below -K, the region is set as a DAME.
 }

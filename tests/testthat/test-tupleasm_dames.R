@@ -34,15 +34,13 @@ test_that("end to end tstat calc", {
 
 
 test_that("end to end find_dames", {
-  ASMt <- get_tstats(ASMscore, 4:5, 1:3)
-  dames <- find_dames(ASMt, verbose = F)
+  dames <- find_dames(ASMscore, 4:5, 1:3, verbose = F)
   expect_is(dames, "data.frame")
   expect_equal(dim(dames)[1], 19)
 })
 
 test_that("change tstat params", {
-  ASMt <- get_tstats(ASMscore, 4:5, 1:3, minNum = 2, minInSpan = 2)
-  dames <- find_dames(ASMt, verbose = F)
+  dames <- find_dames(ASMscore, 4:5, 1:3, minNum = 2, minInSpan = 2, verbose = F)
   expect_is(dames, "data.frame")
   expect_equal(dim(dames)[1], 52)
 })
