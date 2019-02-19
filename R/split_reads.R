@@ -75,19 +75,19 @@ getMD <- function(a){
   nucl <- str_extract_all(a, "[A-Z^]{1,}")[[1]]
   MDtag <- c(numbers, nucl)[order(c(seq_along(numbers)*2 - 1, seq_along(nucl)*2))]
   second <- str_extract(MDtag, "[A-Z]{2,}")
-  
+
   # Small fix for large insertions (letters next to each other)
   if(any(!is.na(second))){
     rem <- which(!is.na(second))
     temp <- str_extract_all(MDtag[rem], "[A-Z]{1}")[[1]]
     MDtag <- MDtag[-rem]
     MDtag <- append(MDtag, temp, after = rem-1)
-    
+
     third <- str_extract(nucl, "[A-Z]{2,}")
     rem <- which(!is.na(third))
     nucl <- nucl[-rem]
     nucl <- append(nucl, temp, after = rem-1)
-  } 
+  }
 
   #extract MDtag as numbers
   if(length(MDtag) == 1){
@@ -95,8 +95,8 @@ getMD <- function(a){
   } else{
     nucl.num <- numeric(length(numbers)+length(nucl))
     #nucl.num[seq(2,length(nucl.num), 2)] <- 1
-    nucl.num[MDtag %in% c("A","C","G","T")] <- 1
-    
+    nucl.num[MDtag %in% c("A","C","G","T", paste0("^", c("A","C","G","T")))] <- 1
+
     if(sum(nucl.num != 1) == length(numbers)){
       nucl.num[nucl.num != 1] <- numbers } else{
         message("I don't understand this error")
