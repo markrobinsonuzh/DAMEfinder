@@ -50,3 +50,12 @@ test_that("single insertion in MD", {
   expect_length(mdtag$nucl.num, 45)
 })
 
+test_that("several insertions in MD", {
+  a <- "3G3G0G2G2G1G11G10G0G0G10^CA13^AA3G0G0G5G3G2G4G0G19G3"
+  mdtag <- getMD(a)
+  expect_is(mdtag, "list")
+  expect_length(mdtag$MDtag, 45)
+  expect_length(mdtag$nucl.num, 45)
+})
+
+
