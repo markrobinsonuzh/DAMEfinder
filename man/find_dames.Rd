@@ -27,25 +27,18 @@ of the absolute values of the given smoothed t-Statistics vector. The default is
 
 \item{verbose}{If the function should be verbose.}
 
-\item{...}{arguments passed to \code{\link{loessByCluster}}}
+\item{...}{arguments passed to \code{\link{get_tstats}}.}
 }
 \value{
 A data frame of detected DAMEs ordered by the area each DAME has above the cutoff K.
 The larger the area value, the more important the DAME. Each row refers to a DAME and the
 following information is provided in the columns:
 \itemize{
-\item chr: on which chromosome the DAME is found
-\item start: The start position of the DAME
-\item end: The end position of the DAME
-\item value:
-\item area: The area of the DAME beyond the exceeded cutoff K.\
-\item pvalue?
-\item cluster: Then genomic cluster the DAME belongs to. Smoothing of the t-Statistics was
-done per cluster.
-\item indexStart:
-\item indexEnd:
-\item L:
-\item clusterL:
+\item chr: on which chromosome the DAME is found.
+\item start: The start position of the DAME.
+\item end: The end position of the DAME.
+\item area: Sum (abs) of all t-stat values in a region.
+\item pvalEmp: Empirical p-value obtained from permuting covariate of interest (group Vs treat).
 }
 }
 \description{

@@ -27,14 +27,14 @@ but can also be set to "robust", which is recommended on a real data set.}
 \item{maxGap}{The maximum allowed gap between genomic positions for clustering of genomic
 regions to be used in smoothing. Default = 20.}
 
-\item{coef}{Columm taken from limma "fit".}
+\item{coef}{Columm taken from \code{\link{lmFit}}.}
 
 \item{verbose}{Set verbose. Default = TRUE.}
 
 \item{...}{arguments passed to \code{\link{loessByCluster}}}
 }
 \value{
-A vector of smoothed t-Statistics within the \code{RangedSummarizedExperiment}
+A vector of smoothed t-Statistics within the \code{RangedSummarizedExperiment}.
 }
 \description{
 This function calculates a moderated t-Statistic per site or tuple using \code{limma}'s 
