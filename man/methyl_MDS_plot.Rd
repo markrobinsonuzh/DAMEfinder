@@ -2,29 +2,27 @@
 % Please edit documentation in R/methyl_MDS_plot.R
 \name{methyl_MDS_plot}
 \alias{methyl_MDS_plot}
-\title{Multidimensional scaling plot of distances between methylation proportions}
+\title{Multidimensional scaling plot of distances between methylation proportions (beta values)}
 \usage{
-methyl_MDS_plot(x, top = 1000, coverage = 4, color)
+methyl_MDS_plot(x, color, top = 1000, coverage = 5)
 }
 \arguments{
-\item{x}{SummarizedExperiment, output from calc_derivedasm(). TODO: also for calc_asm()?}
+\item{x}{\code{RangedSummarizedExperiment}, output from \code{calc_derivedasm} or \code{calc_asm}.}
+
+\item{color}{Vector of group labels same length as number of samples}
 
 \item{top}{Number of top CpG sites used to calculate pairwise distances.}
 
-\item{coverage}{Minimum number of reads covering a CpG site on each allele. Default = 4.}
-
-\item{color}{Vector of group labels same length as number of samples
-#TRUE or FALSE. the object should have group informationin colData}
+\item{coverage}{Minimum number of reads covering a CpG site on each allele. Default = 4.
+TODO: ?TRUE or FALSE. ?the object should have group informationin colData}
 }
 \value{
-Plot
+Two-dimension MDS plot.
 }
 \description{
-Same as limma::plotMDS, expect for an arc-sine transformation of the methylation proportions
-or scores from 0 to 1.
-TODO: check what transformation for ASM-score
+Same as \code{\link{plotMDS}}, except for an arc-sine transformation of the methylation 
+proportions or scores from 0 to 1.
 }
 \examples{
-
 
 }

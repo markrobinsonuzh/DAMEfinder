@@ -1,13 +1,18 @@
 #' Build bigwig files for visualization in IGV
 #'
-#' Builds a bigwig file for each sample, to visualize the ASM score and the derived ASM from
-#' the SummarizedExperiment objects. Requires bedGraphToBigWig to be externally installed.
+#' Creates a \code{bigwig} file with ASM score for each sample. Requires \code{bedGraphToBigWig}. 
+#' installed.
+#' 
+#' The \code{bedGraphToBigWig} script can be downloaded from 
+#' [here](https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64). The \code{chrom.sizes}
+#' file can be downloaded from [here](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/), or a
+#' similar path goldenPath. 
 #'
-#' @param sample Name of sample (as in colnames from SummarizedExperiment)
-#' @param score.obj SummarizedExperiment with der.ASM or asm in assays(). Ideally filtered by coverage
-#' previously
-#' @param folder Destination folder for bigiwig file
-#' @param chromsizes.file hg19.chrom.sizes.mod or any other chrom.sizes file as in (put link to get this file)
+#' @param sample Name of sample (as in colnames from \code{SummarizedExperiment})
+#' @param score.obj \code{RangedSummarizedExperiment}, ideally filtered by coverage from 
+#' \code{\link{cals_asm}} or \code{\link{calc_derivedasm}}.
+#' @param folder Destination folder for bigiwig file.
+#' @param chromsizes.file hg19.chrom.sizes or any other file similar specifying the chromosome sizes.
 #'
 #' @return A bigwig file for the sample chosen.
 #'
@@ -38,20 +43,24 @@ make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
 
   #make bigwig
   #rtracklayer::export(object = GRasm, con = "bigwigs/CRC1.asmScore.bw", format = "bw") #bad function
+  
+  if(folder == "."){
+    folder = ""
+  } else {folder = paste0(folder,"/")}
 
   #make bedgraph
   scorename <- names(SummarizedExperiment::assays(score.obj))[1]
-  write.table(bg, file = sprintf("%s/%s.%s.bedgraph", folder, scorename, sample),
+  write.table(bg, file = sprintf("%s%s.%s.bedgraph", folder, scorename, sample),
               sep = "\t", row.names = F, col.names = F, quote = F)
 
   #sort file
-  cmd1 <- sprintf("sort -k1,1 -k2,2n %s/%s.%s.bedgraph > %s/%s.%s.sorted.bedgraph",
+  cmd1 <- sprintf("sort -k1,1 -k2,2n %s%s.%s.bedgraph > %s%s.%s.sorted.bedgraph",
                   folder, scorename, sample, folder, scorename, sample)
   cat(cmd1, "\n")
   system(cmd1)
 
   #then make bigwig
-  cmd2 <- sprintf("bedGraphToBigWig %s/%s.%s.sorted.bedgraph %s %s/%s.%s.bw",
+  cmd2 <- sprintf("bedGraphToBigWig %s%s.%s.sorted.bedgraph %s %s%s.%s.bw",
                   folder, scorename, sample, chromsizes.file, folder, scorename, sample)
   cat(cmd2, "\n")
   system(cmd2)

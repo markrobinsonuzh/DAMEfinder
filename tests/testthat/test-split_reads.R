@@ -13,11 +13,11 @@ params <- ScanBamParam(
   tag = c("MD","XM","XR","XG"),
   which = snp)
 
-alns.pairs <- readGAlignmentPairs(bam.file, 
+alns.pairs <- readGAlignmentPairs(bam.file,
                                   use.names = TRUE,
                                   param = params)
 
-alns <- unlist(alns.pairs) 
+alns <- unlist(alns.pairs)
 
 test_that("end to end split_reads", {
   split <- splitReads(alns, "A", snp)
@@ -40,6 +40,22 @@ test_that("large insertion in MD", {
   expect_is(mdtag, "list")
   expect_length(mdtag$MDtag, 31)
   expect_length(mdtag$nucl.num, 31)
+})
+
+test_that("single insertion in MD", {
+  a <- "4C5C0C2C0C4C0G2C0C0C0C19C4^C2C2C0C1C4C5C10C5C5C4"
+  mdtag <- getMD(a)
+  expect_is(mdtag, "list")
+  expect_length(mdtag$MDtag, 45)
+  expect_length(mdtag$nucl.num, 45)
+})
+
+test_that("several insertions in MD", {
+  a <- "3G3G0G2G2G1G11G10G0G0G10^CA13^AA3G0G0G5G3G2G4G0G19G3"
+  mdtag <- getMD(a)
+  expect_is(mdtag, "list")
+  expect_length(mdtag$MDtag, 45)
+  expect_length(mdtag$nucl.num, 45)
 })
 
 

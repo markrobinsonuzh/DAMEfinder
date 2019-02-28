@@ -7,19 +7,25 @@
 make_bigwig(sample, score.obj, folder, chromsizes.file)
 }
 \arguments{
-\item{sample}{Name of sample (as in colnames from SummarizedExperiment)}
+\item{sample}{Name of sample (as in colnames from \code{SummarizedExperiment})}
 
-\item{score.obj}{SummarizedExperiment with der.ASM or asm in assays(). Ideally filtered by coverage
-previously}
+\item{score.obj}{\code{RangedSummarizedExperiment}, ideally filtered by coverage from 
+\code{\link{cals_asm}} or \code{\link{calc_derivedasm}}.}
 
-\item{folder}{Destination folder for bigiwig file}
+\item{folder}{Destination folder for bigiwig file.}
 
-\item{chromsizes.file}{hg19.chrom.sizes.mod or any other chrom.sizes file as in (put link to get this file)}
+\item{chromsizes.file}{hg19.chrom.sizes or any other file similar specifying the chromosome sizes.}
 }
 \value{
 A bigwig file for the sample chosen.
 }
 \description{
-Builds a bigwig file for each sample, to visualize the ASM score and the derived ASM from
-the SummarizedExperiment objects. Requires bedGraphToBigWig to be externally installed.
+Creates a \code{bigwig} file with ASM score for each sample. Requires \code{bedGraphToBigWig}. 
+installed.
+}
+\details{
+The \code{bedGraphToBigWig} script can be downloaded from 
+[here](https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64). The \code{chrom.sizes}
+file can be downloaded from [here](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/), or a
+similar path goldenPath.
 }

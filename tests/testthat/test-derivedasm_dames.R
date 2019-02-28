@@ -25,23 +25,17 @@ test_that("all assays created", {
 })
 
 test_that("end to end tstat calc", {
-  derASMt <- get_tstats(derASM, 5:8, 1:4)
+  derASMt <- get_tstats(derASM, 5:8, 1:4, verbose = F)
   expect_s4_class(derASMt, "RangedSummarizedExperiment")
-})
-
-#TODO: test different lmfit methods, and coefs
-
-derASMt <- get_tstats(derASM, 5:8, 1:4, minNum = 2, minInSpan = 2)
-
-test_that("all rowData fields created and matching", {
   expect_s4_class(rowData(derASMt), "DataFrame")
   expect_length(colnames(rowData(derASMt)), 3)
   expect_equal(sum(is.na(rowData(derASMt)$smooth_tstat)), 0)
 })
 
+#TODO: test different lmfit methods, and coefs
 
 test_that("end to end find_dames", {
-  dames <- find_dames(derASMt, verbose = F)
+  dames <- find_dames(derASM, 5:8, 1:4, minNum = 2, minInSpan = 2, verbose = F)
   expect_is(dames, "data.frame")
   expect_equal(dim(dames)[1], 2)
 })
