@@ -146,14 +146,14 @@ calc_derivedasm <- function(rds_files, cores = 1, verbose = T){
   }
 
   #filter sites with a lot of NAs and 0s
-  keep <- BiocGenerics::rowSums(!is.na(trueASM_table) & trueASM_table > 0) >= length(allGR)
-  trueASM_table <- trueASM_table[keep,]
-  snp_match_table <- snp_match_table[keep,]
-  ref.cov_table <- ref.cov_table[keep,]
-  alt.cov_table <- alt.cov_table[keep,]
-  ref.meth_table <- ref.meth_table[keep,]
-  alt.meth_table <- alt.meth_table[keep,]
-  keyGR <- keyGR[keep]
+  # keep <- BiocGenerics::rowSums(!is.na(trueASM_table) & trueASM_table > 0) >= length(allGR)
+  # trueASM_table <- trueASM_table[keep,]
+  # snp_match_table <- snp_match_table[keep,]
+  # ref.cov_table <- ref.cov_table[keep,]
+  # alt.cov_table <- alt.cov_table[keep,]
+  # ref.meth_table <- ref.meth_table[keep,]
+  # alt.meth_table <- alt.meth_table[keep,]
+  # keyGR <- keyGR[keep]
 
   if(dim(snp_match_table)[1] != dim(trueASM_table)[1]){
     stop("Tables contain different sizes")
