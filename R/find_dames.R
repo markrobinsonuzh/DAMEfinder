@@ -11,7 +11,8 @@
 #' of the absolute values of the given smoothed t-Statistics vector. The default is set to 0.9.
 #' @param maxGap Maximum gap between CpGs in a cluster (in bp). Default = 20.
 #' @param verbose If the function should be verbose.
-#' @param sa Vector of smoothed t-Statistics obtained from the \code{\link{get_tstats}} function.
+#' @param sa A SummarizedExperiment containing ASM values where each row and column correspond to a 
+#' tuple/site and sample respectively.
 #' @param control Index of columns corresponding to control samples.
 #' @param treat Index of columns corresponding to treatment samples.
 #' @param samp.perc At least this percentage of samples per group should have data 
