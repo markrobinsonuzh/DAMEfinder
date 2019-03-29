@@ -30,7 +30,11 @@ split_bams <- function(bam_files, vcf_files, sample_names, reference_file, cover
 message("Reading reference file")
 fa <- open(Rsamtools::FaFile(reference_file, index = paste0(reference_file, ".fai")))
 
-for(samp in 1:length(sample_names)){
+#get names and indeces per sample to apply to
+sample_list <- 1:length(sample_names)
+names(sample_list) <- sample_names
+
+lapply(sample_list, function(samp){
 
   message(sprintf("Running sample %s", sample_names[samp]))
 
@@ -42,10 +46,10 @@ for(samp in 1:length(sample_names)){
   message("Extracting methylation per SNP")
   snp.table <- parallel::mcmapply(function(t, u, v){
 
-    #Appearently applying to a GRanges takes too long ? so I will create one each time
+    #Applying to a GRanges takes too long so I create one each time
     snp <- GRanges(seqnames = t, IRanges(start = as.integer(u), width = 1))
 
-
+    #Ignore non-standar chromosomes
     if(length(grep(t, c(as.character(1:21), "X", "Y"))) == 0){
       message("Bad chrom")
       return(NULL)
@@ -205,8 +209,8 @@ for(samp in 1:length(sample_names)){
 
   },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F, mc.cores = cores)
 
-  message(sprintf("Saving results for sample %s", sample_names[samp]))
-  saveRDS(snp.table, file = sprintf("snp.table.%s.rds", sample_names[samp]))
-
+  message(sprintf("Done with sample %s", sample_names[samp]))
+  return(snp.table)
 }
+)
 }

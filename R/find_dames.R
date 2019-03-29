@@ -71,7 +71,7 @@ find_dames <- function(sa, control, treat, samp.perc = 0.9, coverage = 5, Q=0.9,
   
   #### Permutation tests ####
   tot_length <- length(treat) + length(control)
-  combs <- combn(tot_length, length(control))
+  combs <- utils::combn(tot_length, length(control))
   
   #Remove redundant perms
   if(length(control) == length(treat)){
