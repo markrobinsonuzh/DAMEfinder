@@ -8,7 +8,7 @@
 #' SummarizedExperiment of Allele-Specific Methylation (ASM) scores, where each row is a tuple and
 #' each column is a sample.
 #'
-#' @param sample_list List of samples returned from read_tuples
+#' @param sample_list List of samples returned from \code{\link{read_tuples}}
 #' @param beta The beta parameter used to calculate the weight in the ASM score. calc_weight uses
 #' this parameter in the pbeta function. The default is set to 0.5.
 #' @param verbose If the function should be verbose
