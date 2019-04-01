@@ -14,25 +14,15 @@ sample_names <- "NORM1"
 
 reference_file <- get_data_path("19.fa")
 
-output_file <- "snp.table.NORM1.rds"
-
 test_that("end to end split_bams", {
-  split_bams(bam_files, vcf_files, sample_names, reference_file)
-  GRanges_list <- try(readRDS(output_file))
+  GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
   expect_type(GRanges_list, "list")
-
-  #cleanup
-  if(file.exists(output_file)) file.remove(output_file) #make function?
 })
 
 
 test_that("output is GRangesList", {
-  split_bams(bam_files, vcf_files, sample_names, reference_file)
-  GRanges_list <- try(readRDS(output_file))
-  expect_s4_class(GRanges_list[[1]], "GRanges")
-
-  #cleanup
-  if(file.exists(output_file)) file.remove(output_file)
+  GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
+  expect_s4_class(GRanges_list$NORM1[[1]], "GRanges")
 })
 
 

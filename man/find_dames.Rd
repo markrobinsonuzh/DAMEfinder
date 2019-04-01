@@ -8,7 +8,8 @@ find_dames(sa, control, treat, samp.perc = 0.9, coverage = 5,
   Q = 0.9, maxGap = 20, verbose = TRUE, ...)
 }
 \arguments{
-\item{sa}{Vector of smoothed t-Statistics obtained from the \code{\link{get_tstats}} function.}
+\item{sa}{A SummarizedExperiment containing ASM values where each row and column correspond to a
+tuple/site and sample respectively.}
 
 \item{control}{Index of columns corresponding to control samples.}
 

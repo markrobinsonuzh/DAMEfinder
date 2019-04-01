@@ -10,7 +10,6 @@
 #' TODO: ?TRUE or FALSE. ?the object should have group informationin colData
 #'
 #' @return Two-dimension MDS plot.
-#' @examples
 #'
 #' @importFrom SummarizedExperiment assays
 #' @import ggplot2
@@ -43,8 +42,8 @@ methyl_MDS_plot <- function(x, color, top = 1000, coverage = 5){
 
   df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2], names = colnames(x), treat = color)
 
-  ggplot(df)+
-    geom_point(aes(x=dim1, y=dim2, color = treat), size=5) +
-    geom_text(aes(x=dim1, y=dim2-.02, label = names), size=4) +
+  ggplot()+
+    geom_point(data = df, mapping = aes(x=dim1, y=dim2, color = treat), size=5) +
+    geom_text(data = df, mapping = aes(x=dim1, y=dim2-.02, label = names), size=4) +
     theme_bw()
 }
