@@ -23,6 +23,3 @@ Two-dimension MDS plot.
 Same as \code{\link{plotMDS}}, except for an arc-sine transformation of the methylation 
 proportions or scores from 0 to 1.
 }
-\examples{
-
-}
