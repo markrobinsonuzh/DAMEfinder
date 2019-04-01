@@ -6,8 +6,8 @@ get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
 chrom.sizes <- get_data_path("hg19.chrom.sizes.mod")
 
-sample_list <- try(readRDS(get_data_path("splitbams_output.rds")))
-derASM <- calc_derivedasm(sample_list, cores = 1, verbose = T)
+data(splitbams_output)
+derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = T)
 
 test_that("end to end make bigwigs", {
   #for one sample
@@ -16,7 +16,7 @@ test_that("end to end make bigwigs", {
   expect_s4_class(bw, "GRanges")
   
   #cleanup
-  if(file.exists("der.ASM.CRC1.bedgraph")) file.remove("der.ASM.CRC1.sorted.bedgraph")
+  if(file.exists("der.ASM.CRC1.bedgraph")) file.remove("der.ASM.CRC1.bedgraph")
   if(file.exists("der.ASM.CRC1.bw")) file.remove("der.ASM.CRC1.bw")
   if(file.exists("der.ASM.CRC1.sorted.bedgraph")) file.remove("der.ASM.CRC1.sorted.bedgraph")
 })

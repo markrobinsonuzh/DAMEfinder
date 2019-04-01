@@ -2,21 +2,16 @@ context("test-derivedASM_dames")
 library(SummarizedExperiment)
 library(limma)
 
-
-DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
-
-get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
-
-sample_list <- try(readRDS(get_data_path("splitbams_output.rds")))
+data(splitbams_output)
 
 test_that("end to end calc_derivedasm", {
-  derASM <- calc_derivedasm(sample_list, cores = 1, verbose = T)
+  derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = T)
   expect_s4_class(derASM, "RangedSummarizedExperiment")
   expect_length(colnames(derASM), 8)
 })
 
 
-derASM <- calc_derivedasm(sample_list, cores = 1, verbose = T)
+derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = T)
 
 test_that("all assays created", {
   expect_length(assays(derASM), 6)
