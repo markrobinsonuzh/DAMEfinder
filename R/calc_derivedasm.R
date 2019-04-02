@@ -78,13 +78,14 @@ calc_derivedasm <- function(sample_list, cores = 1, verbose = T){
     colnames(mcol) <- colnames(mcols(w))
     ss <- limma::strsplit2(unique.keys,".",fixed=TRUE)
 
+    #return ordered GRanges
+    unGR <- GRanges(ss[,1], IRanges(as.integer(ss[,2]), width = 1))
+    mcols(unGR) <- mcol
+    
     #human ordering
-    or <- GenomeInfoDb::orderSeqlevels(ss[,1])
-
-    #return GRanges
-    unGR <- GRanges(ss[,1][or], IRanges(as.integer(ss[,2][or]), width = 1))
-    mcols(unGR) <- mcol[or,]
-
+    unGR <- GenomeInfoDb::sortSeqlevels(unGR)
+    unGR <- sort(unGR)
+    
     #The unGR has the filtered sites for this sample
     return(unGR)
   }, mc.cores = cores)
@@ -158,6 +159,9 @@ calc_derivedasm <- function(sample_list, cores = 1, verbose = T){
                                                                          alt.meth = alt.meth_table),
                                                                    rowRanges = keyGR,
                                                                    colData = S4Vectors::DataFrame(samples = names(allGR)))
+  #last human sorting
+  derived_ASM_matrix <- GenomeInfoDb::sortSeqlevels(derived_ASM_matrix)
+  derived_ASM_matrix <- sort(derived_ASM_matrix)
 
   return(derived_ASM_matrix)
 }
