@@ -2,3 +2,4 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 inst/extdata/moredata
+R/*.inprogress
