@@ -18,7 +18,7 @@
 methyl_MDS_plot <- function(x, color, top = 1000, coverage = 5){
 
 
-  if(dim(SummarizedExperiment::rowData(x))[2] > 0){
+  if(names(assays(x))[1] == "asm"){
 
     asm <- assays(x)[["asm"]]
     asm.red <- asm[rowSums(!is.na(assays(x)[["cov"]]) & assays(x)[["cov"]] >= coverage) == BiocGenerics::ncol(x),]
