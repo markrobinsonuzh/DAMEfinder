@@ -1,25 +1,30 @@
 #' Draw methylation circle plot
 #'
-#' Draws CpG site methylation status as points, in reads containing a specific SNP.
-#' Generates one plot per bam file.
+#' Draws CpG site methylation status as points, in reads containing a specific
+#' SNP. Generates one plot per bam file.
 #'
 #' @param snp GRanges object containing SNP location.
-#' @param cpgsite (optional) GRanges object containing a single CpG site location of interest.
+#' @param cpgsite (optional) GRanges object containing a single CpG site
+#'   location of interest.
 #' @param vcf.file vcf file.
 #' @param bam.file bismark bam file path.
 #' @param ref.file fasta reference file path.
 #' @param dame (optional) GRanges object containing a region to plot.
 #' @param letter.size Size of alleles drawn in plot. Default = 2.5.
 #' @param point.size Size of methylation circles. Default = 3.
-#' @param sample.name FIX: this is to save the vcf file to not generate it every time you run the function.
+#' @param sample.name FIX: this is to save the vcf file to not generate it every
+#'   time you run the function.
 #'
 #' @return Plot
 #' @examples
-#' #bam_files <- "../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
-#' #vcf_files <- "../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
+#' #bam_files <- 
+#' #"../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
+#' #vcf_files <- 
+#' #"../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
 #' #sample_names <- "NORM1"
-#' #reference_file <- 
-#' "../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
+#' #reference_file <-
+#' #"../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.
+#' #release91/GRCh37.91.fa"
 #'
 #'
 #' @importFrom GenomicRanges GRanges
@@ -31,7 +36,9 @@
 #'
 #' @export
 
-methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, letter.size = 2.5, point.size = 3, sample.name = "sample1", cpgsite = NULL){
+methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, 
+                               letter.size = 2.5, point.size = 3, 
+                               sample.name = "sample1", cpgsite = NULL){
 
   message("Reading vcf file")
   if(!file.exists(paste0(sample.name,".RData"))){
@@ -39,7 +46,8 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     save(vcf, file = paste0(sample.name, ".RData"))
   } else {load(paste0(sample.name, ".RData"))}
 
-  snp.loc <- which(as.integer(vcf[,2]) == start(snp) & vcf[,1] == levels(seqnames(snp)))
+  snp.loc <- which(as.integer(vcf[,2]) == start(snp) & 
+                     vcf[,1] == levels(seqnames(snp)))
   if(length(snp.loc) == 0){
     stop("Sample does not contain SNP")
   }
@@ -47,12 +55,13 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   alt <- vcf[,5][snp.loc]
 
   message("Getting reads")
-  alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
-                                    param = Rsamtools::ScanBamParam(
-                                                         tag= c("MD","XM","XR","XG"),
-                                                         mapqFilter = 40,
-                                                         which=snp),
-                                    use.names = TRUE)
+  alns.pairs <- GenomicAlignments::readGAlignmentPairs(
+    bam.file,
+    param = Rsamtools::ScanBamParam(
+      tag= c("MD","XM","XR","XG"),
+      mapqFilter = 40,
+      which=snp),
+    use.names = TRUE)
 
   alns <- unlist(alns.pairs) #unpaired
 
@@ -62,11 +71,12 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   ref.reads <- split$ref.reads
 
   message("Sorting reads")
-  alt.pairs <- alns.pairs[names(alns.pairs) %in% alt.reads] #don't unlist, paired
+  #don't unlist, paired
+  alt.pairs <- alns.pairs[names(alns.pairs) %in% alt.reads] 
   ref.pairs <- alns.pairs[names(alns.pairs) %in% ref.reads]
   alns.pairs <- c(alt.pairs, ref.pairs) #I just do this to sort them
 
-  ####get reference and CpG positions####--------------------------------------------------------
+  ####get reference and CpG positions####------------------------------------
 
   #Get limits for plotting
 
@@ -93,7 +103,8 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
 
   mepos <- cgsite / Biostrings::nchar(dna) #location of CpG sites
 
-  ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
+  #Use MD tag from bam to extract methylation status for each site detected
+  #above
   message("Getting meth state per read-pair")
   conversion <- vapply(alns.pairs, function(x){
 
@@ -138,8 +149,9 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
               break}
           }
 
-          #if there is a mismatch, the MDtag shows what the base is in the ref. So,
-          # if it shows a C or G, it means that the ref is C and the read has T or A, therefore it is unmethylated (converted)
+          #if there is a mismatch, the MDtag shows what the base is in the ref.
+          #So, if it shows a C or G, it means that the ref is C and the read has
+          #T or A, therefore it is unmethylated (converted)
           if(MDtag[i] %in% c("C", "G")){
             conversion[1,p] <- 21 } else{conversion[1,p] <- 19}
             }
@@ -157,7 +169,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   ref.reads <- ref.reads[ref.reads %in% colnames(conversion)]
   alns.pairs <- alns.pairs[names(alns.pairs) %in% colnames(conversion)]
 
-  #### Get snp position in window ####------------------------------------------------------------
+  #### Get snp position in window ####----------------------------------------
 
   letter <- c(rep(alt, length(alt.reads)), rep(ref, length(ref.reads)))
 
@@ -168,7 +180,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
     cpg.start <- start(cpgsite) - left + 1
   }else{cpg.start = 0}
 
-  #### plot ####---------------------------------------------------------------------------------
+  #### plot ####-------------------------------------------------------------
 
   message("Plotting")
 
@@ -204,20 +216,24 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
   ggplot() +
     scale_shape_identity() +
     theme_void() +
-    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads, colour = snp), size = 0.2) +
-    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", size=point.size) +
-    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape = letter, colour = letter), size=letter.size) +
-    geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green")  +
+    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads, 
+                              colour = snp), size = 0.2) +
+    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", 
+               size=point.size) +
+    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape = letter, 
+                   colour = letter), size=letter.size) +
+    geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green") +
     scale_color_manual(values = cols) +
     guides(color=FALSE)
 }
 
 #' Draw methylation circle plot without SNP
 #'
-#' Draws CpG site methylation status as points, in reads containing a specific CpG site.
-#' Generates one plot per bam file.
+#' Draws CpG site methylation status as points, in reads containing a specific
+#' CpG site. Generates one plot per bam file.
 #'
-#' @param cpgsite GRanges object containing a single CpG site location of interest
+#' @param cpgsite GRanges object containing a single CpG site location of
+#'   interest
 #' @param bam.file bismark bam file path
 #' @param ref.file fasta reference file path
 #' @param point.size Size of methylation circles. Default = 3.
@@ -233,15 +249,19 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, l
 #' @import ggplot2
 #'
 #' @export
-methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, point.size = 3, ref.file = ref.file, dame = NULL){
+methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, 
+                                  point.size = 3, ref.file = ref.file, 
+                                  dame = NULL){
 
-  alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file,
-                                    param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
-                                                                    mapqFilter = 40,
-                                                                    which = cpgsite),
-                                    use.names = TRUE)
+  alns.pairs <- GenomicAlignments::readGAlignmentPairs(
+    bam.file,
+    param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
+                                    mapqFilter = 40,
+                                    which = cpgsite),
+    use.names = TRUE)
   alns <- unlist(alns.pairs)
-  ####get reference and CpG positions####--------------------------------------------------------
+  
+  ####get reference and CpG positions####-------------------------------------
 
   #Get limits for plotting
 
@@ -269,7 +289,8 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, point.
 
   mepos <- cgsite / Biostrings::nchar(dna) #location of CpG sites
 
-  ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
+  ##### Use MD tag from bam to extract methylation status for each site detected
+  ##### above ####----------------------------
   message("Getting meth state per read-pair")
   conversion <- vapply(alns.pairs, function(x){
 
@@ -314,8 +335,9 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, point.
                   break}
               }
 
-              #if there is a mismatch, the MDtag shows what the base is in the ref. So,
-              # if it shows a C or G, it means that the ref is C and the read has T or A, therefore it is unmethylated (converted)
+              #if there is a mismatch, the MDtag shows what the base is in the
+              #ref. So, if it shows a C or G, it means that the ref is C and the
+              #read has T or A, therefore it is unmethylated (converted)
               if(MDtag[i] %in% c("C", "G")){
                 conversion[1,p] <- 21 } else{conversion[1,p] <- 19}
             }
@@ -331,11 +353,11 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, point.
 
   alns.pairs <- alns.pairs[names(alns.pairs) %in% colnames(conversion)]
 
-  #### Get CpG of interest in window ####------------------------------------------------------------
+  #### Get CpG of interest in window ####------------------------------------
 
   cpg.start <- start(cpgsite) - left + 1
 
-  #### plot ####---------------------------------------------------------------------------------
+  #### plot ####-------------------------------------------------------------
 
   message("Plotting")
 
@@ -364,9 +386,11 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, point.
   ggplot() +
     scale_shape_identity() +
     theme_void() +
-    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads), colour = "grey", size = 0.5) +
-    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", size=point.size) +
-    geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green")  +
+    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads), 
+                 colour = "grey", size = 0.5) +
+    geom_point(data=d, aes(x=CpG, y=read, shape=value), 
+               fill = "white", size=point.size) +
+    geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green") +
     guides(color=FALSE)
 }
 

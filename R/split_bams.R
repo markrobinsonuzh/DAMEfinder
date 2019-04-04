@@ -1,20 +1,23 @@
 
 #' Detect allele-specific methylation from a bam file
 #'
-#' The function takes a bam (from bismark) and vcf file for each sample.
-#' For each SNP contained in the vcfile it calculates the proportion of
-#' methylated reads for each CpG site at each allele. At the end it returns
-#' (saves to working directory) a GRanges list, where each GRanges contains
-#' all the CpG sites overlapping the reads containing a specific SNP.
+#' The function takes a bam (from bismark) and vcf file for each sample. For
+#' each SNP contained in the vcfile it calculates the proportion of methylated
+#' reads for each CpG site at each allele. At the end it returns (saves to
+#' working directory) a GRanges list, where each GRanges contains all the CpG
+#' sites overlapping the reads containing a specific SNP.
 #'
 #' @param bam_files List of bam files.
 #' @param vcf_files List of vcf files.
 #' @param sample_names Names of files in the list.
 #' @param reference_file fasta file used to generate the bam files.
-#' @param coverage Minimum number of reads covering a CpG site on each allele. Default = 2.
-#' @param cores Number of cores to use. See package {parallel} for description of core. Default = 1.
+#' @param coverage Minimum number of reads covering a CpG site on each allele.
+#'   Default = 2.
+#' @param cores Number of cores to use. See package {parallel} for description
+#'   of core. Default = 1.
 #'
-#' @return A list of GRanges for each sample. Each list is saved in a separate .rds file.
+#' @return A list of GRanges for each sample. Each list is saved in a separate
+#'   .rds file.
 #' @examples
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
@@ -25,10 +28,12 @@
 #' @importFrom GenomicAlignments readGAlignmentPairs
 #'
 #' @export
-split_bams <- function(bam_files, vcf_files, sample_names, reference_file, coverage = 4, cores = 1){
+split_bams <- function(bam_files, vcf_files, sample_names, reference_file,
+                       coverage = 4, cores = 1){
 
 message("Reading reference file")
-fa <- open(Rsamtools::FaFile(reference_file, index = paste0(reference_file, ".fai")))
+fa <- open(Rsamtools::FaFile(reference_file, 
+                             index = paste0(reference_file, ".fai")))
 
 #get names and indeces per sample to apply to
 sample_list <- 1:length(sample_names)
@@ -92,7 +97,7 @@ lapply(sample_list, function(samp){
       #next
     }
 
-    ####get reference and CpG positions####---------------------------------------
+    ####get reference and CpG positions####-----------------------------------
 
     #Get limits for calling methylation and grabing reference sequence
     left <- min(start(alns))
@@ -111,7 +116,8 @@ lapply(sample_list, function(samp){
     }
     mepos <- cgsite / Biostrings::nchar(dna) #location of CpG sites
 
-    ##### Use MD tag from bam to extract methylation status for each site detected above ####----------------------------
+    ##### Use MD tag from bam to extract methylation status for each site
+    ##### detected above ####----------------------------
     conversion <- vapply(alns.pairs, function(x){
       #change C locations for G locations if reference context is different
       XGcondition <- mcols(x)$XG[1]
@@ -153,9 +159,10 @@ lapply(sample_list, function(samp){
                     break}
                 }
 
-                #if there is a mismatch, the MDtag shows what the base is in the ref. So,
-                #if it shows a C or G, it means that the ref is C or G, and the read has T or A,
-                #therefore it is unmethylated (converted)
+                #if there is a mismatch, the MDtag shows what the base is in the
+                #ref. So, if it shows a C or G, it means that the ref is C or G,
+                #and the read has T or A, therefore it is unmethylated
+                #(converted)
                 if(MDtag[i] %in% c("C", "G")){
                   conversion[1,p] <- 1 } else{conversion[1,p] <- 2}
               }
@@ -189,7 +196,8 @@ lapply(sample_list, function(samp){
     }
 
     #Build GRanges
-    GR <- GRanges(gsub("chr","",chrom), IRanges(start = left + cgsite, width = 1))
+    GR <- GRanges(gsub("chr","",chrom), IRanges(start = left + cgsite, 
+                                                width = 1))
     mcols(GR)$cov.ref <- ref.cov
     mcols(GR)$cov.alt <- alt.cov
     mcols(GR)$meth.ref <- ref.meth
@@ -207,7 +215,8 @@ lapply(sample_list, function(samp){
     gr <- GR[filt]
     return(gr)
 
-  },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F, mc.cores = cores)
+  },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F,
+  mc.cores = cores)
 
   message(sprintf("Done with sample %s", sample_names[samp]))
   return(snp.table)

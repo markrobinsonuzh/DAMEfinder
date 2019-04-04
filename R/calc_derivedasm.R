@@ -1,9 +1,8 @@
 #' Calculate SNP-based ASM
 #'
-#' Combines all the \code{GRangeslist} generated in \code{\link{split_bams}} into a
-#' \code{\link{RangedSummarizedExperiment}} object, and calculates
-#' SNP-based allele-specific methylation.
-#' TODO MAYBE: Make accesor functions to all the assays in this object.
+#' Combines all the \code{GRangeslist} generated in \code{\link{split_bams}}
+#' into a \code{\link{RangedSummarizedExperiment}} object, and calculates
+#' SNP-based allele-specific methylation. 
 #' TODO: Doesn't work for one sample
 #'
 #' @param sample_list List of samples returned from \code{\link{split_bams}}.
@@ -11,12 +10,12 @@
 #' @param verbose If the function should be verbose.
 #' @return \code{RangedSummarizedExperiment} containing in assays:
 #'
-#' - der.ASM: matrix with SNP-based ASM
-#' - snp.table: Matrix with SNP associated to the CpG site
-#' - ref.cov: Coverage of the "reference" allele
-#' - alt.cov: Coevarage of the "alternative" allele
-#' - ref.meth: Methylated reads from the "reference" allele
-#' - alt.meth: Methylated reads from the "alternative" allele
+#'   - der.ASM: matrix with SNP-based ASM 
+#'   - snp.table: Matrix with SNP associated to the CpG site. 
+#'   - ref.cov: Coverage of the "reference" allele. 
+#'   - alt.cov: Coevarage of the "alternative" allele. 
+#'   - ref.meth: Methylated reads from the "reference" allele. 
+#'   - alt.meth: Methylated reads from the "alternative" allele.
 #' @md
 #'
 #' @examples
@@ -28,7 +27,7 @@
 #'
 #' @export
 
-calc_derivedasm <- function(sample_list, cores = 1, verbose = T){
+calc_derivedasm <- function(sample_list, cores = 1, verbose = TRUE){
 
   #filter duplicated sites and choose the one with the highest meth.diff
   allGR <- parallel::mclapply(sample_list, function(snp.table){
@@ -66,7 +65,8 @@ calc_derivedasm <- function(sample_list, cores = 1, verbose = T){
       }
     }, character(6))
 
-    #the vapply returns a tranversed matrix with everything as characters, so I have to transform this.
+    #the vapply returns a tranversed matrix with everything as characters, so I
+    #have to transform this.
     mcol <- data.frame(as.numeric(cols[1,]),
                        as.numeric(cols[2,]),
                        as.numeric(cols[3,]),
@@ -146,19 +146,22 @@ calc_derivedasm <- function(sample_list, cores = 1, verbose = T){
   if(dim(snp_match_table)[1] != dim(trueASM_table)[1]){
     stop("Tables contain different sizes")
   } else{
-    message(sprintf("Returning %i CpG sites for %i samples",  dim(trueASM_table)[1], dim(trueASM_table)[2]))
+    if(verbose) message(sprintf("Returning %i CpG sites for %i samples",  
+                    dim(trueASM_table)[1], dim(trueASM_table)[2]))
   }
 
   ##Put all matrices into S4 vector
-  derived_ASM_matrix <- SummarizedExperiment::SummarizedExperiment(assays = S4Vectors::SimpleList(
-                                                                         der.ASM = trueASM_table,
-                                                                         snp.table = snp_match_table,
-                                                                         ref.cov = ref.cov_table,
-                                                                         alt.cov = alt.cov_table,
-                                                                         ref.meth = ref.meth_table,
-                                                                         alt.meth = alt.meth_table),
-                                                                   rowRanges = keyGR,
-                                                                   colData = S4Vectors::DataFrame(samples = names(allGR)))
+  derived_ASM_matrix <- SummarizedExperiment::SummarizedExperiment(
+    assays = S4Vectors::SimpleList(
+      der.ASM = trueASM_table,
+      snp.table = snp_match_table,
+      ref.cov = ref.cov_table,
+      alt.cov = alt.cov_table,
+      ref.meth = ref.meth_table,
+      alt.meth = alt.meth_table),
+    rowRanges = keyGR,
+    colData = S4Vectors::DataFrame(samples = names(allGR)))
+  
   #last human sorting
   derived_ASM_matrix <- GenomeInfoDb::sortSeqlevels(derived_ASM_matrix)
   derived_ASM_matrix <- sort(derived_ASM_matrix)

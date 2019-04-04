@@ -1,13 +1,14 @@
 #' Divide read names by allele
 #'
-#' Takes a GenomicAlignments object and returns a list of read
-#' names dividied by allele
+#' Takes a GenomicAlignments object and returns a list of read names dividied by
+#' allele.
 #'
 #' @param alns GenomicAlignments object.
 #' @param snp GRanges object containing SNP location.
-#' @param v Nucleotide of reference (or alternative) allele
+#' @param v Nucleotide of reference (or alternative) allele.
 #'
-#' @return A named list of vectors, each vector containing read names for each allele
+#' @return A named list of vectors, each vector containing read names for each
+#'   allele.
 #' @examples
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
@@ -42,7 +43,8 @@ splitReads <- function(alns, v, snp){
       if(count >= snp.start){break}
     }
     return(MDtag[i])
-  }, a = fullMD, x = fullstart, MoreArgs = list(snp.loc = snp.loc), USE.NAMES = F)
+  }, a = fullMD, x = fullstart, MoreArgs = list(snp.loc = snp.loc),
+  USE.NAMES = F)
 
   #Get read names from alt and ref reads
   names(alleles) <- names(alns)
@@ -63,10 +65,6 @@ splitReads <- function(alns, v, snp){
 #' @return A named list of vectors, each vector a parsed version of MDtag:
 #' - nucl.num: Numeric representation of MDtag.
 #' - MDtag: a split version of MDtag
-#'
-#' @examples
-#'
-#'
 #'
 #' @export
 getMD <- function(a){
@@ -100,6 +98,3 @@ getMD <- function(a){
   }
   return(list(MDtag = MDtag, nucl.num = nucl.num))
 }
-
-
-
