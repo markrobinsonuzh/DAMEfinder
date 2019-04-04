@@ -15,15 +15,14 @@
 #' @param ... 
 #' @return Vector of summarized pvals
 #'
-#' @md
 #' @export
-#' 
-#' 
-#' 
-#' 
-empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth, maxPerms = 10, K, maxGap, ...){
+empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth, 
+                           maxPerms = 10, K, maxGap, ...){
   
   sampleSize <- table(design[, coeff])
+  
+  #Since we allow the user to choose the coeff from the design.matrix, I will
+  #never have more than 2 coefs, as dmrseq does
   
   if(length(unique(design[, coeff])) == 2 && 
       
@@ -67,35 +66,10 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth, maxPerms =
         num <- ncol(perms) 
       }
     }
-  } else {
-    # Next consider a multilevel, or continuous covariate where the
-    # covariate will be permuted in an unrestricted manner
- 
-       perms <- as.matrix(seq_len(nrow(design)))
-    
-    for (p in seq_len(maxPerms)) {
-      tries <- 0
-      candidate <- sample(seq_len(nrow(design)), nrow(design))
-      # check that the permutation is not a duplicate, and not 
-      # equal to the original
-      while ((sum(apply(perms, 2, function(x) 
-        all.equal(x, candidate)) == TRUE) > 0 || 
-        sum(apply(perms, 2, function(x) 
-          all.equal(x, rev(candidate))) == TRUE) > 0) &&
-        tries <= 20) {
-        candidate <- sample(seq(seq_len(nrow(design))), nrow(design))
-        tries <- tries + 1
-      }
-      # save the permutation to the permutation matrix
-      if (tries <= 20){
-        perms <- cbind(perms, candidate)
-      }
-    }
-    perms <- perms[,-1] # remove original
-  }
+  } 
   
   #Detect permuted dames
-  message("Generating permutations")
+  if(verbose) message("Generating permutations", appendLF = FALSE)
   areas <- apply(perms, 2, function(i){
     
     reorder <- i
@@ -130,39 +104,25 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth, maxPerms =
     } else {
       midpt <- BiocGenerics::start(sa_perm)
     }
-
-    rf <- bumphunter::regionFinder(x = sm_tstat,
-                                   chr = as.character(GenomeInfoDb::seqnames(sa_perm)),
-                                   pos = midpt,
-                                   cluster = S4Vectors::mcols(sa_perm)$cluster,
-                                   cutoff = K, #use same K always
-                                   maxGap = maxGap,
-                                   verbose = FALSE)
-
+    
+    rf <- bumphunter::regionFinder(
+      x = sm_tstat,
+      chr = as.character(GenomeInfoDb::seqnames(sa_perm)),
+      pos = midpt,
+      cluster = S4Vectors::mcols(sa_perm)$cluster,
+      cutoff = K, #use same K always
+      maxGap = maxGap,
+      verbose = FALSE)
+    
     rf$area
   })
 
   all_areas <- sort(unlist(areas))
   total_areas <- length(all_areas)
 
-  rf$pvalEmp <- sapply(rf$area, function(a){
+  pvalEmp <- sapply(rforiginal$area, function(a){
     pperm <- (sum(all_areas > a) + 1) / (total_areas + 1)
   })
   
-  rf$FDR <- p.adjust(pval, method = "BH")
-  return(rf)
+  return(pvalEmp)
 }
-
-### old code
-
-#####   
-#tot_length <- length(treat) + length(control)
-#combs <- utils::combn(tot_length, length(control))
-
-
-# #remove the true constrats
-# rem <- apply(combs, 2, function(i){
-#   all.equal(i,control)
-# })
-# rem <- which(rem == T)
-# if(!identical(rem, integer(0))) combs <- combs[,-rem]
