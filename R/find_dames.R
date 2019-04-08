@@ -2,16 +2,19 @@
 #'
 #' This function finds Differential Allele-specific MEthylated regions (DAMEs).
 #' It uses the \code{\link{regionFinder}} function from \code{bumphunter}, and
-#' asigns pvalues either empirically or using the Simes method.
+#' asigns p-values either empirically or using the Simes method.
 #'
-#' A region is set as DAME if the (smoothed) t-Statistic (from
-#' \code{\link{eBayes}}) exceeds a cutoff K. K is (optionally) set as the value
-#' of the 0.9 quantile of the absolute t-stats vector. When the (smoothed)
-#' t-stats in consecutive CpGs go above K or below -K, the region is set as a
-#' DAME. p-values are then asigned by generating \code{maxPerms} number of
-#' permutations, or by summarizing the CpG individual p-values using the Simes
-#' method.
-#'
+#' The simes method has higher power to detect DAMEs, but the consistency in
+#' signal across a region is better controlled with the empirical method, since
+#' it uses \code{regionFinder} and \code{getSegments} to find regions with 
+#' t-statistics above a cuttof (controled with parameter \code{Q}), whereas 
+#' with the "simes" option, we initially detects clusters of CpG sites/tuples, 
+#' and then test if at least 1 differential site/tuple is present in the 
+#' cluster.
+#' 
+#' We recommend trying out different \code{maxGap} and \code{Q} parameters, 
+#' since the size and the effect-size of obtained DAMEs change with these 
+#' parameters.
 #'
 #' @param sa A \code{SummarizedExperiment} containing ASM values where each row
 #'   correspond to a tuple/site and a column to sample/replicate.
@@ -19,20 +22,25 @@
 #' @param coef Column in \code{design} specifying the parameter to estimate.
 #'   Default = 2.
 #' @param Q The percentile set to get a cutoff value K. K is the value on the
-#'   Qth quantile of the absolute values of the given (smoothed) t-Statistics
-#'   vector. Default = 0.9.
+#'   Qth quantile of the absolute values of the given (smoothed) t-statistics. 
+#'   Only necessary if \code{pvalAssign} = "empirical". Default = 0.9.
 #' @param pvalAssign Choose method to assign pvalues, either "simes" (default)
 #'   or "empirical". This second one performs \code{maxPerms} number of
-#'   permutations to calculate null statistics.
-#' @param maxGap Maximum gap between CpGs in a cluster (in bp). Default = 20.
+#'   permutations to calculate null statistics, and runs \code{regionFinder}.
+#' @param maxGap Maximum gap between CpGs in a cluster (in bp). NOTE: Regions 
+#' can be as small as 1 bp. Default = 20.
 #' @param smooth Whether smoothing should be applied to the t-Statistics.
-#'   Default = TRUE
-#' @param maxPerms = 10
+#'   Default = TRUE.
+#' @param maxPerms Maximum possible permutations generated. Only necessary if 
+#' \code{pvalAssign} = "empirical". Default = 10.
+#' @param method The method to be used in limma's \code{\link{lmFit}}. The
+#'   default is set to "ls" but can also be set to "robust", which is
+#'   recommended on a real data set.
 #' @param verbose If the function should be verbose. Default = TRUE.
-#' @param ... arguments passed to \code{\link{get_tstats}}.
+#' @param ... Arguments passed to \code{\link{get_tstats}}.
 #'
 #' @return A data frame of detected DAMEs ordered by the p-value. Each row
-#'   refers to a DAME and the following information is provided in the columns
+#'   is a DAME and the following information is provided in the columns
 #'   (some column names change depending on the \code{pvalAssign} choice):
 #'
 #'   - chr: on which chromosome the DAME is found. 
@@ -40,20 +48,23 @@
 #'   - end: The end position of the DAME. 
 #'   - pvalSimes: p-value calculated with the Simes method.
 #'   - pvalEmp: Empirical p-value obtained from permuting covariate of interest.
-#'   - sumPvalues: Sum of all Pvalues (only for Simes).
+#'   - sumTstat: Sum of t-stats per segment/cluster.
+#'   - meanTstat: Mean of t-stats per segment/cluster.
 #'   - segmentL: Size of segmented cluster (from \code{\link{getSegments}}). 
 #'   - clusterL: Size of original cluster (from \code{\link{clusterMaker}}).
 #'   - FDR: Adjusted p-value using the method of Benjamini, Hochberg. (from 
 #'   \code{\link{p.adjust}}).
+#'   - numup: Number of sites with ASM increase in cluster (only for Simes).
+#'   - numdown: Number of sites with ASM decrease in cluster (only for Simes).
 #'
 #' @md
 #'
 #' @export
 #'
 #' @examples
-find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.9, 
-                       pvalAssign = "simes", maxGap = 300, verbose = TRUE, 
-                       maxPerms = 10, ...){
+find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.7, 
+                       pvalAssign = "simes", maxGap = 20, verbose = TRUE, 
+                       maxPerms = 10, method = "ls", ...){
   
   pre_sa <- sa
   
@@ -62,6 +73,7 @@ find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.9,
                     maxGap = maxGap,
                     coef = coef,
                     smooth = smooth,
+                    method = method,
                     ...)
 
   # choose smoothed if true
@@ -84,23 +96,7 @@ find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.9,
   
   if(pvalAssign == "simes"){
     
-    rf <- bumphunter::regionFinder(
-      x = sm_tstat,
-      chr = as.character(GenomeInfoDb::seqnames(sat)),
-      pos = midpt,
-      cluster = S4Vectors::mcols(sat)$cluster, #This might make no difference?
-      y = S4Vectors::mcols(sat)$p.value,
-      summary = simes_pval,
-      cutoff = K,
-      maxGap = maxGap,
-      assumeSorted = TRUE,
-      order = FALSE,
-      verbose = verbose)
-    
-    rf <- rf[,-c(6:8)]
-    colnames(rf) <- c("chr","start","end","pvalSimes",
-                      "sumPvalues","segmentL","clusterL")
-    
+    rf <- simes_pval(sat, sm_tstat, midpt)
     rf <- rf[order(rf$pvalSimes),]
     rf$FDR <- p.adjust(rf$pvalSimes, method="BH")
     
@@ -114,6 +110,7 @@ find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.9,
       cutoff = K,
       maxGap = maxGap,
       assumeSorted = TRUE,
+      order = FALSE,
       verbose = verbose)
     
     rf$pvalEmp <- empirical_pval(pre_sa = pre_sa, 
@@ -122,8 +119,9 @@ find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.9,
                          coeff = coef, 
                          smooth = smooth, 
                          maxPerms = maxPerms, 
-                         K = K, 
+                         Q = Q, 
                          maxGap = maxGap, 
+                         method = method,
                          ...)
     
     rf$FDR <- p.adjust(rf$pvalEmp, method = "BH")
