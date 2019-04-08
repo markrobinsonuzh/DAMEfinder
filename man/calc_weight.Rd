@@ -7,45 +7,45 @@
 calc_weight(MM, UU, beta = 0.5, a = 0.2)
 }
 \arguments{
-\item{MM}{The read counts for where pos1 and pos2 of the tuple were both methylated}
+\item{MM}{The read counts for where pos1 and pos2 of the tuple were both
+methylated.}
 
-\item{UU}{The read counts for where pos1 and pos2 of the tuple were both unmethylated}
+\item{UU}{The read counts for where pos1 and pos2 of the tuple were both
+unmethylated.}
 
-\item{beta}{parameter for the beta distribution. In B(alpha,beta), we set alpha=beta=0.5
-by default.}
+\item{beta}{parameter for the beta distribution. In B(alpha,beta), we set
+alpha=beta=0.5 by default.}
 
-\item{a}{parameter for how far from 0.5 we go as a measure of allele-specific methylation.
-The weight is the probability that the MM:(MM+UU) ratio is between 0.5-a and 0.5+a. The
-default is set to 0.2.}
+\item{a}{parameter for how far from 0.5 we go as a measure of allele-specific
+methylation. The weight is the probability that the MM:(MM+UU) ratio is
+between 0.5-a and 0.5+a. The default is set to 0.2.}
 }
 \value{
-A number that reflects allele-specificity given MM and UU counts for a CpG pair. This
-is used as a weight that is multiplied by the log odds ratio to give the final ASM score of
-that tuple.
+A number that reflects allele-specificity given MM and UU counts for
+a CpG pair. This is used as a weight that is multiplied by the log odds
+ratio to give the final ASM score of that tuple.
 }
 \description{
-This function calculates a weight which reflects MM to UU balance, where M stands for methylated
-and U for unmethylated. Given the MM and UU counts for a particular tuple, the weight is obtained
-using the pbeta function. For the beta distribution B(alpha,beta), the alpha and beta
-parameters are both set to 0.5 by default to reflect a high penalty on instances of
-full methylation or full unmethylation (which are also more common), rather than
-allele-specific methylation. The weight adds a measure of allele-specific methylation
-to the ASM score, reflecting the MM to UU balance.The closer the MM:UU ratio is to 0.5,
-the closer we are to allele-specific methylation.
+This function calculates a weight which reflects MM to UU balance, where M
+stands for methylated and U for unmethylated. Given the MM and UU counts for
+a particular tuple, the weight is obtained using the \code{link{pbeta}}
+function.
 }
 \details{
-For a given tuple with MM and UU counts, the weight that reflects allele-scpecificity is
-calculated as follows:
+For a given tuple with MM and UU counts, the weight that reflects
+allele-scpecificity is calculated as follows:
 \itemize{
 \item Prior:\deqn{p(\theta|\alpha,\beta) \sim Beta(\alpha,\beta),} where
-\eqn{\theta = \frac{MM}{MM+UU}} and \eqn{\alpha = \beta = 0.5}. \eqn{p(\theta|\alpha,\beta)}
-represents our prior belief which is that tuples are either fully methylated or fully
-unmethylated, rather than allele-specifically methylated which is a much rarer event.
-\item Likelihood: \deqn{p(x|\alpha,\beta) \propto \theta^{MM}(1-\theta)^{UU},} where x is our observation
-(the MM and UU counts).
+\eqn{\theta = \frac{MM}{MM+UU}} and \eqn{\alpha = \beta = 0.5}.
+\eqn{p(\theta|\alpha,\beta)} represents our prior belief which is that
+tuples are either fully methylated or fully unmethylated, rather than
+allele-specifically methylated which is a much rarer event.
+\item Likelihood: \deqn{p(x|\alpha,\beta) \propto \theta^{MM}(1-\theta)^{UU},}
+where x is our observation (the MM and UU counts).
 \item Posterior:\deqn{p(\theta|x) \propto p(x|\theta)*p(\theta|\alpha,\beta)}
-\deqn{p(\theta|x) \propto \theta^{MM-0.5}(1-\theta)^{UU-0.5},} where \eqn{\alpha = \beta = 0.5}.
-This posterior also follows a beta distribution \eqn{\sim Beta(\alpha'=MM+0.5, \beta'=UU+0.5)}
+\deqn{p(\theta|x) \propto \theta^{MM-0.5}(1-\theta)^{UU-0.5},}
+where \eqn{\alpha = \beta = 0.5}. This posterior also follows a beta
+distribution \eqn{\sim Beta(\alpha'=MM+0.5, \beta'=UU+0.5)}
 }
 }
 \examples{

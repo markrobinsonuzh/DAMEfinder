@@ -8,7 +8,8 @@ methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file,
   point.size = 3, ref.file = ref.file, dame = NULL)
 }
 \arguments{
-\item{cpgsite}{GRanges object containing a single CpG site location of interest}
+\item{cpgsite}{GRanges object containing a single CpG site location of
+interest}
 
 \item{bam.file}{bismark bam file path}
 
@@ -22,8 +23,8 @@ methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file,
 Plot
 }
 \description{
-Draws CpG site methylation status as points, in reads containing a specific CpG site.
-Generates one plot per bam file.
+Draws CpG site methylation status as points, in reads containing a specific
+CpG site. Generates one plot per bam file.
 }
 \examples{
 

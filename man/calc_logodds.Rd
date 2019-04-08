@@ -7,19 +7,23 @@
 calc_logodds(s, eps = 1)
 }
 \arguments{
-\item{s}{A data frame that contains the MM,UU,UM, and MU counts for each CpG tuple for a
-particular sample. It is the resulting object of the read_tuples function in DAMEfinder.}
+\item{s}{A data frame that contains the MM,UU,UM, and MU counts for each CpG
+tuple for a particular sample. It is the resulting object of the
+\code{read_tuples}.}
 
-\item{eps}{Count added to each of the MM,UU,UM and MU counts to be sure that we don't divide
-by zero for example, as this can damage our log odds ratio results. The default is set to 1.}
+\item{eps}{Count added to each of the MM,UU,UM and MU counts to avoid
+dividing by zero for example. The default is set to 1.}
 }
 \value{
-The same object is returned with an additional column for the logg odds ratio.
+The same object is returned with an additional column for the log
+  odds ratio.
 }
 \description{
-This function calculates the log odds ratio for a CpG tuple: (MM*UU)/(UM*MU), where 'M' stands for
-methylated and 'U' for unmethylated. 'MM' reflects the count for instances the CpG pair is methylated
-at both positions. The higher the MM and UU counts for that CpG pair, the higher the log odds ratio.
+This function calculates the log odds ratio for a CpG tuple:
+\code{(MM*UU)/(UM*MU)}, where 'M' stands for methylated and 'U' for
+unmethylated. 'MM' reflects the count for instances the CpG pair is
+methylated at both positions. The higher the MM and UU counts for that CpG
+pair, the higher the log odds ratio.
 }
 \examples{
 

@@ -4,7 +4,7 @@
 \alias{calc_derivedasm}
 \title{Calculate SNP-based ASM}
 \usage{
-calc_derivedasm(sample_list, cores = 1, verbose = T)
+calc_derivedasm(sample_list, cores = 1, verbose = TRUE)
 }
 \arguments{
 \item{sample_list}{List of samples returned from \code{\link{split_bams}}.}
@@ -17,18 +17,17 @@ calc_derivedasm(sample_list, cores = 1, verbose = T)
 \code{RangedSummarizedExperiment} containing in assays:
 \itemize{
 \item der.ASM: matrix with SNP-based ASM
-\item snp.table: Matrix with SNP associated to the CpG site
-\item ref.cov: Coverage of the "reference" allele
-\item alt.cov: Coevarage of the "alternative" allele
-\item ref.meth: Methylated reads from the "reference" allele
-\item alt.meth: Methylated reads from the "alternative" allele
+\item snp.table: Matrix with SNP associated to the CpG site.
+\item ref.cov: Coverage of the "reference" allele.
+\item alt.cov: Coevarage of the "alternative" allele.
+\item ref.meth: Methylated reads from the "reference" allele.
+\item alt.meth: Methylated reads from the "alternative" allele.
 }
 }
 \description{
-Combines all the \code{GRangeslist} generated in \code{\link{split_bams}} into a
-\code{\link{RangedSummarizedExperiment}} object, and calculates
+Combines all the \code{GRangeslist} generated in \code{\link{split_bams}}
+into a \code{\link{RangedSummarizedExperiment}} object, and calculates
 SNP-based allele-specific methylation.
-TODO MAYBE: Make accesor functions to all the assays in this object.
 TODO: Doesn't work for one sample
 }
 \examples{

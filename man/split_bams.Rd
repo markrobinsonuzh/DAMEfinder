@@ -16,17 +16,20 @@ split_bams(bam_files, vcf_files, sample_names, reference_file,
 
 \item{reference_file}{fasta file used to generate the bam files.}
 
-\item{coverage}{Minimum number of reads covering a CpG site on each allele. Default = 2.}
+\item{coverage}{Minimum number of reads covering a CpG site on each allele.
+Default = 2.}
 
-\item{cores}{Number of cores to use. See package {parallel} for description of core. Default = 1.}
+\item{cores}{Number of cores to use. See package {parallel} for description
+of core. Default = 1.}
 }
 \value{
-A list of GRanges for each sample. Each list is saved in a separate .rds file.
+A list of GRanges for each sample. Each list is saved in a separate
+  .rds file.
 }
 \description{
-The function takes a bam (from bismark) and vcf file for each sample.
-For each SNP contained in the vcfile it calculates the proportion of
-methylated reads for each CpG site at each allele. At the end it returns
-(saves to working directory) a GRanges list, where each GRanges contains
-all the CpG sites overlapping the reads containing a specific SNP.
+The function takes a bam (from bismark) and vcf file for each sample. For
+each SNP contained in the vcfile it calculates the proportion of methylated
+reads for each CpG site at each allele. At the end it returns (saves to
+working directory) a GRanges list, where each GRanges contains all the CpG
+sites overlapping the reads containing a specific SNP.
 }
