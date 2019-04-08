@@ -37,7 +37,7 @@
 #' @export
 #' @examples
 
-get_tstats <- function(sa, design, method="ls", smooth = TRUE, maxGap=300, 
+get_tstats <- function(sa, design, method="ls", smooth = TRUE, maxGap=20, 
                        coef=2, verbose=TRUE, ...) {
 
   # choose SumExp type
