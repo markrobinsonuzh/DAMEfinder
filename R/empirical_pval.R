@@ -1,23 +1,26 @@
 #' Calculate emprical-region-level p-value
 #'
-#' This function performs permutations bla bla
-#' Code for permutations copied from the \code{dmrseq} function
-#' from the package of the same name.
+#' This function permutes the coefficient of interest and re-runs
+#' \code{\link{get_tstats}} and \code{\link{regionFinder}} for each permutation.
+#' Code for permutations copied from the \code{dmrseq} function from the package
+#' of the same name.
 #'
-#' @param pre_sa
-#' @param design 
-#' @param rforiginal
-#' @param coeff
-#' @param smooth
-#' @param maxPerms
-#' @param K
-#' @param maxGap
-#' @param ... 
-#' @return Vector of summarized pvals
+#' @param pre_sa SExperiment output from \code{calc_derivedasm} or
+#'   \code{calc_asm}.
+#' @param design design matrix.
+#' @param rforiginal data.frame of DAMEs calculated with original design.
+#' @param coeff Coefficient of interest to permute.
+#' @param smooth Boolean.
+#' @param maxPerms Maximum possible permutations generated. Default = 10.
+#' @param Q Quantile for cuttof.
+#' @param maxGap Same as other functions in the package.
+#' @param method lmFit method.
+#' @param ... Passed to \code{get_tstats} and then to \code{loessByCluster}.
+#' @return Vector of empirical p-values.
 #'
 #' @export
 empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth, 
-                           maxPerms = 10, K, maxGap, ...){
+                           maxPerms = 10, Q, maxGap, method, ...){
   
   sampleSize <- table(design[, coeff])
   
@@ -66,10 +69,10 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth,
         num <- ncol(perms) 
       }
     }
-  } 
+  } else message("Too many samples!")
   
   #Detect permuted dames
-  if(verbose) message("Generating permutations", appendLF = FALSE)
+  message("Generating ", ncol(perms), " permutations", appendLF = TRUE)
   areas <- apply(perms, 2, function(i){
     
     reorder <- i
@@ -82,13 +85,14 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth,
     } else {
       designr[, coeff] <- designr[reorder, coeff]
     }
-    
+
     sa_perm <- get_tstats(pre_sa, 
                           design = designr,
                           coef = coeff,
                           maxGap = maxGap,
                           smooth  = smooth,
                           verbose = FALSE,
+                          method = method,
                           ...)
 
     # choose smoothed if true
@@ -105,23 +109,27 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth,
       midpt <- BiocGenerics::start(sa_perm)
     }
     
-    rf <- bumphunter::regionFinder(
+    K <- stats::quantile(abs(sm_tstat), Q, na.rm=TRUE)
+    permrf <- bumphunter::regionFinder(
       x = sm_tstat,
       chr = as.character(GenomeInfoDb::seqnames(sa_perm)),
       pos = midpt,
       cluster = S4Vectors::mcols(sa_perm)$cluster,
-      cutoff = K, #use same K always
+      cutoff = K, #if use same K always, doesnt generate any regions
       maxGap = maxGap,
       verbose = FALSE)
     
-    rf$area
+    return(abs(permrf$area))
+    
   })
-
+  
+  #if( put a condition to check if areas actually has something
   all_areas <- sort(unlist(areas))
   total_areas <- length(all_areas)
 
   pvalEmp <- sapply(rforiginal$area, function(a){
-    pperm <- (sum(all_areas > a) + 1) / (total_areas + 1)
+    pperm <- (sum(all_areas > abs(a)) + 1) / (total_areas + 1)
+    return(pperm)
   })
   
   return(pvalEmp)
