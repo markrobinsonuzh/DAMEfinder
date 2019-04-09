@@ -14,9 +14,17 @@
 #'   Only distances that are <= max_gap are kept. Default = 150 base pairs.
 #'
 #' @return A list of data frames, where each data frame corresponds to one file.
+#' @examples
+#' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+#' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+#'
+#' tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+#' tuple_files <- get_data_path(tuple_files)
+#' ASM <- read_tuples(tuple_files, c("CRC1", "CRC2", "CRC3", "NORM1", "NORM3"))
+#' 
 #' @export
 #'
-#' @examples
+#' 
 read_tuples <- function(files, sample_names, min_coverage=2, max_gap=20, 
                         verbose=TRUE ) {
   
@@ -70,8 +78,6 @@ read_tuples <- function(files, sample_names, min_coverage=2, max_gap=20,
 #' @return The same data frame as the input but without the tuples overlapping
 #'   with SNPs.
 #' @export
-#'
-#' @examples
 remove_tuples <- function(df, snp_key=NULL, verbose=TRUE) {
   key_1 <- paste0(df$chr,".", df$pos1)
   df <- df[!(key_1 %in% snp_key),]

@@ -22,9 +22,17 @@
 #'
 #' @return A \code{SummarizedExperiment} of ASM scores where the rows are all
 #'   the tuples and the columns the sample names.
+#' @examples
+#' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+#' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+#'
+#' tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+#' tuple_files <- get_data_path(tuple_files)
+#' ASM <- read_tuples(tuple_files, c("CRC1", "CRC2", "CRC3", "NORM1", "NORM3"))
+#' ASMscore <- calc_asm(ASM)
+#' 
 #' @export
 #'
-#' @examples
 calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, 
                      verbose=TRUE) {
 
@@ -184,9 +192,6 @@ calc_score <- function(df, beta = 0.5, a = 0.2) {
 #' @return The same object is returned with an additional column for the log
 #'   odds ratio.
 #' @export
-#'
-#' @examples
-#' 
 calc_logodds <- function(s, eps=1) {
   ratio <- with(s, ( (MM+eps)*(UU+eps) ) / ( (MU+eps)*(UM+eps) ) )
   s$logodds <- log10(ratio)

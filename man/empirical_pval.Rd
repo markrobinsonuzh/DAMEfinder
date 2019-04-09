@@ -5,7 +5,7 @@
 \title{Calculate emprical-region-level p-value}
 \usage{
 empirical_pval(pre_sa, design, rforiginal, coeff, smooth, maxPerms = 10,
-  Q, maxGap, ...)
+  Q, maxGap, method, ...)
 }
 \arguments{
 \item{pre_sa}{SExperiment output from \code{calc_derivedasm} or
@@ -24,6 +24,8 @@ empirical_pval(pre_sa, design, rforiginal, coeff, smooth, maxPerms = 10,
 \item{Q}{Quantile for cuttof.}
 
 \item{maxGap}{Same as other functions in the package.}
+
+\item{method}{lmFit method.}
 
 \item{...}{Passed to \code{get_tstats} and then to \code{loessByCluster}.}
 }

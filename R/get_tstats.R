@@ -35,7 +35,6 @@
 #' @importFrom SummarizedExperiment assays
 #'
 #' @export
-#' @examples
 
 get_tstats <- function(sa, design, method="ls", smooth = TRUE, maxGap=20, 
                        coef=2, verbose=TRUE, ...) {

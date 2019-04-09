@@ -9,7 +9,6 @@
 #'
 #' @return A named list of vectors, each vector containing read names for each
 #'   allele.
-#' @examples
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
 #' @importFrom S4Vectors mcols

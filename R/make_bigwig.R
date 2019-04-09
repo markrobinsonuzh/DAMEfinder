@@ -19,10 +19,13 @@
 #'
 #' @return A bigwig file for the sample chosen.
 #'
-#' @export
 #' @importFrom utils write.table
-#'
 #' @examples
+#' #To apply to all samples in SummarizedExperiment
+#' #sapply(colnames(ASM_score_matrix), make_bigwig, 
+#' #score.obj = ASM_score_matrix, folder = , chromsizes.file = )
+#' @export
+#'
 make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
 
   if(is.null(dim(SummarizedExperiment::assays(score.obj)[["asm"]]))){
@@ -72,5 +75,3 @@ make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
   system(cmd2)
 }
 
-#apply to all samples in SumExp sapply(colnames(ASM_score_matrix), make_bigwig,
-#score.obj = ASM_score_matrix, folder = , chromsizes.file = )

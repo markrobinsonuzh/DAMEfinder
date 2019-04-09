@@ -19,7 +19,9 @@
 #' @md
 #'
 #' @examples
-#'
+#' data(splitbams_output)
+#' derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+#' 
 #' @importFrom S4Vectors mcols
 #' @importFrom S4Vectors mcols<-
 #' @importFrom GenomicRanges GRanges

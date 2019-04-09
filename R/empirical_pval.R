@@ -32,7 +32,7 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth,
       #limit possible number of perms!
       choose(nrow(design), min(sampleSize)) < 5e5 ){
   
-    perms <- combn(seq(1, nrow(design)), min(sampleSize))
+    perms <- utils::combn(seq(1, nrow(design)), min(sampleSize))
     
     # Remove redundant permutations (if balanced)
     if(length(unique(table(design[,coeff]))) == 1){

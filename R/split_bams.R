@@ -19,6 +19,15 @@
 #' @return A list of GRanges for each sample. Each list is saved in a separate
 #'   .rds file.
 #' @examples
+#' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+#' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+#' bam_files <- get_data_path("NORM1_chr19_trim.bam")
+#' vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
+#' sample_names <- "NORM1"
+#' reference_file <- get_data_path("19.fa")
+#'
+#' GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
+#' 
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
 #' @importFrom S4Vectors mcols

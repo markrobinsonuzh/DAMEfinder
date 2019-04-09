@@ -28,3 +28,12 @@ This function reads in a list of files obtained from the methtuple tool. It
 filters out tuples based on the set minimum coverage (min_cov) and the
 maximum allowed distance (max_gap) between two genomic positions in a tuple.
 }
+\examples{
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+
+tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+tuple_files <- get_data_path(tuple_files)
+ASM <- read_tuples(tuple_files, c("CRC1", "CRC2", "CRC3", "NORM1", "NORM3"))
+
+}

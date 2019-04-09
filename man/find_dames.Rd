@@ -4,9 +4,9 @@
 \alias{find_dames}
 \title{Find DAMEs}
 \usage{
-find_dames(sa, design, coef = 2, smooth = TRUE, Q = 0.9,
+find_dames(sa, design, coef = 2, smooth = TRUE, Q = 0.7,
   pvalAssign = "simes", maxGap = 20, verbose = TRUE, maxPerms = 10,
-  ...)
+  method = "ls", ...)
 }
 \arguments{
 \item{sa}{A \code{SummarizedExperiment} containing ASM values where each row
@@ -18,28 +18,33 @@ correspond to a tuple/site and a column to sample/replicate.}
 Default = 2.}
 
 \item{smooth}{Whether smoothing should be applied to the t-Statistics.
-Default = TRUE}
+Default = TRUE.}
 
 \item{Q}{The percentile set to get a cutoff value K. K is the value on the
-Qth quantile of the absolute values of the given (smoothed) t-Statistics
-vector. Default = 0.9.}
+Qth quantile of the absolute values of the given (smoothed) t-statistics.
+Only necessary if \code{pvalAssign} = "empirical". Default = 0.9.}
 
 \item{pvalAssign}{Choose method to assign pvalues, either "simes" (default)
 or "empirical". This second one performs \code{maxPerms} number of
 permutations to calculate null statistics, and runs \code{regionFinder}.}
 
-\item{maxGap}{Maximum gap between CpGs in a cluster (in bp).
-NOTE: Regions can be as small as 1 bp. Default = 20.}
+\item{maxGap}{Maximum gap between CpGs in a cluster (in bp). NOTE: Regions
+can be as small as 1 bp. Default = 20.}
 
 \item{verbose}{If the function should be verbose. Default = TRUE.}
 
-\item{maxPerms}{= 10}
+\item{maxPerms}{Maximum possible permutations generated. Only necessary if
+\code{pvalAssign} = "empirical". Default = 10.}
 
-\item{...}{arguments passed to \code{\link{get_tstats}}.}
+\item{method}{The method to be used in limma's \code{\link{lmFit}}. The
+default is set to "ls" but can also be set to "robust", which is
+recommended on a real data set.}
+
+\item{...}{Arguments passed to \code{\link{get_tstats}}.}
 }
 \value{
 A data frame of detected DAMEs ordered by the p-value. Each row
-refers to a DAME and the following information is provided in the columns
+is a DAME and the following information is provided in the columns
 (some column names change depending on the \code{pvalAssign} choice):
 \itemize{
 \item chr: on which chromosome the DAME is found.
@@ -47,8 +52,8 @@ refers to a DAME and the following information is provided in the columns
 \item end: The end position of the DAME.
 \item pvalSimes: p-value calculated with the Simes method.
 \item pvalEmp: Empirical p-value obtained from permuting covariate of interest.
-\item sumTstat: Sum of tstats per segment/cluster.
-\item meanTstat: Mean of tstats per segment/cluster.
+\item sumTstat: Sum of t-stats per segment/cluster.
+\item meanTstat: Mean of t-stats per segment/cluster.
 \item segmentL: Size of segmented cluster (from \code{\link{getSegments}}).
 \item clusterL: Size of original cluster (from \code{\link{clusterMaker}}).
 \item FDR: Adjusted p-value using the method of Benjamini, Hochberg. (from
@@ -60,12 +65,32 @@ refers to a DAME and the following information is provided in the columns
 \description{
 This function finds Differential Allele-specific MEthylated regions (DAMEs).
 It uses the \code{\link{regionFinder}} function from \code{bumphunter}, and
-asigns pvalues either empirically or using the Simes method.
+asigns p-values either empirically or using the Simes method.
 }
 \details{
 The simes method has higher power to detect DAMEs, but the consistency in
 signal across a region is better controlled with the empirical method, since
 it uses \code{regionFinder} and \code{getSegments} to find regions with
-t-statistics above a cuttof K, whereas simes detects clusters of CpG
-sites/tuples with at least 1 differential site/tuple.
+t-statistics above a cuttof (controled with parameter \code{Q}), whereas
+with the "simes" option, we initially detects clusters of CpG sites/tuples,
+and then test if at least 1 differential site/tuple is present in the
+cluster.
+
+We recommend trying out different \code{maxGap} and \code{Q} parameters,
+since the size and the effect-size of obtained DAMEs change with these
+parameters.
+}
+\examples{
+
+##Using snp-based mode
+data(splitbams_output)
+derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+mod <- model.matrix(~grp)
+#filt to avoid warnings and get nice regions
+filt <- rowSums(!is.na(
+SummarizedExperiment::assay(derASM, "der.ASM"))) == 8 
+derASM <- derASM[filt,]
+dames <- find_dames(derASM, mod, verbose = FALSE)
+
 }

@@ -4,7 +4,7 @@
 \alias{get_tstats}
 \title{Get t-Statistics}
 \usage{
-get_tstats(sa, design, method = "ls", smooth = TRUE, maxGap = 300,
+get_tstats(sa, design, method = "ls", smooth = TRUE, maxGap = 20,
   coef = 2, verbose = TRUE, ...)
 }
 \arguments{

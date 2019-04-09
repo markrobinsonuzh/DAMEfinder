@@ -32,3 +32,8 @@ The \code{chrom.sizes} file can be downloaded from
 [here](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/), or a similar
 goldenPath.
 }
+\examples{
+#To apply to all samples in SummarizedExperiment
+#sapply(colnames(ASM_score_matrix), make_bigwig, 
+#score.obj = ASM_score_matrix, folder = , chromsizes.file = )
+}

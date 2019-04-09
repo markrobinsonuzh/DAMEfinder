@@ -25,6 +25,3 @@ unmethylated. 'MM' reflects the count for instances the CpG pair is
 methylated at both positions. The higher the MM and UU counts for that CpG
 pair, the higher the log odds ratio.
 }
-\examples{
-
-}

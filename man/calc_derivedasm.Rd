@@ -31,5 +31,7 @@ SNP-based allele-specific methylation.
 TODO: Doesn't work for one sample
 }
 \examples{
+data(splitbams_output)
+derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
 
 }

@@ -29,6 +29,8 @@ test_that("end to end calc_asm", {
 })
 
 ASMscore <- calc_asm(ASM)
+filt <- rowSums(!is.na(assay(ASMscore, "asm"))) == 5 #filt to avoid warnings
+ASMscore <- ASMscore[filt,]
 
 test_that("end to end tstat calc", {
   ASMt <- get_tstats(ASMscore, mod, maxGap = 300, verbose = FALSE)

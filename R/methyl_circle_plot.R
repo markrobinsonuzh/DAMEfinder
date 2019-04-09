@@ -17,15 +17,23 @@
 #'
 #' @return Plot
 #' @examples
-#' #bam_files <- 
-#' #"../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
-#' #vcf_files <- 
-#' #"../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
-#' #sample_names <- "NORM1"
-#' #reference_file <-
-#' #"../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.
-#' #release91/GRCh37.91.fa"
+#' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 #'
+#' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+#' bam_files <- get_data_path("NORM1_chr19_trim.bam")
+#' vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
+#' sample_names <- "NORM1"
+#' reference_file <- get_data_path("19.fa")
+#'
+#' snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
+#' methyl_circle_plot(snp = snp,
+#'  vcf.file = vcf_files,
+#'  bam.file = bam_files,
+#'  ref.file = reference_file,
+#'  letter.size = 3,
+#'  #dame = dame,
+#'  sample.name = sample_names,
+#'  point.size = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -240,6 +248,17 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
 #' @param dame (optional) GRanges object containing a region to plot
 #' @return Plot
 #' @examples
+#' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+#'
+#' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+#' reference_file <- get_data_path("19.fa")
+#' bam_files <- get_data_path("NORM1_chr19_trim.bam")
+#' cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
+#' 
+#' methyl_circle_plotCpG(cpgsite = cpgsite,
+#'  bam.file = bam_files,
+#'  ref.file = reference_file,
+#'  point.size = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
