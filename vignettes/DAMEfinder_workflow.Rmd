@@ -2,11 +2,19 @@
 title: "DAMEfinder Workflow"
 author: 
 - name: Stephany Orjuela
+  affiliation:
+    - &IMLS Institute for Molecular Life Sciences, University of Zurich, Switzerland
+    - &IMCR Institute for Molecular Cancer Research, University of Zurich, Switzerland
+    - &SIB SIB Swiss Institute of Bioinformatics, Switzerland
   email: sorjuelal@gmail.com
 - name: Dania Machlab
-  email: dania.machlab@gmail.com
+  affiliation:
+    - &FMI Friedrich Miescher Institute for Biomedical Research, Basel, Switzerland
+    - *SIB 
 - name: Mark Robinson
-  email: mark.robinson@imls.uzh.ch
+  affiliation:
+    - *IMLS 
+    - *SIB
 date: "`r Sys.Date()`"
 package: DAMEfinder
 output: 
@@ -30,8 +38,8 @@ BiocStyle::markdown()
 # What is allele-specific methylation?
 
 The phenomenon occurs when there is an asymmetry in methylation between one
-specific allele and the alternative allele [@hu2013]. The best studied example of
-allele-specific methylation (ASM) is genomic imprinting. When a gene is
+specific allele and the alternative allele [@hu2013]. The best studied example
+of allele-specific methylation (ASM) is genomic imprinting. When a gene is
 imprinted, one of the parental alleles is hyper-methylated compared to the other
 allele, associated with a parent-allele-specific expression. This asymmetry is
 conferred in the gametes or very early in embryogenesis, and will remain for the
@@ -39,10 +47,9 @@ lifetime of the individual [@kelsey2013; @hanna2014]. ASM not related to
 imprinting or secondary imprinting, exhibits parental-specific methylation, but
 is not inherited from the germline [@hanna2017]. Another example of ASM is X
 chromosome inactivation in female, where methylation coordinates the "random"
-silencing of the X chromosome.
-DAMEfinder detects ASM for several bisulfite-sequenced (BS-seq) samples in a
-cohort and performs differential detection for regions that exhibit loss or gain
-in ASM.
+silencing of the X chromosome. DAMEfinder detects ASM for several
+bisulfite-sequenced (BS-seq) samples in a cohort and performs differential
+detection for regions that exhibit loss or gain in ASM.
 
 
 # Overview
@@ -231,13 +238,12 @@ head(x)
 <!-- ### Get t-Statistics per site -->
 
 <!-- Next, we obtain a moderated t-statistic per CpG site using `limma`. The -->
-<!-- statistic reflects a measure of difference between the two conditions being -->
-<!-- compared, in this case normal Vs cancer. The t-statistic is optionally smoothed -->
-<!-- using `bumphunter`. -->
-
-<!-- For each condition being compared, we recommend at least three biological -->
-<!-- replicates. This ensures enough biological variability to calculate residual -->
-<!-- degrees of freedom in the linear model fit. -->
+<!-- statistic reflects a measure of difference between the two conditions being
+--> <!-- compared, in this case normal Vs cancer. The t-statistic is optionally
+smoothed --> <!-- using `bumphunter`. -->
+<!-- For each condition being compared, we recommend at least three biological
+--> <!-- replicates. This ensures enough biological variability to calculate
+residual --> <!-- degrees of freedom in the linear model fit. -->
 
 
 ### Find DAMEs
@@ -299,7 +305,9 @@ head(dames)
 
 ```
 
-Regions with a significant p-value represent regions where samples belonging to one group (in this case the cancer samples), gain or lose allele-specificity compared to the other group (here the normal group).
+Regions with a significant p-value represent regions where samples belonging to
+one group (in this case the cancer samples), gain or lose allele-specificity
+compared to the other group (here the normal group).
 
 # tuple-based (aka fast-mode)
 
@@ -407,25 +415,39 @@ ASM_mat
 ```
 
 <!-- ### Remove tuples without a SNP -->
-
-<!-- Some of the tuples obtained above might have a good ASM score, however in some cases, this is no guarantee that the ASM is linked to an actual SNP. Because of this and to reduce the number of false positives, you can remove CpG sites that are "far away" from a SNP. Since in the **tuple-based mode** we assume you do not have `VCF` files of your samples, what you can get is a common set of variants.  -->
+<!-- Some of the tuples obtained above might have a good ASM score, however in
+some cases, this is no guarantee that the ASM is linked to an actual SNP.
+Because of this and to reduce the number of false positives, you can remove CpG
+sites that are "far away" from a SNP. Since in the **tuple-based mode** we
+assume you do not have `VCF` files of your samples, what you can get is a common
+set of variants.  -->
 
 <!-- Here we include some options to obtain such a `VCF` file: -->
 
-<!-- * From [dbSNP](https://www.ncbi.nlm.nih.gov/variation/docs/human_variation_vcf/), or its [ftp site](ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/). -->
-<!-- * From [ensembl](http://www.ensembl.org/info/data/ftp/index.html), or its [ftp site](ftp://ftp.ensembl.org/pub/grch37/release-91/variation/vcf/homo_sapiens/). -->
+<!-- * From
+[dbSNP](https://www.ncbi.nlm.nih.gov/variation/docs/human_variation_vcf/), or
+its [ftp
+site](ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/). -->
+<!-- * From [ensembl](http://www.ensembl.org/info/data/ftp/index.html), or its
+[ftp
+site](ftp://ftp.ensembl.org/pub/grch37/release-91/variation/vcf/homo_sapiens/).
+-->
 
-<!-- Next, you can load that file into R with `vcfR`. For more info on this package click [here](https://knausb.github.io/vcfR_documentation/index.html): -->
+<!-- Next, you can load that file into R with `vcfR`. For more info on this
+package click [here](https://knausb.github.io/vcfR_documentation/index.html):
+-->
 
 <!-- ```{r, eval =F} -->
 <!-- library(vcfR) -->
-<!-- vcf <- read.vcfR("../../Shared_taupo/steph/reference/common_all_20170710.vcf") -->
+<!-- vcf <-
+read.vcfR("../../Shared_taupo/steph/reference/common_all_20170710.vcf") -->
 <!-- vcf <- getFIX(vcf) -->
 <!-- ``` -->
 
 <!-- This way we get a matrix version of the `VCF` file.  -->
 
-<!-- Next we make a GRanges object from the vcf, and extract the GRanges from the SummarizedExperiment. -->
+<!-- Next we make a GRanges object from the vcf, and extract the GRanges from
+the SummarizedExperiment. -->
 
 <!-- ```{r, eval=FALSE} -->
 
@@ -435,7 +457,11 @@ ASM_mat
 <!-- GRasm <- rowRanges(ASM_mat) -->
 <!-- ``` -->
 
-<!-- Since we want to keep tuples within a certain proximity of a variant, we grab 50 base pairs up and downstream from the SNP and filter the SummarizedExperiment to keep the CpG tuples within this window. You can change the size of the window depending on for example the read lenght in your data: -->
+<!-- Since we want to keep tuples within a certain proximity of a variant, we
+grab 50 base pairs up and downstream from the SNP and filter the
+SummarizedExperiment to keep the CpG tuples within this window. You can change
+the size of the window depending on for example the read lenght in your data:
+-->
 
 <!-- ```{r, eval=FALSE} -->
 
