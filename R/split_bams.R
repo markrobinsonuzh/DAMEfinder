@@ -15,6 +15,7 @@
 #'   Default = 2.
 #' @param cores Number of cores to use. See package {parallel} for description
 #'   of core. Default = 1.
+#' @param verbose default = TRUE
 #'
 #' @return A list of GRanges for each sample. Each list is saved in a separate
 #'   .rds file.
@@ -38,9 +39,9 @@
 #'
 #' @export
 split_bams <- function(bam_files, vcf_files, sample_names, reference_file,
-                       coverage = 4, cores = 1){
+                       coverage = 4, cores = 1, verbose = TRUE){
 
-message("Reading reference file")
+if(verbose) message("Reading reference file", appendLF = TRUE)
 fa <- open(Rsamtools::FaFile(reference_file, 
                              index = paste0(reference_file, ".fai")))
 
@@ -52,12 +53,12 @@ lapply(sample_list, function(samp){
 
   message(sprintf("Running sample %s", sample_names[samp]))
 
-  message("Reading VCF file")
-  vcf <- vcfR::getFIX(vcfR::read.vcfR(vcf_files[samp], verbose = FALSE))
+  if(verbose) message("Reading VCF file", appendLF = TRUE)
+  vcf <- vcfR::getFIX(vcfR::read.vcfR(vcf_files[samp], verbose = verbose))
   bam.file <- bam_files[samp]
 
   #message(sprintf("Processing chromosome %s",chrom))
-  message("Extracting methylation per SNP")
+  if(verbose) message("Extracting methylation per SNP", appendLF = TRUE)
   snp.table <- parallel::mcmapply(function(t, u, v){
 
     #Applying to a GRanges takes too long so I create one each time
@@ -65,7 +66,7 @@ lapply(sample_list, function(samp){
 
     #Ignore non-standar chromosomes
     if(length(grep(t, c(as.character(1:21), "X", "Y"))) == 0){
-      message("Bad chrom")
+      if(verbose) message("Bad chrom", appendLF = TRUE)
       return(NULL)
       }
 
@@ -101,7 +102,7 @@ lapply(sample_list, function(samp){
     ref.reads <- split$ref.reads
 
     if(length(ref.reads) <= 1 | length(alt.reads) <= 1){
-      message("0 or 1 read in one or both alleles")
+      if(verbose) message("0 or 1 read in one or both alleles", appendLF = TRUE)
       return(NULL)
       #next
     }
@@ -119,7 +120,7 @@ lapply(sample_list, function(samp){
     cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
     if(length(cgsite) < 1){
-      message("No CpG sites associated to this SNP")
+      if(verbose) message("No CpG sites associated to this SNP", appendLF = TRUE)
       return(NULL)
       #next
     }
@@ -217,7 +218,8 @@ lapply(sample_list, function(samp){
     filt <- BiocGenerics::rowSums(cbind(GR$cov.ref,
                                         GR$cov.alt) >= coverage) >= 2
     if(sum(filt) < 2){
-      message("No CpG sites sufficiently covered")
+      if(verbose) message("No CpG sites sufficiently covered at this SNP", 
+                          appendLF = TRUE)
       return(NULL)
     }
 
