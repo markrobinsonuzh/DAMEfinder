@@ -19,6 +19,8 @@
 #' @param transform Transform the calculated tuple ASM scores. We use the
 #'   modulus square root function which outputs the square root, while
 #'   preserving the original sign.
+#' @param coverage Remove tuples with total reads below coverage. Default
+#'   = 5.
 #'
 #' @return A \code{SummarizedExperiment} of ASM scores where the rows are all
 #'   the tuples and the columns the sample names.
@@ -28,13 +30,13 @@
 #'
 #' tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
 #' tuple_files <- get_data_path(tuple_files)
-#' ASM <- read_tuples(tuple_files, c("CRC1", "CRC2", "CRC3", "NORM1", "NORM3"))
+#' ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
 #' ASMscore <- calc_asm(ASM)
 #' 
 #' @export
 #'
 calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, 
-                     verbose=TRUE) {
+                     coverage = 5, verbose=TRUE) {
 
 
   if(verbose) message("Calculating log odds.")
@@ -73,7 +75,7 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
 
   # get matrix of coverage, and tuple methylation
   if(verbose) message("Assembling coverage tables: ", appendLF = FALSE)
-  coverage <- mapply( function(df,k){
+  tot.coverage <- mapply( function(df,k){
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$cov[m]
@@ -119,12 +121,20 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
   #Build object
   sa <- SummarizedExperiment::SummarizedExperiment(
     assays=S4Vectors::SimpleList(asm=abs(asm),
-                                 cov = coverage,
+                                 cov = tot.coverage,
                                  MM = MM,
                                  MU = MU,
                                  UM = UM,
                                  UU = UU),
     rowRanges=gr)
+  
+  #filter by coverage
+  
+  filt <- rowSums(
+    !is.na(SummarizedExperiment::assay(sa, "cov")) &
+      SummarizedExperiment::assay(sa, "cov") >= coverage) ==  ncol(sa)
+  sa <- sa[filt,]
+  gr <- gr[filt]
 
   if(verbose) message("Returning SummarizedExperiment with ",nrow(asm), 
                       " CpG pairs", appendLF = FALSE)

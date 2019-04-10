@@ -5,7 +5,7 @@
 \title{Calculate ASM Score}
 \usage{
 calc_asm(sample_list, beta = 0.5, a = 0.2, transform = modulus_sqrt,
-  verbose = TRUE)
+  coverage = 5, verbose = TRUE)
 }
 \arguments{
 \item{sample_list}{List of samples returned from \code{\link{read_tuples}}}
@@ -21,6 +21,9 @@ for the instances where the balance is between 0.3 and 0.7.}
 \item{transform}{Transform the calculated tuple ASM scores. We use the
 modulus square root function which outputs the square root, while
 preserving the original sign.}
+
+\item{coverage}{Remove tuples with total reads below coverage. Default
+= 5.}
 
 \item{verbose}{If the function should be verbose. Default = TRUE.}
 }
@@ -44,7 +47,7 @@ get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
 tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
 tuple_files <- get_data_path(tuple_files)
-ASM <- read_tuples(tuple_files, c("CRC1", "CRC2", "CRC3", "NORM1", "NORM3"))
+ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
 ASMscore <- calc_asm(ASM)
 
 }
