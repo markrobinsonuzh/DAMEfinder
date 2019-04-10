@@ -47,9 +47,6 @@ make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
   #remove NAs (this is just to double check, the user should input a filtered
   #matrix)
   bg <- bg[!is.na(asm[,grep(sample, colnames(asm))]),]
-
-  #make bigwig rtracklayer::export(object = GRasm, con =
-  #"bigwigs/CRC1.asmScore.bw", format = "bw") #bad function
   
   if(folder == "."){
     folder = ""

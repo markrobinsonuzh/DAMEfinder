@@ -2,24 +2,27 @@
 % Please edit documentation in R/methyl_MDS_plot.R
 \name{methyl_MDS_plot}
 \alias{methyl_MDS_plot}
-\title{Multidimensional scaling plot of distances between methylation proportions (beta values)}
+\title{Multidimensional scaling plot of distances between methylation proportions
+(beta values)}
 \usage{
-methyl_MDS_plot(x, color, top = 1000, coverage = 5)
+methyl_MDS_plot(x, color, top = 1000, coverage = 4)
 }
 \arguments{
-\item{x}{\code{RangedSummarizedExperiment}, output from \code{calc_derivedasm} or \code{calc_asm}.}
+\item{x}{\code{RangedSummarizedExperiment}, output from
+\code{calc_derivedasm} or \code{calc_asm}.}
 
-\item{color}{Vector of group labels same length as number of samples}
+\item{color}{Vector of group or any other labels, same length as number of
+samples.}
 
 \item{top}{Number of top CpG sites used to calculate pairwise distances.}
 
-\item{coverage}{Minimum number of reads covering a CpG site on each allele. Default = 4.
-TODO: ?TRUE or FALSE. ?the object should have group informationin colData}
+\item{coverage}{Minimum number of reads covering a CpG site on each allele.
+Default = 4.}
 }
 \value{
-Two-dimension MDS plot.
+Two-dimensional MDS plot.
 }
 \description{
-Same as \code{\link{plotMDS}}, except for an arc-sine transformation of the methylation 
-proportions or scores from 0 to 1.
+Same as \code{\link{plotMDS}}, except for an arc-sine transformation of the
+methylation proportions.
 }

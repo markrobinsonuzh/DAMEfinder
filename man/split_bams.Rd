@@ -5,7 +5,7 @@
 \title{Detect allele-specific methylation from a bam file}
 \usage{
 split_bams(bam_files, vcf_files, sample_names, reference_file,
-  coverage = 4, cores = 1)
+  coverage = 4, cores = 1, verbose = TRUE)
 }
 \arguments{
 \item{bam_files}{List of bam files.}
@@ -21,6 +21,8 @@ Default = 2.}
 
 \item{cores}{Number of cores to use. See package {parallel} for description
 of core. Default = 1.}
+
+\item{verbose}{default = TRUE}
 }
 \value{
 A list of GRanges for each sample. Each list is saved in a separate
