@@ -2,3 +2,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 inst/extdata/moredata
+R/*.inprogress
+vignettes/*.RData
+vignettes/.Rhistory

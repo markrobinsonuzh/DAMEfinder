@@ -18,8 +18,3 @@ A named list of vectors, each vector a parsed version of MDtag:
 Takes a GenomicAlignments object containing the MDtag, and transforms it
 into a vector of characters and numbers
 }
-\examples{
-
-
-
-}

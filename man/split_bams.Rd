@@ -5,7 +5,7 @@
 \title{Detect allele-specific methylation from a bam file}
 \usage{
 split_bams(bam_files, vcf_files, sample_names, reference_file,
-  coverage = 4, cores = 1)
+  coverage = 4, cores = 1, verbose = TRUE)
 }
 \arguments{
 \item{bam_files}{List of bam files.}
@@ -16,17 +16,33 @@ split_bams(bam_files, vcf_files, sample_names, reference_file,
 
 \item{reference_file}{fasta file used to generate the bam files.}
 
-\item{coverage}{Minimum number of reads covering a CpG site on each allele. Default = 2.}
+\item{coverage}{Minimum number of reads covering a CpG site on each allele.
+Default = 2.}
 
-\item{cores}{Number of cores to use. See package {parallel} for description of core. Default = 1.}
+\item{cores}{Number of cores to use. See package {parallel} for description
+of core. Default = 1.}
+
+\item{verbose}{default = TRUE}
 }
 \value{
-A list of GRanges for each sample. Each list is saved in a separate .rds file.
+A list of GRanges for each sample. Each list is saved in a separate
+  .rds file.
 }
 \description{
-The function takes a bam (from bismark) and vcf file for each sample.
-For each SNP contained in the vcfile it calculates the proportion of
-methylated reads for each CpG site at each allele. At the end it returns
-(saves to working directory) a GRanges list, where each GRanges contains
-all the CpG sites overlapping the reads containing a specific SNP.
+The function takes a bam (from bismark) and vcf file for each sample. For
+each SNP contained in the vcfile it calculates the proportion of methylated
+reads for each CpG site at each allele. At the end it returns (saves to
+working directory) a GRanges list, where each GRanges contains all the CpG
+sites overlapping the reads containing a specific SNP.
+}
+\examples{
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+bam_files <- get_data_path("NORM1_chr19_trim.bam")
+vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
+sample_names <- "NORM1"
+reference_file <- get_data_path("19.fa")
+
+GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
+
 }

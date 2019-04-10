@@ -8,7 +8,8 @@ methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file,
   point.size = 3, ref.file = ref.file, dame = NULL)
 }
 \arguments{
-\item{cpgsite}{GRanges object containing a single CpG site location of interest}
+\item{cpgsite}{GRanges object containing a single CpG site location of
+interest}
 
 \item{bam.file}{bismark bam file path}
 
@@ -22,9 +23,20 @@ methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file,
 Plot
 }
 \description{
-Draws CpG site methylation status as points, in reads containing a specific CpG site.
-Generates one plot per bam file.
+Draws CpG site methylation status as points, in reads containing a specific
+CpG site. Generates one plot per bam file.
 }
 \examples{
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+
+get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+reference_file <- get_data_path("19.fa")
+bam_files <- get_data_path("NORM1_chr19_trim.bam")
+cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
+
+methyl_circle_plotCpG(cpgsite = cpgsite,
+ bam.file = bam_files,
+ ref.file = reference_file,
+ point.size = 2)
 
 }

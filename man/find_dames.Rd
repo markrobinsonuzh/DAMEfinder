@@ -4,50 +4,93 @@
 \alias{find_dames}
 \title{Find DAMEs}
 \usage{
-find_dames(sa, control, treat, samp.perc = 0.9, coverage = 5,
-  Q = 0.9, maxGap = 20, verbose = TRUE, ...)
+find_dames(sa, design, coef = 2, smooth = TRUE, Q = 0.7,
+  pvalAssign = "simes", maxGap = 20, verbose = TRUE, maxPerms = 10,
+  method = "ls", ...)
 }
 \arguments{
-\item{sa}{A SummarizedExperiment containing ASM values where each row and column correspond to a
-tuple/site and sample respectively.}
+\item{sa}{A \code{SummarizedExperiment} containing ASM values where each row
+correspond to a tuple/site and a column to sample/replicate.}
 
-\item{control}{Index of columns corresponding to control samples.}
+\item{design}{A design matrix created with \code{\link{model.matrix}}.}
 
-\item{treat}{Index of columns corresponding to treatment samples.}
+\item{coef}{Column in \code{design} specifying the parameter to estimate.
+Default = 2.}
 
-\item{samp.perc}{At least this percentage of samples per group should have data
-(no NAs, coverage above threshold) per row. Default = 0.9.}
+\item{smooth}{Whether smoothing should be applied to the t-Statistics.
+Default = TRUE.}
 
-\item{coverage}{Minimum number of reads covering a CpG site (sum of both alleles) or tuple.
-Default = 5.}
+\item{Q}{The percentile set to get a cutoff value K. K is the value on the
+Qth quantile of the absolute values of the given (smoothed) t-statistics.
+Only necessary if \code{pvalAssign} = "empirical". Default = 0.9.}
 
-\item{Q}{The percentile set to get a cutoff value K. K is the value on the Qth quantile
-of the absolute values of the given smoothed t-Statistics vector. The default is set to 0.9.}
+\item{pvalAssign}{Choose method to assign pvalues, either "simes" (default)
+or "empirical". This second one performs \code{maxPerms} number of
+permutations to calculate null statistics, and runs \code{regionFinder}.}
 
-\item{maxGap}{Maximum gap between CpGs in a cluster (in bp). Default = 20.}
+\item{maxGap}{Maximum gap between CpGs in a cluster (in bp). NOTE: Regions
+can be as small as 1 bp. Default = 20.}
 
-\item{verbose}{If the function should be verbose.}
+\item{verbose}{If the function should be verbose. Default = TRUE.}
 
-\item{...}{arguments passed to \code{\link{get_tstats}}.}
+\item{maxPerms}{Maximum possible permutations generated. Only necessary if
+\code{pvalAssign} = "empirical". Default = 10.}
+
+\item{method}{The method to be used in limma's \code{\link{lmFit}}. The
+default is set to "ls" but can also be set to "robust", which is
+recommended on a real data set.}
+
+\item{...}{Arguments passed to \code{\link{get_tstats}}.}
 }
 \value{
-A data frame of detected DAMEs ordered by the area each DAME has above the cutoff K.
-The larger the area value, the more important the DAME. Each row refers to a DAME and the
-following information is provided in the columns:
+A data frame of detected DAMEs ordered by the p-value. Each row
+is a DAME and the following information is provided in the columns
+(some column names change depending on the \code{pvalAssign} choice):
 \itemize{
 \item chr: on which chromosome the DAME is found.
 \item start: The start position of the DAME.
 \item end: The end position of the DAME.
-\item area: Sum (abs) of all t-stat values in a region.
-\item pvalEmp: Empirical p-value obtained from permuting covariate of interest (group Vs treat).
+\item pvalSimes: p-value calculated with the Simes method.
+\item pvalEmp: Empirical p-value obtained from permuting covariate of interest.
+\item sumTstat: Sum of t-stats per segment/cluster.
+\item meanTstat: Mean of t-stats per segment/cluster.
+\item segmentL: Size of segmented cluster (from \code{\link{getSegments}}).
+\item clusterL: Size of original cluster (from \code{\link{clusterMaker}}).
+\item FDR: Adjusted p-value using the method of Benjamini, Hochberg. (from
+\code{\link{p.adjust}}).
+\item numup: Number of sites with ASM increase in cluster (only for Simes).
+\item numdown: Number of sites with ASM decrease in cluster (only for Simes).
 }
 }
 \description{
 This function finds Differential Allele-specific MEthylated regions (DAMEs).
-It uses the \code{\link{regionFinder}} function from \code{bumphunter}.
+It uses the \code{\link{regionFinder}} function from \code{bumphunter}, and
+asigns p-values either empirically or using the Simes method.
 }
 \details{
-A region is set as DAME if the smoothed t-Statistic (from \code{\link{eBayes}}) exceeds a cutoff K.
-K is set as the value of the 0.9 quantile of the absolute t-stats vector. When the smoothed t-stats
-in consecutive CpGs go above K or below -K, the region is set as a DAME.
+The simes method has higher power to detect DAMEs, but the consistency in
+signal across a region is better controlled with the empirical method, since
+it uses \code{regionFinder} and \code{getSegments} to find regions with
+t-statistics above a cuttof (controled with parameter \code{Q}), whereas
+with the "simes" option, we initially detects clusters of CpG sites/tuples,
+and then test if at least 1 differential site/tuple is present in the
+cluster.
+
+We recommend trying out different \code{maxGap} and \code{Q} parameters,
+since the size and the effect-size of obtained DAMEs change with these
+parameters.
+}
+\examples{
+
+##Using snp-based mode
+data(splitbams_output)
+derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+mod <- model.matrix(~grp)
+#filt to avoid warnings and get nice regions
+filt <- rowSums(!is.na(
+SummarizedExperiment::assay(derASM, "der.ASM"))) == 8 
+derASM <- derASM[filt,]
+dames <- find_dames(derASM, mod, verbose = FALSE)
+
 }

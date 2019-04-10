@@ -8,15 +8,15 @@ read_tuples(files, sample_names, min_coverage = 2, max_gap = 20,
   verbose = TRUE)
 }
 \arguments{
-\item{files}{List of methtuple files}
+\item{files}{List of methtuple files.}
 
 \item{sample_names}{Names of files in the list.}
 
-\item{min_coverage}{The minimum coverage per tuple. Tuples with a coverage < min_coverage are
-filtered out. Default = 2.}
+\item{min_coverage}{The minimum coverage per tuple. Tuples with a coverage <
+min_coverage are filtered out. Default = 2.}
 
-\item{max_gap}{The maximum allowed distance between two positions in a tuple. Only distances that
-are <= max_gap are kept. Default = 150 base pairs.}
+\item{max_gap}{The maximum allowed distance between two positions in a tuple.
+Only distances that are <= max_gap are kept. Default = 150 base pairs.}
 
 \item{verbose}{If the function should be verbose.}
 }
@@ -24,7 +24,16 @@ are <= max_gap are kept. Default = 150 base pairs.}
 A list of data frames, where each data frame corresponds to one file.
 }
 \description{
-This function reads in a list of files obtained from the methtuple tool. It filters out tuples
-based on the set minimum coverage (min_cov) and the maximum allowed distance (max_gap) between
-two genomic positions in a tuple.
+This function reads in a list of files obtained from the methtuple tool. It
+filters out tuples based on the set minimum coverage (min_cov) and the
+maximum allowed distance (max_gap) between two genomic positions in a tuple.
+}
+\examples{
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+
+tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+tuple_files <- get_data_path(tuple_files)
+ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
+
 }

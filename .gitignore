@@ -1,7 +1,9 @@
 .Rproj.user
 .Rhistory
-#.RData
-#*.RData
+*.RData
+vignettes/*.RData
+vignettes/.Rhistory
 DAMEfinder.Rproj
 DAMEfinder_git.Rproj
 inst/extdata/moredata
+R/*.inprogress

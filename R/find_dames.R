@@ -1,127 +1,151 @@
 #' Find DAMEs
 #'
 #' This function finds Differential Allele-specific MEthylated regions (DAMEs).
-#' It uses the \code{\link{regionFinder}} function from \code{bumphunter}.
+#' It uses the \code{\link{regionFinder}} function from \code{bumphunter}, and
+#' asigns p-values either empirically or using the Simes method.
+#'
+#' The simes method has higher power to detect DAMEs, but the consistency in
+#' signal across a region is better controlled with the empirical method, since
+#' it uses \code{regionFinder} and \code{getSegments} to find regions with 
+#' t-statistics above a cuttof (controled with parameter \code{Q}), whereas 
+#' with the "simes" option, we initially detects clusters of CpG sites/tuples, 
+#' and then test if at least 1 differential site/tuple is present in the 
+#' cluster.
 #' 
-#' A region is set as DAME if the smoothed t-Statistic (from \code{\link{eBayes}}) exceeds a cutoff K. 
-#' K is set as the value of the 0.9 quantile of the absolute t-stats vector. When the smoothed t-stats 
-#' in consecutive CpGs go above K or below -K, the region is set as a DAME.
+#' We recommend trying out different \code{maxGap} and \code{Q} parameters, 
+#' since the size and the effect-size of obtained DAMEs change with these 
+#' parameters.
 #'
-#' @param Q The percentile set to get a cutoff value K. K is the value on the Qth quantile
-#' of the absolute values of the given smoothed t-Statistics vector. The default is set to 0.9.
-#' @param maxGap Maximum gap between CpGs in a cluster (in bp). Default = 20.
-#' @param verbose If the function should be verbose.
-#' @param sa A SummarizedExperiment containing ASM values where each row and column correspond to a 
-#' tuple/site and sample respectively.
-#' @param control Index of columns corresponding to control samples.
-#' @param treat Index of columns corresponding to treatment samples.
-#' @param samp.perc At least this percentage of samples per group should have data 
-#' (no NAs, coverage above threshold) per row. Default = 0.9.
-#' @param coverage Minimum number of reads covering a CpG site (sum of both alleles) or tuple. 
-#' Default = 5.
-#' @param ... arguments passed to \code{\link{get_tstats}}.
+#' @param sa A \code{SummarizedExperiment} containing ASM values where each row
+#'   correspond to a tuple/site and a column to sample/replicate.
+#' @param design A design matrix created with \code{\link{model.matrix}}.
+#' @param coef Column in \code{design} specifying the parameter to estimate.
+#'   Default = 2.
+#' @param Q The percentile set to get a cutoff value K. K is the value on the
+#'   Qth quantile of the absolute values of the given (smoothed) t-statistics. 
+#'   Only necessary if \code{pvalAssign} = "empirical". Default = 0.9.
+#' @param pvalAssign Choose method to assign pvalues, either "simes" (default)
+#'   or "empirical". This second one performs \code{maxPerms} number of
+#'   permutations to calculate null statistics, and runs \code{regionFinder}.
+#' @param maxGap Maximum gap between CpGs in a cluster (in bp). NOTE: Regions 
+#' can be as small as 1 bp. Default = 20.
+#' @param smooth Whether smoothing should be applied to the t-Statistics.
+#'   Default = TRUE.
+#' @param maxPerms Maximum possible permutations generated. Only necessary if 
+#' \code{pvalAssign} = "empirical". Default = 10.
+#' @param method The method to be used in limma's \code{\link{lmFit}}. The
+#'   default is set to "ls" but can also be set to "robust", which is
+#'   recommended on a real data set.
+#' @param verbose If the function should be verbose. Default = TRUE.
+#' @param ... Arguments passed to \code{\link{get_tstats}}.
 #'
-#' @return A data frame of detected DAMEs ordered by the area each DAME has above the cutoff K.
-#' The larger the area value, the more important the DAME. Each row refers to a DAME and the
-#' following information is provided in the columns:
+#' @return A data frame of detected DAMEs ordered by the p-value. Each row
+#'   is a DAME and the following information is provided in the columns
+#'   (some column names change depending on the \code{pvalAssign} choice):
 #'
-#' - chr: on which chromosome the DAME is found.
-#' - start: The start position of the DAME.
-#' - end: The end position of the DAME.
-#' - area: Sum (abs) of all t-stat values in a region.
-#' - pvalEmp: Empirical p-value obtained from permuting covariate of interest (group Vs treat).
+#'   - chr: on which chromosome the DAME is found. 
+#'   - start: The start position of the DAME. 
+#'   - end: The end position of the DAME. 
+#'   - pvalSimes: p-value calculated with the Simes method.
+#'   - pvalEmp: Empirical p-value obtained from permuting covariate of interest.
+#'   - sumTstat: Sum of t-stats per segment/cluster.
+#'   - meanTstat: Mean of t-stats per segment/cluster.
+#'   - segmentL: Size of segmented cluster (from \code{\link{getSegments}}). 
+#'   - clusterL: Size of original cluster (from \code{\link{clusterMaker}}).
+#'   - FDR: Adjusted p-value using the method of Benjamini, Hochberg. (from 
+#'   \code{\link{p.adjust}}).
+#'   - numup: Number of sites with ASM increase in cluster (only for Simes).
+#'   - numdown: Number of sites with ASM decrease in cluster (only for Simes).
+#'
 #' @md
-#' 
-#'
-#' @export
 #'
 #' @examples
-find_dames <- function(sa, control, treat, samp.perc = 0.9, coverage = 5, Q=0.9, maxGap=20, verbose=TRUE, ...){
+#' 
+#' ##Using snp-based mode
+#' data(splitbams_output)
+#' derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+#' grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+#' mod <- model.matrix(~grp)
+#' #filt to avoid warnings and get nice regions
+#' filt <- rowSums(!is.na(
+#' SummarizedExperiment::assay(derASM, "der.ASM"))) == 8 
+#' derASM <- derASM[filt,]
+#' dames <- find_dames(derASM, mod, verbose = FALSE)
+#' 
+#' @export
+#'
+#' 
+find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.7, 
+                       pvalAssign = "simes", maxGap = 20, verbose = TRUE, 
+                       maxPerms = 10, method = "ls", ...){
   
   pre_sa <- sa
   
   #get tstats with limma
-  sat <- get_tstats(pre_sa, control, treat, 
-                    samp.perc = samp.perc, 
-                    coverage = coverage, 
+  sat <- get_tstats(pre_sa, design,
                     maxGap = maxGap,
+                    coef = coef,
+                    smooth = smooth,
+                    method = method,
                     ...)
 
-  # Detect real dames
+  # choose smoothed if true
+  if(smooth){
   sm_tstat <- S4Vectors::mcols(sat)$smooth_tstat
-
-  if(is.null(dim(SummarizedExperiment::assays(sat)[["asm"]]))){
-    midpt <- BiocGenerics::start(sat)
   } else {
+    sm_tstat <- S4Vectors::mcols(sat)$tstat
+  }
+
+  #choose position to find regions
+  if(names(assays(sa))[1] == "asm"){
     midpt <- S4Vectors::mcols(sat)$midpt
+  } else {
+    midpt <- BiocGenerics::start(sat)
   }
 
+  message("Detecting DAMEs", appendLF = TRUE)
+  #detect dames
   K <- stats::quantile(abs(sm_tstat), Q, na.rm=TRUE)
-  rf <- bumphunter::regionFinder(x = sm_tstat,
-                                 chr = as.character(GenomeInfoDb::seqnames(sat)),
-                                 pos = midpt,
-                                 cluster = S4Vectors::mcols(sat)$cluster,
-                                 cutoff = K,
-                                 maxGap = maxGap,
-                                 verbose = verbose)
-
-  rf <- rf[,c("chr", "start", "end", "area")]
-  rownames(rf) <- paste0("DAME", seq(from = 1, to = nrow(rf), by = 1))
-  if(verbose) message(nrow(rf), " DAMEs found.")
   
-  #### Permutation tests ####
-  tot_length <- length(treat) + length(control)
-  combs <- utils::combn(tot_length, length(control))
-  
-  #Remove redundant perms
-  if(length(control) == length(treat)){
-  combs <- combs[,1:(ncol(combs)/2)]
+  if(pvalAssign == "simes"){
+    
+    rf <- simes_pval(sat, sm_tstat, midpt)
+    rf <- rf[order(rf$pvalSimes),]
+    rf$FDR <- stats::p.adjust(rf$pvalSimes, method="BH")
+    
+  } else if(pvalAssign == "empirical"){
+    
+    rf <- bumphunter::regionFinder(
+      x = sm_tstat,
+      chr = as.character(GenomeInfoDb::seqnames(sat)),
+      pos = midpt,
+      cluster = S4Vectors::mcols(sat)$cluster,
+      cutoff = K,
+      maxGap = maxGap,
+      assumeSorted = TRUE,
+      order = FALSE,
+      verbose = verbose)
+    
+    rf$pvalEmp <- empirical_pval(pre_sa = pre_sa, 
+                         design = design, 
+                         rforiginal = rf, 
+                         coeff = coef, 
+                         smooth = smooth, 
+                         maxPerms = maxPerms, 
+                         Q = Q, 
+                         maxGap = maxGap, 
+                         method = method,
+                         ...)
+    
+    rf$FDR <- stats::p.adjust(rf$pvalEmp, method = "BH")
+    
+    rf <- rf[,-c(6:8)]
+    colnames(rf) <- c("chr","start","end","meanTstat", "sumTstat","segmentL",
+                      "clusterL", "pvalEmp", "FDR")
+    
+    rf <- rf[order(rf$pvalEmp),]
+    
   }
-  
-  #remove the true constrats
-  rem <- apply(combs, 2, function(i){
-    all.equal(i,control)
-  })
-  rem <- which(rem == T)
-  if(!identical(rem, integer(0))) combs <- combs[,-rem]
-  
-  #Detect permuted dames
-  message("Generating permutations")
-  areas <- apply(combs, 2, function(i){
-    treat_perm <- which(!(1:tot_length %in% i))
-    sa_perm <- get_tstats(pre_sa, control = i, treat = treat_perm, 
-                          samp.perc = samp.perc, 
-                          coverage = coverage, 
-                          maxGap = maxGap,
-                          verbose = F,
-                          ...)
-    
-    sm_tstat <- S4Vectors::mcols(sa_perm)$smooth_tstat
-    
-    if(is.null(dim(SummarizedExperiment::assays(sa_perm)[["asm"]]))){
-      midpt <- BiocGenerics::start(sa_perm)
-    } else {
-      midpt <- S4Vectors::mcols(sa_perm)$midpt
-    }
-    
-    K <- stats::quantile(abs(sm_tstat), Q, na.rm = TRUE)
-    rf <- bumphunter::regionFinder(x = sm_tstat,
-                                   chr = as.character(GenomeInfoDb::seqnames(sa_perm)),
-                                   pos = midpt,
-                                   cluster = S4Vectors::mcols(sa_perm)$cluster,
-                                   cutoff = K,
-                                   maxGap = maxGap,
-                                   verbose = F)
-    
-    rf$area
-  })
-  
-  all_areas <- sort(unlist(areas))
-  total_areas <- length(all_areas)
-  
-  rf$pvalEmp <- sapply(rf$area, function(a){
-    pperm <- (sum(all_areas > a) + 1) / (total_areas + 1)
-  })
-  
+  if(verbose) message(nrow(rf), " DAMEs found.")
   return(rf)
 }

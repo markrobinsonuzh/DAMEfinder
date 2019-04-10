@@ -5,29 +5,49 @@
 \title{Calculate ASM Score}
 \usage{
 calc_asm(sample_list, beta = 0.5, a = 0.2, transform = modulus_sqrt,
-  verbose = TRUE)
+  coverage = 5, verbose = TRUE)
 }
 \arguments{
 \item{sample_list}{List of samples returned from \code{\link{read_tuples}}}
 
-\item{beta}{The beta parameter used to calculate the weight in the ASM score. calc_weight uses
-this parameter in the pbeta function. The default is set to 0.5.}
+\item{beta}{The beta parameter used to calculate the weight in the ASM score.
+\code{link{calc_weight}} uses this parameter for \code{\link{pbeta}}.
+Default = 0.5.}
 
-\item{a}{The distance from 0.5 we allow for, where 0.5 is a perfect MM:UU balance for a tuple.
-In the default mode this value is set to 0.2, and we account for the instances where the balance
-is between 0.3 and 0.7.}
+\item{a}{The distance from 0.5 allowed, where 0.5 is a perfect MM:UU balance
+for a tuple. In the default mode this value is set to 0.2, and we account
+for the instances where the balance is between 0.3 and 0.7.}
 
-\item{transform}{Transform the calculated ASM scores. We use the modulus square root function
-which outputs the square root while preserving the original sign. This step is useful before
-calculating the t-statistic with limma::lmFit in the get_tstats function.}
+\item{transform}{Transform the calculated tuple ASM scores. We use the
+modulus square root function which outputs the square root, while
+preserving the original sign.}
 
-\item{verbose}{If the function should be verbose}
+\item{coverage}{Remove tuples with total reads below coverage. Default
+= 5.}
+
+\item{verbose}{If the function should be verbose. Default = TRUE.}
 }
 \value{
-A SummarizedExperiment of ASM scores where the rows are all the tuples and the columns the sample names.
+A \code{SummarizedExperiment} of ASM scores where the rows are all
+  the tuples and the columns the sample names.
 }
 \description{
-This function takes in a list of samples resulting from the read_tuples function and returns a
-SummarizedExperiment of Allele-Specific Methylation (ASM) scores, where each row is a tuple and
-each column is a sample.
+This function takes in a list of samples resulting from the read_tuples
+function and returns a SummarizedExperiment of Allele-Specific Methylation
+(ASM) scores, where each row is a tuple and each column is a sample.
+}
+\details{
+Calculates ASM score for a list of samples in the output format of the result
+of read_tuples This functions uses the following other functions: process,
+calcScore, calcWeight.
+}
+\examples{
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+
+tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+tuple_files <- get_data_path(tuple_files)
+ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
+ASMscore <- calc_asm(ASM)
+
 }

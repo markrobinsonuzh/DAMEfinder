@@ -23,23 +23,36 @@ methyl_circle_plot(snp, vcf.file, bam.file, ref.file, dame = NULL,
 
 \item{point.size}{Size of methylation circles. Default = 3.}
 
-\item{sample.name}{FIX: this is to save the vcf file to not generate it every time you run the function.}
+\item{sample.name}{FIX: this is to save the vcf file to not generate it every
+time you run the function.}
 
-\item{cpgsite}{(optional) GRanges object containing a single CpG site location of interest.}
+\item{cpgsite}{(optional) GRanges object containing a single CpG site
+location of interest.}
 }
 \value{
 Plot
 }
 \description{
-Draws CpG site methylation status as points, in reads containing a specific SNP.
-Generates one plot per bam file.
+Draws CpG site methylation status as points, in reads containing a specific
+SNP. Generates one plot per bam file.
 }
 \examples{
-#bam_files <- "../../../Shared_taupo/steph/CRC.bismark.bams/NORM1_pe.dedupl_s.bam"
-#vcf_files <- "../../../Shared_taupo/steph/CRC.vcfs/NORM1.chr19.moretrim.vcf"
-#sample_names <- "NORM1"
-#reference_file <- 
-"../../../Shared_taupo/data/annotation/Human/GRCH37/Bisulfite_Genome.release91/GRCh37.91.fa"
+DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 
+get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
+bam_files <- get_data_path("NORM1_chr19_trim.bam")
+vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
+sample_names <- "NORM1"
+reference_file <- get_data_path("19.fa")
+
+snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
+methyl_circle_plot(snp = snp,
+ vcf.file = vcf_files,
+ bam.file = bam_files,
+ ref.file = reference_file,
+ letter.size = 3,
+ #dame = dame,
+ sample.name = sample_names,
+ point.size = 2)
 
 }
