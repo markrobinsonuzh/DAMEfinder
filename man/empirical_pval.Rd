@@ -2,7 +2,7 @@
 % Please edit documentation in R/empirical_pval.R
 \name{empirical_pval}
 \alias{empirical_pval}
-\title{Calculate emprical-region-level p-value}
+\title{Calculate empirical region-level p-value}
 \usage{
 empirical_pval(presa, design, rforiginal, coeff, smooth, maxPerms = 10,
   Q, maxGap, method, ...)

@@ -50,7 +50,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   message("Reading vcf file")
   if(!file.exists(paste0(sampleName,".RData"))){
-    vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFile, verbose = T))
+    vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFile, verbose = FALSE))
     save(vcf, file = paste0(sampleName, ".RData"))
   } else {load(paste0(sampleName, ".RData"))}
 
@@ -186,7 +186,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
   #and cpg of interest
   if(!is.null(cpgsite)){
     cpg.start <- start(cpgsite) - left + 1
-  }else{cpg.start = 0}
+  } else{cpg.start = snp.start}
 
   #### plot ####-------------------------------------------------------------
 
@@ -196,7 +196,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
                   read=rep(1:length(alns.pairs), each=length(cgsite)),
                   value=as.vector(conversion),
-                  stringsAsFactors = F)
+                  stringsAsFactors = FALSE)
 
   #data for segments
   reads <- d$read
@@ -213,14 +213,13 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
     max(newd$CpG[vals], snp.start)
   })
 
-  d2 <- unique(data.frame(xstart, xend, reads, stringsAsFactors = F))
+  d2 <- unique(data.frame(xstart, xend, reads, stringsAsFactors = FALSE))
   d2$snp <- c(rep("a", length(alt.reads)), rep("r", length(ref.reads)))
 
   #To manually scale the colors
   cols <- c("#0E4071", "#d55e00", "#0E4071", "#d55e00")
   names(cols) <- c("a", "r", alt, ref)
-
-
+    
   ggplot() +
     scale_shape_identity() +
     theme_void() +

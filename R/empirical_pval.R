@@ -1,4 +1,4 @@
-#' Calculate emprical-region-level p-value
+#' Calculate empirical region-level p-value
 #'
 #' This function permutes the coefficient of interest and re-runs
 #' \code{\link{get_tstats}} and \code{\link{regionFinder}} for each permutation.
