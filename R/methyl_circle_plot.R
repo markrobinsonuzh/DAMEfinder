@@ -6,13 +6,13 @@
 #' @param snp GRanges object containing SNP location.
 #' @param cpgsite (optional) GRanges object containing a single CpG site
 #'   location of interest.
-#' @param vcf.file vcf file.
-#' @param bam.file bismark bam file path.
-#' @param ref.file fasta reference file path.
+#' @param vcfFile vcf file.
+#' @param bamFile bismark bam file path.
+#' @param refFile fasta reference file path.
 #' @param dame (optional) GRanges object containing a region to plot.
-#' @param letter.size Size of alleles drawn in plot. Default = 2.5.
-#' @param point.size Size of methylation circles. Default = 3.
-#' @param sample.name FIX: this is to save the vcf file to not generate it every
+#' @param letterSize Size of alleles drawn in plot. Default = 2.5.
+#' @param pointSize Size of methylation circles. Default = 3.
+#' @param sampleName FIX: this is to save the vcf file to not generate it every
 #'   time you run the function.
 #'
 #' @return Plot
@@ -27,13 +27,13 @@
 #'
 #' snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
 #' methyl_circle_plot(snp = snp,
-#'  vcf.file = vcf_files,
-#'  bam.file = bam_files,
-#'  ref.file = reference_file,
-#'  letter.size = 3,
+#'  vcfFile = vcf_files,
+#'  bamFile = bam_files,
+#'  refFile = reference_file,
+#'  letterSize = 3,
 #'  #dame = dame,
-#'  sample.name = sample_names,
-#'  point.size = 2)
+#'  sampleName = sample_names,
+#'  pointSize = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -44,15 +44,15 @@
 #'
 #' @export
 
-methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL, 
-                               letter.size = 2.5, point.size = 3, 
-                               sample.name = "sample1", cpgsite = NULL){
+methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL, 
+                               letterSize = 2.5, pointSize = 3, 
+                               sampleName = "sample1", cpgsite = NULL){
 
   message("Reading vcf file")
-  if(!file.exists(paste0(sample.name,".RData"))){
-    vcf <- vcfR::getFIX(vcfR::read.vcfR(vcf.file, verbose = T))
-    save(vcf, file = paste0(sample.name, ".RData"))
-  } else {load(paste0(sample.name, ".RData"))}
+  if(!file.exists(paste0(sampleName,".RData"))){
+    vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFile, verbose = T))
+    save(vcf, file = paste0(sampleName, ".RData"))
+  } else {load(paste0(sampleName, ".RData"))}
 
   snp.loc <- which(as.integer(vcf[,2]) == start(snp) & 
                      vcf[,1] == levels(seqnames(snp)))
@@ -64,7 +64,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
 
   message("Getting reads")
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(
-    bam.file,
+    bamFile,
     param = Rsamtools::ScanBamParam(
       tag= c("MD","XM","XR","XG"),
       mapqFilter = 40,
@@ -100,7 +100,7 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
 
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
-  fa <- open(Rsamtools::FaFile(ref.file))
+  fa <- open(Rsamtools::FaFile(refFile))
   dna <- Rsamtools::scanFa(fa, param=window)
 
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
@@ -225,13 +225,13 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
     scale_shape_identity() +
     theme_void() +
     geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads, 
-                              colour = snp), size = 0.2) +
-    geom_point(data=d, aes(x=CpG, y=read, shape=value), fill = "white", 
-               size=point.size) +
-    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape = letter, 
-                   colour = letter), size=letter.size) +
-    geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green") +
-    scale_color_manual(values = cols) +
+                              colour=snp), size=0.2) +
+    geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), fill="white", 
+               size=pointSize) +
+    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape=letter, 
+                   colour = letter), size=letterSize) +
+    geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
+    scale_color_manual(values=cols) +
     guides(color=FALSE)
 }
 
@@ -242,9 +242,9 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
 #'
 #' @param cpgsite GRanges object containing a single CpG site location of
 #'   interest
-#' @param bam.file bismark bam file path
-#' @param ref.file fasta reference file path
-#' @param point.size Size of methylation circles. Default = 3.
+#' @param bamFile bismark bam file path
+#' @param refFile fasta reference file path
+#' @param pointSize Size of methylation circles. Default = 3.
 #' @param dame (optional) GRanges object containing a region to plot
 #' @return Plot
 #' @examples
@@ -256,9 +256,9 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
 #' cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
 #' 
 #' methyl_circle_plotCpG(cpgsite = cpgsite,
-#'  bam.file = bam_files,
-#'  ref.file = reference_file,
-#'  point.size = 2)
+#'  bamFile = bam_files,
+#'  refFile = reference_file,
+#'  pointSize = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -268,12 +268,12 @@ methyl_circle_plot <- function(snp, vcf.file, bam.file, ref.file, dame = NULL,
 #' @import ggplot2
 #'
 #' @export
-methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file, 
-                                  point.size = 3, ref.file = ref.file, 
+methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile, 
+                                  pointSize = 3, refFile = refFile, 
                                   dame = NULL){
 
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(
-    bam.file,
+    bamFile,
     param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
                                     mapqFilter = 40,
                                     which = cpgsite),
@@ -296,7 +296,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file,
 
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
-  fa <- open(Rsamtools::FaFile(ref.file))
+  fa <- open(Rsamtools::FaFile(refFile))
   #idx <- scanFaIndex(fa)
   dna <- Rsamtools::scanFa(fa, param=window)
 
@@ -406,10 +406,10 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bam.file = bam.file,
     scale_shape_identity() +
     theme_void() +
     geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads), 
-                 colour = "grey", size = 0.5) +
-    geom_point(data=d, aes(x=CpG, y=read, shape=value), 
-               fill = "white", size=point.size) +
-    geom_point(aes(x=cpg.start, y = 0), shape = 24, size = 3, fill = "green") +
+                 colour="grey", size=0.5) +
+    geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), 
+               fill="white", size=pointSize) +
+    geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
     guides(color=FALSE)
 }
 

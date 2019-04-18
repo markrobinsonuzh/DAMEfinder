@@ -21,8 +21,12 @@
 #' @param method The method to be used in limma's \code{\link{lmFit}}. The
 #'   default is set to "ls" but can also be set to "robust", which is
 #'   recommended on a real data set.
-#' @param smooth Whether smoothing should be applied to the t-Statistics.
-#'   Default = TRUE
+#' @param trend Passed to \code{\link{eBayes}}. Should an intensity-trend be 
+#' allowed for the prior variance? Default is that the prior variance is 
+#' constant, e.g. FALSE.
+#' @param smooth Whether smoothing should be applied to the t-Statistics. 
+#'   Default = FALSE. If TRUE, wherever smoothing is not possible, the 
+#'   un-smoothed t-stat is used instead.
 #' @param maxGap The maximum allowed gap between genomic positions for
 #'   clustering of genomic regions to be used in smoothing. Default = 20.
 #' @param verbose Set verbose. Default = TRUE.
@@ -36,8 +40,8 @@
 #'
 #' @export
 
-get_tstats <- function(sa, design, method="ls", smooth = TRUE, maxGap=20, 
-                       coef=2, verbose=TRUE, ...) {
+get_tstats <- function(sa, design, method="ls", trend=FALSE, smooth=FALSE, 
+                       maxGap=20, coef=2, verbose=TRUE, ...) {
 
   # choose SumExp type
   if(names(assays(sa))[1] == "asm"){
@@ -49,10 +53,9 @@ get_tstats <- function(sa, design, method="ls", smooth = TRUE, maxGap=20,
   # moderated t-statistic using specified column in the design matrix
   if(verbose) message("Calculating moderated t-statistics", appendLF = TRUE)
   fit <- limma::lmFit(object = asm, design = design, method = method)
-  fit2 <- limma::eBayes(fit)
+  fit2 <- limma::eBayes(fit, trend = trend)
   S4Vectors::mcols(sa)$tstat <- fit2$t[,coef]
   S4Vectors::mcols(sa)$p.value <- fit2$p.value[,coef]
-  
 
   if(names(assays(sa))[1] == "asm"){
     midpt <- S4Vectors::mcols(sa)$midpt
@@ -75,18 +78,22 @@ get_tstats <- function(sa, design, method="ls", smooth = TRUE, maxGap=20,
       y = S4Vectors::mcols(sa)$tstat, 
       x = midpt,
       cluster = S4Vectors::mcols(sa)$cluster,
-      # bpSpan = bpSpan,
       #minNum = 2, 
       #minInSpan = 2, 
-      # maxSpan = maxSpan,
-      # verbose = verbose,
+      verbose = verbose,
       ...)
     
     S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[,1]
     
-    sa <- sa[!is.na(S4Vectors::mcols(sa)$smooth_tstat),]
+    #replace empty smoothed value for original
+    S4Vectors::mcols(sa)$smooth_tstat <- ifelse(
+      is.na(S4Vectors::mcols(sa)$smooth_tstat), 
+      S4Vectors::mcols(sa)$tstat, 
+      S4Vectors::mcols(sa)$smooth_tstat) 
   } 
-  #filter for empty tstats (?)
+  
+  #filter for empty tstats
   sa <- sa[!is.na(S4Vectors::mcols(sa)$tstat),]
+
   return(sa)
 }

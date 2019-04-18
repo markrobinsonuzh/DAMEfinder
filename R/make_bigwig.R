@@ -4,17 +4,17 @@
 #' \code{bedGraphToBigWig}. installed.
 #'
 #' The \code{bedGraphToBigWig} script can be downloaded from
-#' [here](https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64).
+#' \url{https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64}.
 #' The \code{chrom.sizes} file can be downloaded from
-#' [here](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/), or a similar
+#' \url{http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/}, or a similar
 #' goldenPath.
 #'
 #' @param sample Name of sample (as in colnames from
 #'   \code{SummarizedExperiment})
-#' @param score.obj \code{RangedSummarizedExperiment}, ideally filtered by
+#' @param scoreObj \code{RangedSummarizedExperiment}, ideally filtered by
 #'   coverage from \code{\link{calc_asm}} or \code{\link{calc_derivedasm}}.
 #' @param folder Destination folder for bigwig file.
-#' @param chromsizes.file hg19.chrom.sizes or any other file similar specifying
+#' @param chromsizesFile hg19.chrom.sizes or any other file similar specifying
 #'   the chromosome sizes.
 #'
 #' @return A bigwig file for the sample chosen.
@@ -23,21 +23,21 @@
 #' @examples
 #' #To apply to all samples in SummarizedExperiment
 #' #sapply(colnames(ASM_score_matrix), make_bigwig, 
-#' #score.obj = ASM_score_matrix, folder = , chromsizes.file = )
+#' #scoreObj = ASM_score_matrix, folder = , chromsizesFile = )
 #' @export
 #'
-make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
+make_bigwig <- function(sample, scoreObj, folder, chromsizesFile){
 
-  if(is.null(dim(SummarizedExperiment::assays(score.obj)[["asm"]]))){
-    asm <- SummarizedExperiment::assays(score.obj)[["der.ASM"]]
-    midpt <- BiocGenerics::start(score.obj)
+  if(is.null(dim(SummarizedExperiment::assays(scoreObj)[["asm"]]))){
+    asm <- SummarizedExperiment::assays(scoreObj)[["der.ASM"]]
+    midpt <- BiocGenerics::start(scoreObj)
   } else {
-    asm <- SummarizedExperiment::assays(score.obj)[["asm"]]
-    midpt <- S4Vectors::mcols(score.obj)$midpt
+    asm <- SummarizedExperiment::assays(scoreObj)[["asm"]]
+    midpt <- S4Vectors::mcols(scoreObj)$midpt
   }
 
   #make dataframe with midpoint and score for file
-  bg <- data.frame(chr = GenomeInfoDb::seqnames(score.obj),
+  bg <- data.frame(chr = GenomeInfoDb::seqnames(scoreObj),
                    start = as.integer(midpt),
                    end = as.integer(midpt),
                    score = abs(asm[,grep(sample, colnames(asm))]),
@@ -53,7 +53,7 @@ make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
   } else {folder = paste0(folder,"/")}
 
   #make bedgraph
-  scorename <- names(SummarizedExperiment::assays(score.obj))[1]
+  scorename <- names(SummarizedExperiment::assays(scoreObj))[1]
   write.table(bg, file = sprintf("%s%s.%s.bedgraph", folder, scorename, sample),
               sep = "\t", row.names = F, col.names = F, quote = F)
 
@@ -66,7 +66,7 @@ make_bigwig <- function(sample, score.obj, folder, chromsizes.file){
 
   #then make bigwig
   cmd2 <- sprintf("bedGraphToBigWig %s%s.%s.sorted.bedgraph %s %s%s.%s.bw",
-                  folder, scorename, sample, chromsizes.file, folder, 
+                  folder, scorename, sample, chromsizesFile, folder, 
                   scorename, sample)
   cat(cmd2, "\n")
   system(cmd2)

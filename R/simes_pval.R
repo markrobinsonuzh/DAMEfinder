@@ -9,12 +9,12 @@
 #' method.
 #'
 #' @param sat Output from \code{\link{get_tstats}}.
-#' @param sm_tstat (Smoothed) tstat vector from \code{\link{get_tstats}}.
+#' @param smtstat (Smoothed) tstat vector from \code{\link{get_tstats}}.
 #' @param midpt Coordinate vector for each CpG site/tuple.
 #' @return Vector of summarized pvals
 #'
 #' @export
-simes_pval <- function(sat, sm_tstat, midpt){
+simes_pval <- function(sat, smtstat, midpt){
 
   #try to use this strategy using full clusters, not segments which means
   #choosing the maxGap for cluster in get_tstat is the most important parameter
@@ -38,17 +38,17 @@ simes_pval <- function(sat, sm_tstat, midpt){
     end=sapply(cluster.ids, 
                function(Index) max(ends[cluster == Index])),
     meanTstat=sapply(cluster.ids, 
-                     function(Index) mean(sm_tstat[cluster == Index])),
+                     function(Index) mean(smtstat[cluster == Index])),
     sumTstat=sapply(cluster.ids, 
-                    function(Index) sum(sm_tstat[cluster == Index])),
+                    function(Index) sum(smtstat[cluster == Index])),
     pvalSimes=sapply(cluster.ids, 
                      function(Index) simes(pval[cluster == Index])),
     clusterL=sapply(cluster.ids, 
                  function(Index) length(cluster[cluster == Index])),
     numup=sapply(cluster.ids, 
-                 function(Index) sum(sm_tstat[cluster == Index] > 0)),
+                 function(Index) sum(smtstat[cluster == Index] > 0)),
     numdown=sapply(cluster.ids, 
-                   function(Index) sum(sm_tstat[cluster == Index] < 0)))
+                   function(Index) sum(smtstat[cluster == Index] < 0)))
   
   return(realregs)
 }

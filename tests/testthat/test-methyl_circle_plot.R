@@ -21,13 +21,13 @@ cpgsite <- GRanges(19, IRanges(387982, width = 1))
 test_that("end to end methyl plot", {
   
   p <- methyl_circle_plot(snp = snp,
-                          vcf.file = vcf_files,
-                          bam.file = bam_files,
-                          ref.file = reference_file,
-                          letter.size = 3,
+                          vcfFile = vcf_files,
+                          bamFile = bam_files,
+                          refFile = reference_file,
+                          letterSize = 3,
                           #dame = dame,
-                          sample.name = sample_names,
-                          point.size = 2)
+                          sampleName = sample_names,
+                          pointSize = 2)
   expect_true(is.ggplot(p))
   
   
@@ -37,13 +37,13 @@ test_that("end to end methyl plot", {
 
 test_that("add CpG site", {
   p <- methyl_circle_plot(snp = snp,
-                          vcf.file = vcf_files,
-                          bam.file = bam_files,
-                          ref.file = reference_file,
-                          letter.size = 3,
+                          vcfFile = vcf_files,
+                          bamFile = bam_files,
+                          refFile = reference_file,
+                          letterSize = 3,
                           #dame = dame,
-                          sample.name = sample_names,
-                          point.size = 2,
+                          sampleName = sample_names,
+                          pointSize = 2,
                           cpgsite = cpgsite)
   expect_true(is.ggplot(p))
   
@@ -54,9 +54,9 @@ test_that("add CpG site", {
 
 test_that("end to end methyl_circle_plotCpG", {
   p <- methyl_circle_plotCpG(cpgsite = cpgsite,
-                        bam.file = bam_files,
-                        ref.file = reference_file,
-                        point.size = 2)
+                        bamFile = bam_files,
+                        refFile = reference_file,
+                        pointSize = 2)
   expect_true(is.ggplot(p))
 })
 

@@ -4,26 +4,26 @@
 \alias{methyl_circle_plot}
 \title{Draw methylation circle plot}
 \usage{
-methyl_circle_plot(snp, vcf.file, bam.file, ref.file, dame = NULL,
-  letter.size = 2.5, point.size = 3, sample.name = "sample1",
+methyl_circle_plot(snp, vcfFile, bamFile, refFile, dame = NULL,
+  letterSize = 2.5, pointSize = 3, sampleName = "sample1",
   cpgsite = NULL)
 }
 \arguments{
 \item{snp}{GRanges object containing SNP location.}
 
-\item{vcf.file}{vcf file.}
+\item{vcfFile}{vcf file.}
 
-\item{bam.file}{bismark bam file path.}
+\item{bamFile}{bismark bam file path.}
 
-\item{ref.file}{fasta reference file path.}
+\item{refFile}{fasta reference file path.}
 
 \item{dame}{(optional) GRanges object containing a region to plot.}
 
-\item{letter.size}{Size of alleles drawn in plot. Default = 2.5.}
+\item{letterSize}{Size of alleles drawn in plot. Default = 2.5.}
 
-\item{point.size}{Size of methylation circles. Default = 3.}
+\item{pointSize}{Size of methylation circles. Default = 3.}
 
-\item{sample.name}{FIX: this is to save the vcf file to not generate it every
+\item{sampleName}{FIX: this is to save the vcf file to not generate it every
 time you run the function.}
 
 \item{cpgsite}{(optional) GRanges object containing a single CpG site
@@ -47,12 +47,12 @@ reference_file <- get_data_path("19.fa")
 
 snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
 methyl_circle_plot(snp = snp,
- vcf.file = vcf_files,
- bam.file = bam_files,
- ref.file = reference_file,
- letter.size = 3,
+ vcfFile = vcf_files,
+ bamFile = bam_files,
+ refFile = reference_file,
+ letterSize = 3,
  #dame = dame,
- sample.name = sample_names,
- point.size = 2)
+ sampleName = sample_names,
+ pointSize = 2)
 
 }

@@ -8,7 +8,7 @@
 #' of read_tuples This functions uses the following other functions: process,
 #' calcScore, calcWeight.
 #'
-#' @param sample_list List of samples returned from \code{\link{read_tuples}}
+#' @param sampleList List of samples returned from \code{\link{read_tuples}}
 #' @param beta The beta parameter used to calculate the weight in the ASM score.
 #'   \code{link{calc_weight}} uses this parameter for \code{\link{pbeta}}.
 #'   Default = 0.5.
@@ -35,15 +35,15 @@
 #' 
 #' @export
 #'
-calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt, 
+calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt, 
                      coverage = 5, verbose=TRUE) {
 
 
   if(verbose) message("Calculating log odds.")
-  sample_list <- lapply(sample_list, calc_logodds)
+  sampleList <- lapply(sampleList, calc_logodds)
 
   if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
-  sample_list <- lapply(sample_list, function(u) {
+  sampleList <- lapply(sampleList, function(u) {
     if(verbose) message(".", appendLF=FALSE)
     calc_score(u, beta=beta, a=a)
   })
@@ -51,7 +51,7 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
 
   if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
   # get key of unique tuples
-  all_keys <- lapply(sample_list, function(u) {
+  all_keys <- lapply(sampleList, function(u) {
     if(verbose) message(".", appendLF=FALSE)
     paste0(u$chr,'.',u$pos1, '.', u$pos2)
   })
@@ -64,10 +64,10 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$asm_score[m]
-  }, sample_list, all_keys)
+  }, sampleList, all_keys)
 
   rownames(asm) <- key
-  colnames(asm) <- names(sample_list)
+  colnames(asm) <- names(sampleList)
   if(verbose) message(" done.")
 
   if(verbose) message("Transforming.")
@@ -79,7 +79,7 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$cov[m]
-  }, sample_list, all_keys)
+  }, sampleList, all_keys)
 
 
   #MM
@@ -87,28 +87,28 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$MM[m]
-  }, sample_list, all_keys)
+  }, sampleList, all_keys)
 
   #MU
   MU <- mapply( function(df,k){
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$MU[m]
-  }, sample_list, all_keys)
+  }, sampleList, all_keys)
 
   #UM
   UM <- mapply( function(df,k){
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$UM[m]
-  }, sample_list, all_keys)
+  }, sampleList, all_keys)
 
   #UU
   UU <- mapply( function(df,k){
     if(verbose) message(".", appendLF=FALSE)
     m <- match(key, k)
     df$UU[m]
-  }, sample_list, all_keys)
+  }, sampleList, all_keys)
 
   #Get ranges
   ss <- limma::strsplit2(rownames(asm),".",fixed=TRUE)
@@ -165,15 +165,13 @@ calc_asm <- function(sample_list, beta=0.5, a=0.2, transform=modulus_sqrt,
 #'
 #'
 #' @return The same object with an additional column for the ASM score.
-#' @export
-#'
 #' @examples
 #' # Get list of samples containing tuple count information
-#' #sample_list <- read_tuples(files = file_list,
+#' #sampleList <- read_tuples(files = file_list,
 #' #sample_names = names(file_list))
 #'
 #' # Calculate log odds ratio per tuple for the first sample in the list
-#' # sample1 <- calc_logodds(sample_list[[1]])
+#' #sample1 <- calc_logodds(sampleList[[1]])
 #'
 #' # Calculate ASM score
 #' # sample1 <- calc_score(sample1, beta=0.5, a=0.2)
@@ -201,7 +199,6 @@ calc_score <- function(df, beta = 0.5, a = 0.2) {
 #'
 #' @return The same object is returned with an additional column for the log
 #'   odds ratio.
-#' @export
 calc_logodds <- function(s, eps=1) {
   ratio <- with(s, ( (MM+eps)*(UU+eps) ) / ( (MU+eps)*(UM+eps) ) )
   s$logodds <- log10(ratio)
@@ -218,14 +215,10 @@ calc_logodds <- function(s, eps=1) {
 #'   preserves the sign.
 #'
 #' @return Vector or matrix of transformed scores.
-#' @export
 #'
 #' @examples
-#' v <- c(-1,1.5,0,-2.1,4.3)
-#' modulus_sqrt(v)
-#'
-#'
-#' 
+#' #v <- c(-1,1.5,0,-2.1,4.3)
+#' #modulus_sqrt(v)
 modulus_sqrt <- function(values) {
   sign(values)*sqrt(abs(values))
 }
@@ -268,18 +261,16 @@ modulus_sqrt <- function(values) {
 #' @return A number that reflects allele-specificity given MM and UU counts for
 #'   a CpG pair. This is used as a weight that is multiplied by the log odds
 #'   ratio to give the final ASM score of that tuple.
-#'
-#' @export
-#'
+#'   
 #' @examples
-#' weight1 <- calc_weight(MM=50, UU=50)
-#' 0.9999716
+#' #weight1 <- calc_weight(MM=50, UU=50)
+#' #0.9999716
 #'
-#' weight2 <- calc_weight(MM=20, UU=60)
-#' 0.1646916
+#' #weight2 <- calc_weight(MM=20, UU=60)
+#' #0.1646916
 #'
-#' weight3 <- calc_weight(MM=2, UU=3)
-#' 0.6260661
+#' #weight3 <- calc_weight(MM=2, UU=3)
+#' #0.6260661
 #'
 #' 
 calc_weight <- function(MM, UU, beta=0.5, a=.2) {

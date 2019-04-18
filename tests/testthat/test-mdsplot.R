@@ -1,8 +1,8 @@
 context("test-mdsplot")
 
-data(splitbams_output)
+data(extractbams_output)
 
-derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = T)
+derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = T)
 
 test_that("end to end mdsplot", {
   p <- methyl_MDS_plot(derASM, color = c(rep("CRC",4), rep("NORM", 4)))

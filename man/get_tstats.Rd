@@ -4,8 +4,8 @@
 \alias{get_tstats}
 \title{Get t-Statistics}
 \usage{
-get_tstats(sa, design, method = "ls", smooth = TRUE, maxGap = 20,
-  coef = 2, verbose = TRUE, ...)
+get_tstats(sa, design, method = "ls", trend = FALSE, smooth = FALSE,
+  maxGap = 20, coef = 2, verbose = TRUE, ...)
 }
 \arguments{
 \item{sa}{A SummarizedExperiment containing ASM values where each row and
@@ -17,8 +17,13 @@ column correspond to a tuple/site and sample respectively.}
 default is set to "ls" but can also be set to "robust", which is
 recommended on a real data set.}
 
-\item{smooth}{Whether smoothing should be applied to the t-Statistics.
-Default = TRUE}
+\item{trend}{Passed to \code{\link{eBayes}}. Should an intensity-trend be 
+allowed for the prior variance? Default is that the prior variance is 
+constant, e.g. FALSE.}
+
+\item{smooth}{Whether smoothing should be applied to the t-Statistics. 
+Default = FALSE. If TRUE, wherever smoothing is not possible, the 
+un-smoothed t-stat is used instead.}
 
 \item{maxGap}{The maximum allowed gap between genomic positions for
 clustering of genomic regions to be used in smoothing. Default = 20.}

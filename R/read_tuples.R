@@ -2,16 +2,16 @@
 #'
 #' This function reads in a list of files obtained from the methtuple tool. It
 #' filters out tuples based on the set minimum coverage (min_cov) and the
-#' maximum allowed distance (max_gap) between two genomic positions in a tuple.
+#' maximum allowed distance (maxGap) between two genomic positions in a tuple.
 #'
 #'
 #' @param files List of methtuple files.
-#' @param sample_names Names of files in the list.
-#' @param min_coverage The minimum coverage per tuple. Tuples with a coverage <
-#'   min_coverage are filtered out. Default = 2.
+#' @param sampleNames Names of files in the list.
+#' @param minCoverage The minimum coverage per tuple. Tuples with a coverage <
+#'   minCoverage are filtered out. Default = 2.
 #' @param verbose If the function should be verbose.
-#' @param max_gap The maximum allowed distance between two positions in a tuple.
-#'   Only distances that are <= max_gap are kept. Default = 150 base pairs.
+#' @param maxGap The maximum allowed distance between two positions in a tuple.
+#'   Only distances that are <= maxGap are kept. Default = 150 base pairs.
 #'
 #' @return A list of data frames, where each data frame corresponds to one file.
 #' @examples
@@ -25,7 +25,7 @@
 #' @export
 #'
 #' 
-read_tuples <- function(files, sample_names, min_coverage=2, max_gap=20, 
+read_tuples <- function(files, sampleNames, minCoverage=2, maxGap=20, 
                         verbose=TRUE ) {
   
   # read in methtuple files
@@ -40,7 +40,7 @@ read_tuples <- function(files, sample_names, min_coverage=2, max_gap=20,
     UU = readr::col_integer()
   )
 
-  names(files) <- sample_names
+  names(files) <- sampleNames
 
   methtuple_list <- lapply(files, function(u) {
     if(verbose) message("Reading ",u)
@@ -53,7 +53,7 @@ read_tuples <- function(files, sample_names, min_coverage=2, max_gap=20,
     if(verbose) message(".",appendLF = FALSE)
     df$cov <- with(df, MM + UU + UM + MU)
     df$inter_dist <- with(df, pos2-pos1)
-    w <- df$cov >= min_coverage & df$inter_dist <= max_gap
+    w <- df$cov >= minCoverage & df$inter_dist <= maxGap
     df <- df[w,]
     df[order(df$chr,df$pos1,df$pos2),]
   })

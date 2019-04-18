@@ -16,7 +16,6 @@
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_locate_all
 #'
-#' @export
 splitReads <- function(alns, v, snp){
 
   fullMD <- mcols(alns)$MD
@@ -65,7 +64,6 @@ splitReads <- function(alns, v, snp){
 #' - nucl.num: Numeric representation of MDtag.
 #' - MDtag: a split version of MDtag
 #'
-#' @export
 getMD <- function(a){
 
   #extract matches and mismatches from MD tag

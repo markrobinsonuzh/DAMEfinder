@@ -5,7 +5,7 @@
 #' Code for permutations copied from the \code{dmrseq} function from the package
 #' of the same name.
 #'
-#' @param pre_sa SExperiment output from \code{calc_derivedasm} or
+#' @param presa SExperiment output from \code{calc_derivedasm} or
 #'   \code{calc_asm}.
 #' @param design design matrix.
 #' @param rforiginal data.frame of DAMEs calculated with original design.
@@ -19,7 +19,7 @@
 #' @return Vector of empirical p-values.
 #'
 #' @export
-empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth, 
+empirical_pval <- function(presa, design, rforiginal, coeff, smooth, 
                            maxPerms = 10, Q, maxGap, method, ...){
   
   sampleSize <- table(design[, coeff])
@@ -86,7 +86,7 @@ empirical_pval <- function(pre_sa, design, rforiginal, coeff, smooth,
       designr[, coeff] <- designr[reorder, coeff]
     }
 
-    sa_perm <- get_tstats(pre_sa, 
+    sa_perm <- get_tstats(presa, 
                           design = designr,
                           coef = coeff,
                           maxGap = maxGap,

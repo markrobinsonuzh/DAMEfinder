@@ -36,6 +36,9 @@
 #' @param method The method to be used in limma's \code{\link{lmFit}}. The
 #'   default is set to "ls" but can also be set to "robust", which is
 #'   recommended on a real data set.
+#' @param trend Passed to \code{\link{eBayes}}. Should an intensity-trend be 
+#' allowed for the prior variance? Default is that the prior variance is 
+#' constant, e.g. FALSE.
 #' @param verbose If the function should be verbose. Default = TRUE.
 #' @param ... Arguments passed to \code{\link{get_tstats}}.
 #'
@@ -62,8 +65,8 @@
 #' @examples
 #' 
 #' ##Using snp-based mode
-#' data(splitbams_output)
-#' derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+#' data(extractbams_output)
+#' derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 #' grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
 #' mod <- model.matrix(~grp)
 #' #filt to avoid warnings and get nice regions
@@ -77,7 +80,7 @@
 #' 
 find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.7, 
                        pvalAssign = "simes", maxGap = 20, verbose = TRUE, 
-                       maxPerms = 10, method = "ls", ...){
+                       maxPerms = 10, method = "ls", trend = FALSE, ...){
   
   pre_sa <- sa
   
@@ -87,6 +90,7 @@ find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.7,
                     coef = coef,
                     smooth = smooth,
                     method = method,
+                    trend = trend,
                     ...)
 
   # choose smoothed if true
@@ -126,7 +130,7 @@ find_dames <- function(sa, design, coef = 2, smooth = TRUE, Q = 0.7,
       order = FALSE,
       verbose = verbose)
     
-    rf$pvalEmp <- empirical_pval(pre_sa = pre_sa, 
+    rf$pvalEmp <- empirical_pval(presa = pre_sa, 
                          design = design, 
                          rforiginal = rf, 
                          coeff = coef, 

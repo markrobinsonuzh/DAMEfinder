@@ -4,10 +4,10 @@
 \alias{calc_derivedasm}
 \title{Calculate SNP-based ASM}
 \usage{
-calc_derivedasm(sample_list, cores = 1, verbose = TRUE)
+calc_derivedasm(sampleList, cores = 1, verbose = TRUE)
 }
 \arguments{
-\item{sample_list}{List of samples returned from \code{\link{split_bams}}.}
+\item{sampleList}{List of samples returned from \code{\link{extract_bams}}.}
 
 \item{cores}{Number of cores to thread.}
 
@@ -25,13 +25,13 @@ calc_derivedasm(sample_list, cores = 1, verbose = TRUE)
 }
 }
 \description{
-Combines all the \code{GRangeslist} generated in \code{\link{split_bams}}
+Combines all the \code{GRangeslist} generated in \code{\link{extract_bams}}
 into a \code{\link{RangedSummarizedExperiment}} object, and calculates
 SNP-based allele-specific methylation.
 TODO: Doesn't work for one sample
 }
 \examples{
-data(splitbams_output)
-derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+data(extractbams_output)
+derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 
 }
