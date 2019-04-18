@@ -7,10 +7,10 @@
 #' working directory) a GRanges list, where each GRanges contains all the CpG
 #' sites overlapping the reads containing a specific SNP.
 #'
-#' @param bam_files List of bam files.
-#' @param vcf_files List of vcf files.
-#' @param sample_names Names of files in the list.
-#' @param reference_file fasta file used to generate the bam files.
+#' @param bamFiles List of bam files.
+#' @param vcfFiles List of vcf files.
+#' @param sampleNames Names of files in the list.
+#' @param referenceFile fasta file used to generate the bam files.
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 2.
 #' @param cores Number of cores to use. See package {parallel} for description
@@ -22,12 +22,12 @@
 #' @examples
 #' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 #' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
-#' bam_files <- get_data_path("NORM1_chr19_trim.bam")
-#' vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
-#' sample_names <- "NORM1"
-#' reference_file <- get_data_path("19.fa")
+#' bamFiles <- get_data_path("NORM1_chr19_trim.bam")
+#' vcfFiles <- get_data_path("NORM1.chr19.trim.vcf")
+#' sampleNames <- "NORM1"
+#' referenceFile <- get_data_path("19.fa")
 #'
-#' GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
+#' GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
 #' 
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
@@ -38,24 +38,24 @@
 #' @importFrom GenomicAlignments readGAlignmentPairs
 #'
 #' @export
-split_bams <- function(bam_files, vcf_files, sample_names, reference_file,
+extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                        coverage = 4, cores = 1, verbose = TRUE){
 
 if(verbose) message("Reading reference file", appendLF = TRUE)
-fa <- open(Rsamtools::FaFile(reference_file, 
-                             index = paste0(reference_file, ".fai")))
+fa <- open(Rsamtools::FaFile(referenceFile, 
+                             index = paste0(referenceFile, ".fai")))
 
 #get names and indeces per sample to apply to
-sample_list <- 1:length(sample_names)
-names(sample_list) <- sample_names
+sample_list <- 1:length(sampleNames)
+names(sample_list) <- sampleNames
 
 lapply(sample_list, function(samp){
 
-  message(sprintf("Running sample %s", sample_names[samp]))
+  message(sprintf("Running sample %s", sampleNames[samp]))
 
   if(verbose) message("Reading VCF file", appendLF = TRUE)
-  vcf <- vcfR::getFIX(vcfR::read.vcfR(vcf_files[samp], verbose = verbose))
-  bam.file <- bam_files[samp]
+  vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFiles[samp], verbose = verbose))
+  bam.file <- bamFiles[samp]
 
   #message(sprintf("Processing chromosome %s",chrom))
   if(verbose) message("Extracting methylation per SNP", appendLF = TRUE)
@@ -229,7 +229,7 @@ lapply(sample_list, function(samp){
   },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F,
   mc.cores = cores)
 
-  message(sprintf("Done with sample %s", sample_names[samp]))
+  message(sprintf("Done with sample %s", sampleNames[samp]))
   return(snp.table)
 }
 )

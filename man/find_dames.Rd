@@ -6,7 +6,7 @@
 \usage{
 find_dames(sa, design, coef = 2, smooth = TRUE, Q = 0.7,
   pvalAssign = "simes", maxGap = 20, verbose = TRUE, maxPerms = 10,
-  method = "ls", ...)
+  method = "ls", trend = FALSE, ...)
 }
 \arguments{
 \item{sa}{A \code{SummarizedExperiment} containing ASM values where each row
@@ -39,6 +39,10 @@ can be as small as 1 bp. Default = 20.}
 \item{method}{The method to be used in limma's \code{\link{lmFit}}. The
 default is set to "ls" but can also be set to "robust", which is
 recommended on a real data set.}
+
+\item{trend}{Passed to \code{\link{eBayes}}. Should an intensity-trend be
+allowed for the prior variance? Default is that the prior variance is
+constant, e.g. FALSE.}
 
 \item{...}{Arguments passed to \code{\link{get_tstats}}.}
 }
@@ -83,8 +87,8 @@ parameters.
 \examples{
 
 ##Using snp-based mode
-data(splitbams_output)
-derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+data(extractbams_output)
+derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
 mod <- model.matrix(~grp)
 #filt to avoid warnings and get nice regions

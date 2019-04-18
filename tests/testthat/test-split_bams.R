@@ -15,13 +15,13 @@ sample_names <- "NORM1"
 reference_file <- get_data_path("19.fa")
 
 test_that("end to end split_bams", {
-  GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
+  GRanges_list <- extract_bams(bam_files, vcf_files, sample_names, reference_file)
   expect_type(GRanges_list, "list")
 })
 
 
 test_that("output is GRangesList", {
-  GRanges_list <- split_bams(bam_files, vcf_files, sample_names, reference_file)
+  GRanges_list <- extract_bams(bam_files, vcf_files, sample_names, reference_file)
   expect_s4_class(GRanges_list$NORM1[[1]], "GRanges")
 })
 

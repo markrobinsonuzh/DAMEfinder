@@ -1,11 +1,11 @@
 #' Calculate SNP-based ASM
 #'
-#' Combines all the \code{GRangeslist} generated in \code{\link{split_bams}}
+#' Combines all the \code{GRangeslist} generated in \code{\link{extract_bams}}
 #' into a \code{\link{RangedSummarizedExperiment}} object, and calculates
 #' SNP-based allele-specific methylation. 
 #' TODO: Doesn't work for one sample
 #'
-#' @param sample_list List of samples returned from \code{\link{split_bams}}.
+#' @param sampleList List of samples returned from \code{\link{extract_bams}}.
 #' @param cores Number of cores to thread.
 #' @param verbose If the function should be verbose.
 #' @return \code{RangedSummarizedExperiment} containing in assays:
@@ -19,8 +19,8 @@
 #' @md
 #'
 #' @examples
-#' data(splitbams_output)
-#' derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+#' data(extractbams_output)
+#' derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 #' 
 #' @importFrom S4Vectors mcols
 #' @importFrom S4Vectors mcols<-
@@ -29,10 +29,10 @@
 #'
 #' @export
 
-calc_derivedasm <- function(sample_list, cores = 1, verbose = TRUE){
+calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE){
 
   #filter duplicated sites and choose the one with the highest meth.diff
-  allGR <- parallel::mclapply(sample_list, function(snp.table){
+  allGR <- parallel::mclapply(sampleList, function(snp.table){
     if(verbose) message(".", appendLF=FALSE)
     
     #remove NULL values from list
