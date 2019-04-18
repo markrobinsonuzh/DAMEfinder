@@ -4,11 +4,11 @@
 \alias{empirical_pval}
 \title{Calculate emprical-region-level p-value}
 \usage{
-empirical_pval(pre_sa, design, rforiginal, coeff, smooth, maxPerms = 10,
+empirical_pval(presa, design, rforiginal, coeff, smooth, maxPerms = 10,
   Q, maxGap, method, ...)
 }
 \arguments{
-\item{pre_sa}{SExperiment output from \code{calc_derivedasm} or
+\item{presa}{SExperiment output from \code{calc_derivedasm} or
 \code{calc_asm}.}
 
 \item{design}{design matrix.}

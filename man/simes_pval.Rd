@@ -4,12 +4,12 @@
 \alias{simes_pval}
 \title{Calculate region-level p-value}
 \usage{
-simes_pval(sat, sm_tstat, midpt)
+simes_pval(sat, smtstat, midpt)
 }
 \arguments{
 \item{sat}{Output from \code{\link{get_tstats}}.}
 
-\item{sm_tstat}{(Smoothed) tstat vector from \code{\link{get_tstats}}.}
+\item{smtstat}{(Smoothed) tstat vector from \code{\link{get_tstats}}.}
 
 \item{midpt}{Coordinate vector for each CpG site/tuple.}
 }

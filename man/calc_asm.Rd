@@ -4,11 +4,11 @@
 \alias{calc_asm}
 \title{Calculate ASM Score}
 \usage{
-calc_asm(sample_list, beta = 0.5, a = 0.2, transform = modulus_sqrt,
+calc_asm(sampleList, beta = 0.5, a = 0.2, transform = modulus_sqrt,
   coverage = 5, verbose = TRUE)
 }
 \arguments{
-\item{sample_list}{List of samples returned from \code{\link{read_tuples}}}
+\item{sampleList}{List of samples returned from \code{\link{read_tuples}}}
 
 \item{beta}{The beta parameter used to calculate the weight in the ASM score.
 \code{link{calc_weight}} uses this parameter for \code{\link{pbeta}}.
