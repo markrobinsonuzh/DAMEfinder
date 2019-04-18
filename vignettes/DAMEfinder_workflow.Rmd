@@ -177,7 +177,7 @@ sample_names <- c("NORM1", "CRC1")
 reference_file <- system.file("extdata", "19.fa", package = "DAMEfinder")
 
 #Split reads and extract methylation according to allele
-snp.list <- split_bams(bam_files, vcf_files, sample_names, reference_file,
+snp.list <- extract_bams(bam_files, vcf_files, sample_names, reference_file,
                        coverage = 2)
 
 #CpG sites for first SNP in VCF file from sample NORM1
@@ -279,11 +279,11 @@ samples, and their paired normal mucosa:
 
 ```{r}
 
-data(splitbams_output)
+data(extractbams_output)
 
 #The data loaded is an output from `split_bams()`, therefore we run 
 #`calc_derivedasm` to get the SummarizedExperiment
-derASM <- calc_derivedasm(splitbams_output, cores = 1, verbose = FALSE)
+derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 
 #We remove all CpG sites with any NA values, but not 0s
 filt <- rowSums(!is.na(assay(derASM, "der.ASM"))) == 8 
@@ -349,7 +349,7 @@ tuple_files <- c(system.file("extdata", "NORM1_chr19.qs.CG.2.tsv.gz",
 
 sample_names <- c("NORM1", "CRC1")
 
-tuple_list <- read_tuples(files = tuple_files, sample_names)
+tuple_list <- read_tuples(tuple_files, sample_names)
 
 head(tuple_list$NORM1)
 ```
@@ -410,7 +410,7 @@ $\beta_2$.
 
 ```{r}
 
-ASM_mat <- calc_asm(sample_list = tuple_list)
+ASM_mat <- calc_asm(tuple_list)
 ASM_mat
 ```
 
@@ -530,8 +530,8 @@ vcf.file <- system.file("extdata", "CRC1.chr19.trim.vcf",
 
 ref.file <- system.file("extdata", "19.fa", package = "DAMEfinder")
 
-methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.file, 
-                   ref.file = ref.file)
+methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
+                   refFile = ref.file)
 ```
 
 If you are interested in a specific CpG site within this plot, you can include
@@ -541,8 +541,8 @@ an extra `GRanges` with its location:
 
 cpgsite <- GRanges(19, IRanges(266998, width = 1))
 
-methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.file, 
-                   ref.file = ref.file, cpgsite = cpgsite)
+methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
+                   refFile = ref.file, cpgsite = cpgsite)
 ```
 
 If you are instead interested in reads overlapping a CpG site, you can use an
@@ -552,8 +552,8 @@ If you are instead interested in reads overlapping a CpG site, you can use an
 
 cpgsite <- GRanges(19, IRanges(266998, width = 1))
 
-methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file, 
-                      ref.file = ref.file)
+methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bam.file, 
+                      refFile = ref.file)
 ```
 
 You can also limit both the SNP plot and the CpG plot to a specific window of
@@ -575,8 +575,8 @@ snp <- GRanges(19, IRanges(388413, width = 1)) #always set the width if your
 #GRanges has 1 site
 
 #as expected, this DAME is not really good (given the high p-value)
-methyl_circle_plot(snp = snp, vcf.file = vcf.file, bam.file = bam.file, 
-                   ref.file = ref.file, dame = dame)
+methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
+                   refFile = ref.file, dame = dame)
 
 ```
 
@@ -597,8 +597,8 @@ methyl_MDS_plot(ASMscore, grp)
 ## Generate bigWig files
 
 You can generate `bigWig` files for each sample, containing either the SNP-based
-or the tuple-based scores by running `make_bigwig`. This only works as long as
-`bedGraphToBigWig` is installed in a LINUX or mac-based sytem.
+or the tuple-based scores by running `make_bigwig`. This function only works as
+long as `bedGraphToBigWig` is installed in a LINUX or mac-based sytem.
 
 ```{r, fig6, eval=FALSE}
 
@@ -607,12 +607,12 @@ chromsizes <- system.file("extdata", "hg19.chrom.sizes.mod",
                           package = "DAMEfinder")
 
 #For a single sample
-make_bigwig(samples = "NORM1", score.obj = derASM, folder = "", 
+make_bigwig(samples = "NORM1", scoreObj = derASM, folder = "", 
             chromsizes.file = chromsizes)
 
 #For all samples in object
-sapply(colnames(derASM), make_bigwig, score.obj = derASM, folder = "", 
-       chromsizes.file = chromsizes)
+sapply(colnames(derASM), make_bigwig, scoreObj = derASM, folder = "", 
+       chromsizesFile = chromsizes)
 
 ```
 
