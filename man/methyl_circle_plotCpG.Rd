@@ -4,18 +4,18 @@
 \alias{methyl_circle_plotCpG}
 \title{Draw methylation circle plot without SNP}
 \usage{
-methyl_circle_plotCpG(cpgsite = cpgsite, bam.file = bam.file,
-  point.size = 3, ref.file = ref.file, dame = NULL)
+methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bamFile,
+  pointSize = 3, refFile = refFile, dame = NULL)
 }
 \arguments{
 \item{cpgsite}{GRanges object containing a single CpG site location of
 interest}
 
-\item{bam.file}{bismark bam file path}
+\item{bamFile}{bismark bam file path}
 
-\item{point.size}{Size of methylation circles. Default = 3.}
+\item{pointSize}{Size of methylation circles. Default = 3.}
 
-\item{ref.file}{fasta reference file path}
+\item{refFile}{fasta reference file path}
 
 \item{dame}{(optional) GRanges object containing a region to plot}
 }
@@ -35,8 +35,8 @@ bam_files <- get_data_path("NORM1_chr19_trim.bam")
 cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
 
 methyl_circle_plotCpG(cpgsite = cpgsite,
- bam.file = bam_files,
- ref.file = reference_file,
- point.size = 2)
+ bamFile = bam_files,
+ refFile = reference_file,
+ pointSize = 2)
 
 }

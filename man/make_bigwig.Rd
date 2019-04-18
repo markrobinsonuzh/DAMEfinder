@@ -4,18 +4,18 @@
 \alias{make_bigwig}
 \title{Build bigwig files for visualization in IGV}
 \usage{
-make_bigwig(sample, score.obj, folder, chromsizes.file)
+make_bigwig(sample, scoreObj, folder, chromsizesFile)
 }
 \arguments{
 \item{sample}{Name of sample (as in colnames from
 \code{SummarizedExperiment})}
 
-\item{score.obj}{\code{RangedSummarizedExperiment}, ideally filtered by
+\item{scoreObj}{\code{RangedSummarizedExperiment}, ideally filtered by
 coverage from \code{\link{calc_asm}} or \code{\link{calc_derivedasm}}.}
 
 \item{folder}{Destination folder for bigwig file.}
 
-\item{chromsizes.file}{hg19.chrom.sizes or any other file similar specifying
+\item{chromsizesFile}{hg19.chrom.sizes or any other file similar specifying
 the chromosome sizes.}
 }
 \value{
@@ -27,13 +27,13 @@ Creates a \code{bigwig} file with ASM score for each sample. Requires
 }
 \details{
 The \code{bedGraphToBigWig} script can be downloaded from
-[here](https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64).
+\url{https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64}.
 The \code{chrom.sizes} file can be downloaded from
-[here](http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/), or a similar
+\url{http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/}, or a similar
 goldenPath.
 }
 \examples{
 #To apply to all samples in SummarizedExperiment
 #sapply(colnames(ASM_score_matrix), make_bigwig, 
-#score.obj = ASM_score_matrix, folder = , chromsizes.file = )
+#scoreObj = ASM_score_matrix, folder = , chromsizesFile = )
 }
