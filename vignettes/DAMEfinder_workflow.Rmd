@@ -41,24 +41,24 @@ The phenomenon occurs when there is an asymmetry in methylation between one
 specific allele and the alternative allele [@hu2013]. The best studied example
 of allele-specific methylation (ASM) is genomic imprinting. When a gene is
 imprinted, one of the parental alleles is hyper-methylated compared to the other
-allele, associated with a parent-allele-specific expression. This asymmetry is
+allele, which leads to parent-allele-specific expression. This asymmetry is
 conferred in the gametes or very early in embryogenesis, and will remain for the
 lifetime of the individual [@kelsey2013; @hanna2014]. ASM not related to
-imprinting or secondary imprinting, exhibits parental-specific methylation, but
-is not inherited from the germline [@hanna2017]. Another example of ASM is X
-chromosome inactivation in female, where methylation coordinates the "random"
+imprinting or "secondary imprinting", exhibits parental-specific methylation,
+but is not inherited from the germline [@hanna2017]. Another example of ASM is X
+chromosome inactivation in females, where methylation coordinates the "random"
 silencing of the X chromosome. DAMEfinder detects ASM for several
-bisulfite-sequenced (BS-seq) samples in a cohort and performs differential
+bisulfite-sequenced (BS-seq) samples in a cohort, and performs differential
 detection for regions that exhibit loss or gain in ASM.
 
 
 # Overview
 
-We focus on cases of ASM in which there is an imbalance in the methylation level
-between two alleles.
+We focus on any case of ASM in which there is an imbalance in the methylation
+level between two alleles, regardless of its origin.
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and
-**tuple-based** (fast-mode), which converge when differential ASM is identified:
+**tuple-based** (fast-mode), which converge when differential ASM is detected:
 
 ```{r, echo=FALSE, out.width='250%', fig.align='center'}
 knitr::include_graphics('DAMEfinder_workflow.png')
@@ -66,20 +66,20 @@ knitr::include_graphics('DAMEfinder_workflow.png')
 
 ## Why **SNP-based**?
 We call this the "exhaustive-mode" because it extracts an ASM score for every
-CpG site in the reads containing each SNP from a VCF file. Based on this score
+CpG site in the reads containing the SNPs in a VCF file. Based on this score,
 DAMEs are detected. From a biological point of view, you might want to run this
 mode if you are interested in loss or gain of allele-specificity linked to
-somatic heterozygous SNPs. More specifically, you could detect genes that
-exhibit loss of imprinting (e.g. in colorectal cancer [@cui2002]).
+somatic or germline heterozygous SNPs. More specifically, you could detect genes
+that exhibit loss of imprinting (e.g. as in colorectal cancer [@cui2002]).
 
 ## Why **tuple-based**?
 To run the **tuple-based** mode you have to run
-[methtuple](https://github.com/PeteHaitch/methtuple) first. The methtuple output
-is the only thing needed for this mode. I call this the fast-mode because you
-don't need SNP information. The assumption is that intermediate levels of
-methylation represent ASM along the genome. For example, we have shown (paper in
-prep) that the ASM score can distinguish females from males in the X chromosome.
-Using SNP information this wouldn't be possible.
+[methtuple](https://github.com/PeteHaitch/methtuple) first [@hickey2015]. The
+methtuple output is the only thing needed for this mode. I call this the
+fast-mode because you don't need SNP information. The assumption is that
+intermediate levels of methylation represent ASM along the genome. For example,
+we have shown (paper in prep) that the ASM score can distinguish females from
+males in the X chromosome. Using SNP information this wouldn't be possible.
 
 # Get bam files 
 In order to run any of the two modes, you must obtain aligned bam files using
@@ -107,7 +107,8 @@ for further specifications.
 bismark_genome_preparation <path_to_genome_folder>
 
 #run Bismark
-bismark -B sample1 --genome <path_to_genome_folder> -1 sample1_R1_val_1.fq.gz 
+bismark -B sample1 --genome <path_to_genome_folder> 
+    -1 sample1_R1_val_1.fq.gz 
     -2 sample1_R2_val_2.fq.gz
 
 #deduplicate (optional)
@@ -124,7 +125,7 @@ Before the alignment, you must download a reference fasta file from
 [Gencode](https://www.gencodegenes.org/), and generate a bisulfite converted
 reference. For this we use `bismark_genome_preparation` from the `bismark`
 suite, and specify the folder that contains the fasta file with its index
-file. Depending on the library type and kit used to obtains the reads, you may
+file. Depending on the library type and kit used to obtain the reads, you may
 want to deduplicate your bam files (e.g. TruSeq). Please refer to the [user
 guide](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html)
 for further explanation and specifications.
@@ -141,11 +142,11 @@ calls from bisulfite-converted reads.
 
 ## Example Workflow 
 
-In this example we use samples from a published dataset [@parker2018]. We
-include samples from two patients with colorectal cancer. For each patient two
-samples were taken: `NORM#` corresponds to normal mucosa tissue and `CRC#`
-corresponds to the paired adenoma lesion. Each of these samples was sequenced
-using targeted BS-seq followed by variant calling using `Bis-SNP`.
+In this example we use samples from two patients with colorectal cancer from a
+published dataset [@parker2018]. For each patient two samples were taken:
+`NORM#` corresponds to normal mucosa tissue and `CRC#` corresponds to the paired
+adenoma lesion. Each of these samples was sequenced using targeted BS-seq
+followed by variant calling using `Bis-SNP`.
 
 ### Obtain allele-based methylation calls
 
@@ -153,7 +154,8 @@ Similar to the `bismark_methylation_extractor`, we obtain methylation calls.
 However since we are interested in allele-specific methylation, we only extract
 methylation for CpG sites that fall within reads including a SNP. For every SNP
 in the VCF file an independent methylation call is performed by using
-`split_bams`, which "splits" reads from the bam file according to the alleles:
+`extract_bams`, which "extracts" reads from the bam file according to the
+alleles, and generates a `list` of `GRangesList`s:
 
 ```{r}
 suppressPackageStartupMessages({
@@ -176,7 +178,7 @@ sample_names <- c("NORM1", "CRC1")
 
 reference_file <- system.file("extdata", "19.fa", package = "DAMEfinder")
 
-#Split reads and extract methylation according to allele
+#Extract reads and extract methylation according to allele
 snp.list <- extract_bams(bam_files, vcf_files, sample_names, reference_file,
                        coverage = 2)
 
@@ -188,7 +190,6 @@ snp.list$CRC1[[1]]
 
 ```
 
-
 For demonstration, we include bam files from chromosome 19, and shortened VCF
 files. Typically we would run the function on an entire bam and VCF file, which
 would generate a large output.
@@ -198,6 +199,9 @@ alignments. For demonstration we use chromosome 19 of the `GRCh37.91` reference
 fasta file.
 
 ### Summarize methylation calls across samples
+
+We use `calc_derivedasm()` to generate a `RangedSummarizedExperiment` from the
+large list we generated above:
 
 ```{r}
 
@@ -210,23 +214,23 @@ assays(derASM)
 Every row in the object is a single CpG site, and each column a sample. It 
 contains 6 matrices in `assays`:
 
-* der.ASM: Derived SNP-based ASM: $abs(\frac{X^{r}_M}{X^{r}} -
+* `der.ASM`: A derived SNP-based ASM defined as $abs(\frac{X^{r}_M}{X^{r}} -
 \frac{X^{a}_M}{X^{a}})$, where $X$ is the coverage in the reference $r$ or
 alternative allele $a$, and $X_M$ the number of methylated reads in $r$ or $a$.
 Basically, CpG sites with values of 1 or close to 1 have more
 allele-specificity. ASM of 1 represents the perfect scenario in which none of
-the reads belonging one allele are methylated, and the reads of the other allele
-are completely methylated.
+the reads belonging to one allele are methylated, and the reads of the other
+allele are completely methylated.
 
-* snp.table: Location of the SNP associated to the CpG site.
+* `snp.table`: Location of the SNP associated to the CpG site.
 
-* ref.cov: Coverage of the "reference" allele.
+* `ref.cov`: Coverage of the "reference" allele.
 
-* alt.cov: Coevarage of the "alternative" allele.
+* `alt.cov`: Covearage of the "alternative" allele.
 
-* ref.meth: Methylated reads from the "reference" allele.
+* `ref.meth`: Methylated reads from the "reference" allele.
 
-* alt.meth: Methylated reads from the "alternative" allele.
+* `alt.meth`: Methylated reads from the "alternative" allele.
 
 You can access these assays as:
 
@@ -251,7 +255,7 @@ residual --> <!-- degrees of freedom in the linear model fit. -->
 Now we detect regions that show differential ASM. The function `find_dames()`
 performs several steps:
 
- 1. Obtain a moderated t-statistic per CpG site using `lmFit()` and `eBayes()`
+ 1. Obtains a moderated t-statistic per CpG site using `lmFit()` and `eBayes()`
  from the `limma` package. The statistic reflects a measure of difference
  between the conditions being compared, in this case normal Vs cancer. The
  t-statistic is optionally smoothed (`smooth` parameter).
@@ -261,13 +265,14 @@ performs several steps:
  * Simes method: 
     2. (Default) Clusters of CpG sites are determined by closeness (`maxGap`),
     and a p-value for each cluster is calculated using the simes method, similar
-    to `csaw` from @lun2014. In this case the p-value represents evidence
-    against the null hypothesis that no sites are differential in the cluster.
+    to the package `csaw` from @lun2014. With this approach, the p-value
+    represents evidence against the null hypothesis that no sites are
+    differential in the cluster.
     
   * Bumphunting method:
     2. CpG sites with a t-statistic above and below a certain cutoff (set with
-    `Q`), are clustered into segments (after being clustered). This is done with
-    the `regionFinder()` function from `bumphunter`.
+    `Q`), are grouped into segments (after being clustered). This is done with
+    the `regionFinder()` function from `bumphunter` [@jaffe2012].
     3. For each of these segments, a p-value is calculated empirically by
     permuting the groups (covariate) of interest. Depending on the number of
     samples, this can take longer than the Simes method. However the number of
@@ -292,6 +297,7 @@ derASM <- derASM[filt,]
 #set the design matrix
 grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
 mod <- model.matrix(~grp)
+mod
 
 #Run default
 dames <- find_dames(derASM, mod)
@@ -305,7 +311,7 @@ head(dames)
 
 ```
 
-Regions with a significant p-value represent regions where samples belonging to
+A significant p-value represent regions where samples belonging to
 one group (in this case the cancer samples), gain or lose allele-specificity
 compared to the other group (here the normal group).
 
@@ -355,7 +361,7 @@ head(tuple_list$NORM1)
 ```
 
 Each row in the `tibble` displays a tuple. The chromosome name and strand are
-shown followed by `pos1` and `pos2` which refer to the genomic positions of the
+shown followed by `pos1` and `pos2`, which refer to the genomic positions of the
 first and second CpG in the tuple. The `MM`, `MU`, `UM`, and `UU` counts of the
 tuple are displayed where `M` stands for methylated and `U` for unmethylated.
 For example, `UM` shows the read counts for the instances where `pos1` is
@@ -366,20 +372,19 @@ respectively.
 
 ### Calculate ASM Score
 
-The calc_asm function takes in the output from `read_tuples()` and outputs a
-`SummarizedExperiment` where each row is a tuple and each column is a sample. As
-in the SNP-based mode, the object contains 6 assays including the `MM`, `MU`,
-`UM`, and `UU` counts, as well as the total coverage and the tuple-based ASM
-score.
+The `calc_asm` function takes the output from `read_tuples()`, and as in the
+SNP-based mode, generates a `RangedSummarizedExperiment` where each row is a
+tuple and each column is a sample. The object contains 6 assays including the
+`MM`, `MU`, `UM`, and `UU` counts, as well as the total coverage and the
+tuple-based ASM score. This score is a measure of ASM calculated directly from
+the reads without the need of SNP information. Because of this, it is a lot
+quicker than the SNP-based ASM, and is useful for more explorative purposes.
 
-This score is a measure ASM calculated directly from the reads without the need
-of SNP information. Because of this it is a lot quicker than the SNP-based ASM,
-and is useful for more explorative questions. Equations \@ref(eq:asmGeneral),
-\@ref(eq:asmWeight) and \@ref(eq:asmTheta) show how the score is calculated. The
-log odds ratio in equation \@ref(eq:asmGeneral) provides a higher score the more
-`MM` and `UU` counts the tuple has, whereas a higher `UM` and `MU` would
-indicate "random" methylation. The weight further adds allele-specificity where
-a rather balanced MM:UU count provides the tuple with a higher score.
+Equations \@ref(eq:asmGeneral), \@ref(eq:asmWeight) and \@ref(eq:asmTheta) show
+how the score is calculated. The log odds ratio in equation \@ref(eq:asmGeneral)
+provides a higher score the more `MM` and `UU` counts the tuple has, whereas a
+higher `UM` and `MU` would indicate "random" methylation. The weight further
+adds allele-specificity where a rather balanced MM:UU increases the score.
 
 \begin{equation}
     ASM^{(i)} = log{ \Big\{ \frac{X_{MM}^{(i)} \cdot X_{UU}^{(i)}}{X_{MU}^{(i)}
@@ -476,9 +481,9 @@ the size of the window depending on for example the read lenght in your data:
 
 ### Find DAMEs
 
-As above, the `SummarizedExperiment` is used to detect differential ASM. Here we
-show an example with a pre-processed set of samples: 3 colorectal cancer
-samples, an 2 normal mucosa samples:
+As above, the `RangedSummarizedExperiment` is used to detect differential ASM.
+Here we show an example with a pre-processed set of samples: 3 colorectal cancer
+samples, an 2 normal mucosa samples
 
 ```{r}
 #load package data
@@ -515,7 +520,7 @@ particular SNP, and the methylation state of the CpG sites in those reads (black
 circles for methylated and white for unmethylated, see @shoemaker2010 for
 examples). Here we offer this option with the function `methyl_circle_plot()`.
 As input it takes a `GRanges` with the SNP of interest, and the bam, VCF and
-reference files as in the `split_bams()` function.
+reference files as in the `extract_bams()` function.
 
 ```{r, fig1}
 snp <- GRanges(19, IRanges(267039, width = 1))
@@ -535,7 +540,8 @@ methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file,
 ```
 
 If you are interested in a specific CpG site within this plot, you can include
-an extra `GRanges` with its location:
+an extra `GRanges` with its location, and the triangle at the bottom will point
+to it:
 
 ```{r, fig2}
 
@@ -545,7 +551,7 @@ methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file,
                    refFile = ref.file, cpgsite = cpgsite)
 ```
 
-If you are instead interested in reads overlapping a CpG site, you can use an
+If you are instead interested in reads overlapping a CpG site, you can use
 `methyl_circle_plotCpG()`, which is useful if you run the tuple-mode:
 
 ```{r, fig3}
@@ -585,7 +591,8 @@ methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file,
 
 To plot a multidimensional scaling plot (MDS), we provide a wrapper to
 `plotMDS()` from `limma`, which adjusts the ASM score to calculate the euclidean
-distances. The input is the `SummarizedExperiment`, and a vector :
+distances. The input is the `SummarizedExperiment`, and the vector of covariates
+to color the points by:
 
 ```{r, fig5}
 
@@ -597,8 +604,8 @@ methyl_MDS_plot(ASMscore, grp)
 ## Generate bigWig files
 
 You can generate `bigWig` files for each sample, containing either the SNP-based
-or the tuple-based scores by running `make_bigwig`. This function only works as
-long as `bedGraphToBigWig` is installed in a LINUX or mac-based sytem.
+or the tuple-based scores by running `make_bigwig()`. This function only works
+as long as `bedGraphToBigWig` is installed in a LINUX or mac-based sytem.
 
 ```{r, fig6, eval=FALSE}
 
