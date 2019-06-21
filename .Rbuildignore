@@ -5,3 +5,5 @@ inst/extdata/moredata
 R/*.inprogress
 vignettes/*.RData
 vignettes/.Rhistory
+^doc$
+^Meta$
