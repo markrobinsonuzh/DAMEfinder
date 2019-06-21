@@ -58,3 +58,7 @@ Now you can install DAMEfinder
 ```{r}
 BiocManager::install("markrobinsonuzh/DAMEfinder")
 ```
+
+## Feedback
+
+If you have problems installing, running, or just have questions regarding the package or theory behind it, please open an issue and I will answer as soon as possible. 
