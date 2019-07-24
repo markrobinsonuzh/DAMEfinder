@@ -6,34 +6,36 @@
 #'
 #' @param x \code{RangedSummarizedExperiment}, output from
 #'   \code{calc_derivedasm} or \code{calc_asm}.
-#' @param color Vector of group or any other labels, same length as number of
+#' @param color Vector of colors for each group label.
+#' @param group Vector of group or any other labels, same length as number of
 #'   samples.
 #' @param top Number of top CpG sites used to calculate pairwise distances.
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
-#'   Default = 4.
-#'   
+#'   Default = 5.
+#'
 #' @return Two-dimensional MDS plot.
 #'
 #' @importFrom SummarizedExperiment assays
 #' @import ggplot2
 #'
 #' @export
-methyl_MDS_plot <- function(x, color, top = 1000, coverage = 4){
+methyl_MDS_plot <- function(x, color = NA,
+                            group, top = 1000, coverage = 5){
 
 
   if(names(assays(x))[1] == "asm"){
 
     asm <- assays(x)[["asm"]]
     asm.red <- asm[rowSums(
-      !is.na(assays(x)[["cov"]]) & 
+      !is.na(assays(x)[["cov"]]) &
         assays(x)[["cov"]] >= coverage) == BiocGenerics::ncol(x),]
-    
+
     mds_meth <- limma::plotMDS(asm.red, top = top , plot = FALSE)$cmdscale.out
 
   } else {
 
     full.cov <- assays(x)[["ref.cov"]] + assays(x)[["alt.cov"]]
-    filt <- BiocGenerics::rowSums(full.cov >= coverage & 
+    filt <- BiocGenerics::rowSums(full.cov >= coverage &
                                     !is.na(full.cov)) == BiocGenerics::ncol(x)
     xfilt <- x[filt,]
 
@@ -43,17 +45,28 @@ methyl_MDS_plot <- function(x, color, top = 1000, coverage = 4){
     methsTR <- asin(2*methsTR-1)
     bad <- BiocGenerics::rowSums(is.finite(methsTR)) < ncol(methsTR)
     if(any(bad)) methsTR <- methsTR[!bad,,drop=FALSE]
-    
+
     mds_meth <- limma::plotMDS(methsTR, top = top, plot = FALSE)$cmdscale.out
   }
 
-  df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2], 
-                   names = colnames(x), treat = color)
+  df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2],
+                   names = colnames(x), treat = group)
 
+  if(is.na(color)){
   ggplot()+
-    geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat), 
+    geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
                size=5) +
-    geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-.02, label=~names), 
+    geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-.02, label=~names),
               size=4) +
     theme_bw()
+  } else {
+    ggplot()+
+      geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
+                 size=5) +
+      geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-.02, label=~names),
+                size=4) +
+      scale_color_discrete(values = color) +
+      theme_bw()
+    }
+
 }
