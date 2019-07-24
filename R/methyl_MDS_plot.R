@@ -12,6 +12,7 @@
 #' @param top Number of top CpG sites used to calculate pairwise distances.
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 5.
+#' @param adj Text adjustment in y-axis. Default = 0.2.
 #'
 #' @return Two-dimensional MDS plot.
 #'
@@ -20,7 +21,8 @@
 #'
 #' @export
 methyl_MDS_plot <- function(x, color = NA,
-                            group, top = 1000, coverage = 5){
+                            group, top = 1000, coverage = 5,
+                            adj = 0.02){
 
 
   if(names(assays(x))[1] == "asm"){
@@ -52,20 +54,16 @@ methyl_MDS_plot <- function(x, color = NA,
   df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2],
                    names = colnames(x), treat = group)
 
-  if(is.na(color)){
+  if(!is.vector(color)){
   ggplot()+
-    geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
-               size=5) +
-    geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-.02, label=~names),
-              size=4) +
+    geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat)) +
+    geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-adj, label=~names)) +
     theme_bw()
-  } else {
+  } else{
     ggplot()+
-      geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
-                 size=5) +
-      geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-.02, label=~names),
-                size=4) +
-      scale_color_discrete(values = color) +
+      geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat)) +
+      geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-adj, label=~names)) +
+      scale_color_manual(values = color) +
       theme_bw()
     }
 
