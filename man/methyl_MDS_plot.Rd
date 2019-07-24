@@ -5,19 +5,21 @@
 \title{Multidimensional scaling plot of distances between methylation proportions
 (beta values)}
 \usage{
-methyl_MDS_plot(x, color, top = 1000, coverage = 4)
+methyl_MDS_plot(x, color = NA, group, top = 1000, coverage = 5)
 }
 \arguments{
 \item{x}{\code{RangedSummarizedExperiment}, output from
 \code{calc_derivedasm} or \code{calc_asm}.}
 
-\item{color}{Vector of group or any other labels, same length as number of
+\item{color}{Vector of colors for each group label.}
+
+\item{group}{Vector of group or any other labels, same length as number of
 samples.}
 
 \item{top}{Number of top CpG sites used to calculate pairwise distances.}
 
 \item{coverage}{Minimum number of reads covering a CpG site on each allele.
-Default = 4.}
+Default = 5.}
 }
 \value{
 Two-dimensional MDS plot.
