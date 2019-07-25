@@ -4,8 +4,8 @@
 \alias{empirical_pval}
 \title{Calculate empirical region-level p-value}
 \usage{
-empirical_pval(presa, design, rforiginal, coeff, smooth, maxPerms = 10,
-  Q, maxGap, method, ...)
+empirical_pval(presa, design, rforiginal, coeff, cont, smooth,
+  maxPerms = 10, Q, maxGap, method, ...)
 }
 \arguments{
 \item{presa}{SExperiment output from \code{calc_derivedasm} or
@@ -16,6 +16,8 @@ empirical_pval(presa, design, rforiginal, coeff, smooth, maxPerms = 10,
 \item{rforiginal}{data.frame of DAMEs calculated with original design.}
 
 \item{coeff}{Coefficient of interest to permute.}
+
+\item{cont}{same as in \code{get_tstats}.}
 
 \item{smooth}{Boolean.}
 
