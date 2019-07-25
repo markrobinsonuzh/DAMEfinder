@@ -5,7 +5,8 @@
 \title{Multidimensional scaling plot of distances between methylation proportions
 (beta values)}
 \usage{
-methyl_MDS_plot(x, color = NA, group, top = 1000, coverage = 5)
+methyl_MDS_plot(x, color = NA, group, top = 1000, coverage = 5,
+  adj = 0.02)
 }
 \arguments{
 \item{x}{\code{RangedSummarizedExperiment}, output from
@@ -20,6 +21,8 @@ samples.}
 
 \item{coverage}{Minimum number of reads covering a CpG site on each allele.
 Default = 5.}
+
+\item{adj}{Text adjustment in y-axis. Default = 0.2.}
 }
 \value{
 Two-dimensional MDS plot.

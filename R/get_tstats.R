@@ -17,15 +17,16 @@
 #'   column correspond to a tuple/site and sample respectively.
 #' @param design a design matrix created with \code{\link{model.matrix}}.
 #' @param coef Column in model.matrix specifying the parameter to estimate.
-#'   Default = 2.
+#'   Default = 2. If \code{contrast} specified, column with contrast of interest.
+#' @param contrast a contrast matrix, generated with \code{\link{makeContrasts}}.
 #' @param method The method to be used in limma's \code{\link{lmFit}}. The
 #'   default is set to "ls" but can also be set to "robust", which is
 #'   recommended on a real data set.
-#' @param trend Passed to \code{\link{eBayes}}. Should an intensity-trend be 
-#' allowed for the prior variance? Default is that the prior variance is 
+#' @param trend Passed to \code{\link{eBayes}}. Should an intensity-trend be
+#' allowed for the prior variance? Default is that the prior variance is
 #' constant, e.g. FALSE.
-#' @param smooth Whether smoothing should be applied to the t-Statistics. 
-#'   Default = FALSE. If TRUE, wherever smoothing is not possible, the 
+#' @param smooth Whether smoothing should be applied to the t-Statistics.
+#'   Default = FALSE. If TRUE, wherever smoothing is not possible, the
 #'   un-smoothed t-stat is used instead.
 #' @param maxGap The maximum allowed gap between genomic positions for
 #'   clustering of genomic regions to be used in smoothing. Default = 20.
@@ -40,7 +41,7 @@
 #'
 #' @export
 
-get_tstats <- function(sa, design, method="ls", trend=FALSE, smooth=FALSE, 
+get_tstats <- function(sa, design, contrast = NULL, method="ls", trend=FALSE, smooth=FALSE,
                        maxGap=20, coef=2, verbose=TRUE, ...) {
 
   # choose SumExp type
@@ -52,10 +53,19 @@ get_tstats <- function(sa, design, method="ls", trend=FALSE, smooth=FALSE,
 
   # moderated t-statistic using specified column in the design matrix
   if(verbose) message("Calculating moderated t-statistics", appendLF = TRUE)
+
   fit <- limma::lmFit(object = asm, design = design, method = method)
-  fit2 <- limma::eBayes(fit, trend = trend)
+  if(is.matrix(contrast)){
+    fit.cont <- limma::contrasts.fit(fit, contrasts = contrast)
+    fit2 <- limma::eBayes(fit.cont, trend = trend)
+
+  } else{
+    fit2 <- limma::eBayes(fit, trend = trend)
+  }
+
   S4Vectors::mcols(sa)$tstat <- fit2$t[,coef]
   S4Vectors::mcols(sa)$p.value <- fit2$p.value[,coef]
+
 
   if(names(assays(sa))[1] == "asm"){
     midpt <- S4Vectors::mcols(sa)$midpt
@@ -65,33 +75,33 @@ get_tstats <- function(sa, design, method="ls", trend=FALSE, smooth=FALSE,
 
   S4Vectors::mcols(sa)$cluster <- bumphunter::clusterMaker(
     chr = as.character(GenomeInfoDb::seqnames(sa)),
-    pos = midpt, 
+    pos = midpt,
     maxGap = maxGap,
     assumeSorted = TRUE)
-  
+
   # smooth moderated t-stats
   if(smooth){
-    
+
     if(verbose) message("Smoothing moderated t-statistics", appendLF = TRUE)
-    
+
     smooth <- bumphunter::loessByCluster(
-      y = S4Vectors::mcols(sa)$tstat, 
+      y = S4Vectors::mcols(sa)$tstat,
       x = midpt,
       cluster = S4Vectors::mcols(sa)$cluster,
-      #minNum = 2, 
-      #minInSpan = 2, 
+      #minNum = 2,
+      #minInSpan = 2,
       verbose = verbose,
       ...)
-    
+
     S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[,1]
-    
+
     #replace empty smoothed value for original
     S4Vectors::mcols(sa)$smooth_tstat <- ifelse(
-      is.na(S4Vectors::mcols(sa)$smooth_tstat), 
-      S4Vectors::mcols(sa)$tstat, 
-      S4Vectors::mcols(sa)$smooth_tstat) 
-  } 
-  
+      is.na(S4Vectors::mcols(sa)$smooth_tstat),
+      S4Vectors::mcols(sa)$tstat,
+      S4Vectors::mcols(sa)$smooth_tstat)
+  }
+
   #filter for empty tstats
   sa <- sa[!is.na(S4Vectors::mcols(sa)$tstat),]
 
