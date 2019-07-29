@@ -76,6 +76,7 @@ empirical_pval <- function(presa, design, rforiginal, coeff, cont, smooth,
   message("Generating ", ncol(perms), " permutations", appendLF = TRUE)
   areas <- apply(perms, 2, function(i){
 
+    message("Permutation ", i, appendLF = TRUE)
     reorder <- i
     designr <- design
 
