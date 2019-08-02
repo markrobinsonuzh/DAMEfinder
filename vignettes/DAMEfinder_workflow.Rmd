@@ -596,7 +596,7 @@ to color the points by:
 
 ```{r, fig5}
 
-methyl_MDS_plot(ASMscore, group = grp)
+methyl_MDS_plot(ASMscore, group = grp, color = 1:2)
 
 ```
 
