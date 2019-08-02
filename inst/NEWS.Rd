@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.0.1}{
+\itemize{
+    \item Fix typo that didn not include chromosome 22
+    \item Add read sorting to methyl_circle_plotCpG
+}
+}
+
 \section{DAMEfinder VERSION 1.0.0}{
 \itemize{
     \item Corrected version (not compatible with 0.1.13)

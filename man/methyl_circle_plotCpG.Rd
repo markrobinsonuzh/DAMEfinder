@@ -5,7 +5,7 @@
 \title{Draw methylation circle plot without SNP}
 \usage{
 methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bamFile,
-  pointSize = 3, refFile = refFile, dame = NULL)
+  pointSize = 3, refFile = refFile, dame = NULL, order = FALSE)
 }
 \arguments{
 \item{cpgsite}{GRanges object containing a single CpG site location of
@@ -18,6 +18,9 @@ interest}
 \item{refFile}{fasta reference file path}
 
 \item{dame}{(optional) GRanges object containing a region to plot}
+
+\item{order}{Whether reads should be sorted by methylation status. Default=
+False.}
 }
 \value{
 Plot

@@ -4,8 +4,8 @@
 \alias{get_tstats}
 \title{Get t-Statistics}
 \usage{
-get_tstats(sa, design, method = "ls", trend = FALSE, smooth = FALSE,
-  maxGap = 20, coef = 2, verbose = TRUE, ...)
+get_tstats(sa, design, contrast = NULL, method = "ls", trend = FALSE,
+  smooth = FALSE, maxGap = 20, coef = 2, verbose = TRUE, ...)
 }
 \arguments{
 \item{sa}{A SummarizedExperiment containing ASM values where each row and
@@ -13,23 +13,25 @@ column correspond to a tuple/site and sample respectively.}
 
 \item{design}{a design matrix created with \code{\link{model.matrix}}.}
 
+\item{contrast}{a contrast matrix, generated with \code{\link{makeContrasts}}.}
+
 \item{method}{The method to be used in limma's \code{\link{lmFit}}. The
 default is set to "ls" but can also be set to "robust", which is
 recommended on a real data set.}
 
-\item{trend}{Passed to \code{\link{eBayes}}. Should an intensity-trend be 
-allowed for the prior variance? Default is that the prior variance is 
+\item{trend}{Passed to \code{\link{eBayes}}. Should an intensity-trend be
+allowed for the prior variance? Default is that the prior variance is
 constant, e.g. FALSE.}
 
-\item{smooth}{Whether smoothing should be applied to the t-Statistics. 
-Default = FALSE. If TRUE, wherever smoothing is not possible, the 
+\item{smooth}{Whether smoothing should be applied to the t-Statistics.
+Default = FALSE. If TRUE, wherever smoothing is not possible, the
 un-smoothed t-stat is used instead.}
 
 \item{maxGap}{The maximum allowed gap between genomic positions for
 clustering of genomic regions to be used in smoothing. Default = 20.}
 
 \item{coef}{Column in model.matrix specifying the parameter to estimate.
-Default = 2.}
+Default = 2. If \code{contrast} specified, column with contrast of interest.}
 
 \item{verbose}{Set verbose. Default = TRUE.}
 

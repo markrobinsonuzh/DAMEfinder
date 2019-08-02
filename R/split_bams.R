@@ -28,7 +28,7 @@
 #' referenceFile <- get_data_path("19.fa")
 #'
 #' GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
-#' 
+#'
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
 #' @importFrom S4Vectors mcols
@@ -42,7 +42,7 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                        coverage = 4, cores = 1, verbose = TRUE){
 
 if(verbose) message("Reading reference file", appendLF = TRUE)
-fa <- open(Rsamtools::FaFile(referenceFile, 
+fa <- open(Rsamtools::FaFile(referenceFile,
                              index = paste0(referenceFile, ".fai")))
 
 #get names and indeces per sample to apply to
@@ -64,8 +64,8 @@ lapply(sample_list, function(samp){
     #Applying to a GRanges takes too long so I create one each time
     snp <- GRanges(seqnames = t, IRanges(start = as.integer(u), width = 1))
 
-    #Ignore non-standar chromosomes
-    if(length(grep(t, c(as.character(1:21), "X", "Y"))) == 0){
+    #Ignore non-standard chromosomes
+    if(length(grep(t, c(as.character(1:22), "X", "Y"))) == 0){
       if(verbose) message("Bad chrom", appendLF = TRUE)
       return(NULL)
       }
@@ -84,14 +84,14 @@ lapply(sample_list, function(samp){
     #   isDuplicate = F,
     #   isSecondaryAlignment = F,
     #   isSupplementaryAlignment = F)
-    
+
     params <- Rsamtools::ScanBamParam(
       #flag = flags,
       tag = c("MD","XM","XR","XG"),
       #mapqFilter = 20,
       which = snp)
-    
-    alns.pairs <- readGAlignmentPairs(bam.file, 
+
+    alns.pairs <- readGAlignmentPairs(bam.file,
                                       use.names = TRUE,
                                       param = params)
 
@@ -206,7 +206,7 @@ lapply(sample_list, function(samp){
     }
 
     #Build GRanges
-    GR <- GRanges(gsub("chr","",chrom), IRanges(start = left + cgsite, 
+    GR <- GRanges(gsub("chr","",chrom), IRanges(start = left + cgsite,
                                                 width = 1))
     mcols(GR)$cov.ref <- ref.cov
     mcols(GR)$cov.alt <- alt.cov
@@ -218,7 +218,7 @@ lapply(sample_list, function(samp){
     filt <- BiocGenerics::rowSums(cbind(GR$cov.ref,
                                         GR$cov.alt) >= coverage) >= 2
     if(sum(filt) < 2){
-      if(verbose) message("No CpG sites sufficiently covered at this SNP", 
+      if(verbose) message("No CpG sites sufficiently covered at this SNP",
                           appendLF = TRUE)
       return(NULL)
     }

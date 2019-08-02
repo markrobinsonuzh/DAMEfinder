@@ -4,9 +4,9 @@
 \alias{find_dames}
 \title{Find DAMEs}
 \usage{
-find_dames(sa, design, coef = 2, smooth = TRUE, Q = 0.7,
-  pvalAssign = "simes", maxGap = 20, verbose = TRUE, maxPerms = 10,
-  method = "ls", trend = FALSE, ...)
+find_dames(sa, design, coef = 2, contrast = NULL, smooth = TRUE,
+  Q = 0.7, pvalAssign = "simes", maxGap = 20, verbose = TRUE,
+  maxPerms = 10, method = "ls", trend = FALSE, ...)
 }
 \arguments{
 \item{sa}{A \code{SummarizedExperiment} containing ASM values where each row
@@ -16,6 +16,8 @@ correspond to a tuple/site and a column to sample/replicate.}
 
 \item{coef}{Column in \code{design} specifying the parameter to estimate.
 Default = 2.}
+
+\item{contrast}{a contrast matrix, generated with \code{\link{makeContrasts}}.}
 
 \item{smooth}{Whether smoothing should be applied to the t-Statistics.
 Default = TRUE.}
@@ -93,7 +95,7 @@ grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
 mod <- model.matrix(~grp)
 #filt to avoid warnings and get nice regions
 filt <- rowSums(!is.na(
-SummarizedExperiment::assay(derASM, "der.ASM"))) == 8 
+SummarizedExperiment::assay(derASM, "der.ASM"))) == 8
 derASM <- derASM[filt,]
 dames <- find_dames(derASM, mod, verbose = FALSE)
 
