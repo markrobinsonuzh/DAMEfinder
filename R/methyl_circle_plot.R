@@ -44,8 +44,8 @@
 #'
 #' @export
 
-methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL, 
-                               letterSize = 2.5, pointSize = 3, 
+methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
+                               letterSize = 2.5, pointSize = 3,
                                sampleName = "sample1", cpgsite = NULL){
 
   message("Reading vcf file")
@@ -54,7 +54,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
     save(vcf, file = paste0(sampleName, ".RData"))
   } else {load(paste0(sampleName, ".RData"))}
 
-  snp.loc <- which(as.integer(vcf[,2]) == start(snp) & 
+  snp.loc <- which(as.integer(vcf[,2]) == start(snp) &
                      vcf[,1] == levels(seqnames(snp)))
   if(length(snp.loc) == 0){
     stop("Sample does not contain SNP")
@@ -80,7 +80,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   message("Sorting reads")
   #don't unlist, paired
-  alt.pairs <- alns.pairs[names(alns.pairs) %in% alt.reads] 
+  alt.pairs <- alns.pairs[names(alns.pairs) %in% alt.reads]
   ref.pairs <- alns.pairs[names(alns.pairs) %in% ref.reads]
   alns.pairs <- c(alt.pairs, ref.pairs) #I just do this to sort them
 
@@ -219,15 +219,15 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
   #To manually scale the colors
   cols <- c("#0E4071", "#d55e00", "#0E4071", "#d55e00")
   names(cols) <- c("a", "r", alt, ref)
-    
+
   ggplot() +
     scale_shape_identity() +
     theme_void() +
-    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads, 
+    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads,
                               colour=snp), size=0.2) +
-    geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), fill="white", 
+    geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), fill="white",
                size=pointSize) +
-    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape=letter, 
+    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape=letter,
                    colour = letter), size=letterSize) +
     geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
     scale_color_manual(values=cols) +
@@ -245,6 +245,8 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' @param refFile fasta reference file path
 #' @param pointSize Size of methylation circles. Default = 3.
 #' @param dame (optional) GRanges object containing a region to plot
+#' @param order Whether reads should be sorted by methylation status. Default=
+#' False.
 #' @return Plot
 #' @examples
 #' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
@@ -253,7 +255,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' reference_file <- get_data_path("19.fa")
 #' bam_files <- get_data_path("NORM1_chr19_trim.bam")
 #' cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
-#' 
+#'
 #' methyl_circle_plotCpG(cpgsite = cpgsite,
 #'  bamFile = bam_files,
 #'  refFile = reference_file,
@@ -267,9 +269,9 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' @import ggplot2
 #'
 #' @export
-methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile, 
-                                  pointSize = 3, refFile = refFile, 
-                                  dame = NULL){
+methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
+                                  pointSize = 3, refFile = refFile,
+                                  dame = NULL, order = FALSE){
 
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(
     bamFile,
@@ -278,7 +280,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
                                     which = cpgsite),
     use.names = TRUE)
   alns <- unlist(alns.pairs)
-  
+
   ####get reference and CpG positions####-------------------------------------
 
   #Get limits for plotting
@@ -384,6 +386,20 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
                   read=rep(1:length(alns.pairs), each=length(cgsite)),
                   value=as.vector(conversion))
 
+  #reorder reads to plot
+  if(isTRUE(order)){
+  trans <- ifelse(d$value == 19, 1, 0)
+  und <- unique(d$read)
+  sums_per_read <- sapply(und, function(i) sum(trans[d$read == i],na.rm = TRUE))
+  und_ord <- und[order(sums_per_read)]
+
+  d$order <- 0
+  for(i in und){
+    d$order[d$read == i] <- which(und_ord == i)
+  }
+  d$read <- d$order
+  }
+
   #data for segments
   reads <- d$read
 
@@ -404,11 +420,12 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
   ggplot() +
     scale_shape_identity() +
     theme_void() +
-    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads), 
+    geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads),
                  colour="grey", size=0.5) +
-    geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), 
+    geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value),
                fill="white", size=pointSize) +
     geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
     guides(color=FALSE)
+
 }
 
