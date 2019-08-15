@@ -13,6 +13,7 @@
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 5.
 #' @param adj Text adjustment in y-axis. Default = 0.2.
+#' @param pointSize Default = 4.
 #'
 #' @return Two-dimensional MDS plot.
 #'
@@ -22,7 +23,7 @@
 #' @export
 methyl_MDS_plot <- function(x, color = NA,
                             group, top = 1000, coverage = 5,
-                            adj = 0.02){
+                            adj = 0.02, pointSize = 4){
 
 
   if(names(assays(x))[1] == "asm"){
@@ -56,12 +57,14 @@ methyl_MDS_plot <- function(x, color = NA,
 
   if(!is.vector(color)){
   ggplot()+
-    geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat)) +
+    geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
+               size = pointSize) +
     geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-adj, label=~names)) +
     theme_bw()
   } else{
     ggplot()+
-      geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat)) +
+      geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
+                 size = pointSize) +
       geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-adj, label=~names)) +
       scale_color_manual(values = color) +
       theme_bw()

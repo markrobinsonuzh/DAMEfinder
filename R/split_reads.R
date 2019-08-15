@@ -86,7 +86,7 @@ getMD <- function(a){
     nucl.num <- as.integer(MDtag)
   } else{
     nucl.num <- numeric(length(MDtag))
-    nucl.num[MDtag %in% c("A","C","G","T")] <- 1
+    nucl.num[MDtag %in% c("A","C","G","T","N")] <- 1
 
     if(sum(nucl.num != 1) == length(numbers)){
       nucl.num[nucl.num != 1] <- as.integer(numbers)} else{
