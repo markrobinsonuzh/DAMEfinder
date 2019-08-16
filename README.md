@@ -6,7 +6,7 @@
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and **tuple-based** (fast-mode), which converge when calculating differential methylation.
 
-<img src="vignettes/DAMEfinder_workflow.png" width="200">
+<img src="vignettes/DAMEfinder_workflow.png" width="500">
 
 Please refer to the vignette for more details on running the pipeline.
 
