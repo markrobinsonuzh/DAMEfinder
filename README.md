@@ -6,7 +6,7 @@
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and **tuple-based** (fast-mode), which converge when calculating differential methylation.
 
-![](vignettes/DAMEfinder_workflow.png)
+<img src="vignettes/DAMEfinder_workflow.png" width="500">
 
 Please refer to the vignette for more details on running the pipeline.
 
@@ -28,10 +28,21 @@ To run the **tuple-based** mode you have to run [methtuple](https://github.com/P
 
 I call this the fast-mode because you don't need SNP information. The assumption is that intermediate levels of methylation represent ASM along the genome. For example, we have shown that the ASM score can distinguish females from males in the X chromosome. Using SNP information this wouldn't be possible.
 
+### What does that look like?
+
+1. **SNP-based** ASM is sequence dependent, therefore to draw ASM I split the reads by allele, a bit like this:
+![](vignettes/MethylcirclesSNP_fullmapq.png)
+This is an example where there is differential SNP-ASM, where there is gain of ASM in CR-cancer tissue.
+
+2. **tuple-based** ASM only relies on the reads, therefore I order the reads by methylation state, a bit like this:
+![](vignettes/MethylcirclesCpG_topDAME.png)
+This is another example where there is differential gain of ASM, also in CRC.
+
+**DAMEfinder** makes plots like these, as well as MDS plots.
 
 ## How do I install it?
 
-Since DAMEfinder is not (yet) on Bioconductor, you have to install all dependencies before:
+Since DAMEfinder is not on Bioconductor, you have to install all dependencies before:
 
 ```{r}
 ## Install `BiocManager` if needed

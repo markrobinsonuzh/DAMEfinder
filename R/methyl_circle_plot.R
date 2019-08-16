@@ -67,7 +67,6 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
     bamFile,
     param = Rsamtools::ScanBamParam(
       tag= c("MD","XM","XR","XG"),
-      mapqFilter = 40,
       which=snp),
     use.names = TRUE)
 
@@ -276,7 +275,6 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(
     bamFile,
     param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
-                                    mapqFilter = 40,
                                     which = cpgsite),
     use.names = TRUE)
   alns <- unlist(alns.pairs)

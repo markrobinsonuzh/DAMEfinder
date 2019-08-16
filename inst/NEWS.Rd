@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.0.3}{
+\itemize{
+    \item Fix bug in methyl_circle_plot that ignored reads by mapq
+    \item Add figures to README
+}
+}
+
 \section{DAMEfinder VERSION 1.0.2}{
 \itemize{
     \item Fix bug in get_MD that ignored N bases
