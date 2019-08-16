@@ -28,6 +28,17 @@ To run the **tuple-based** mode you have to run [methtuple](https://github.com/P
 
 I call this the fast-mode because you don't need SNP information. The assumption is that intermediate levels of methylation represent ASM along the genome. For example, we have shown that the ASM score can distinguish females from males in the X chromosome. Using SNP information this wouldn't be possible.
 
+### What does that look like?
+
+SNP-based ASM is sequence dependent, therefore to draw ASM I split the reads by allele, a bit like this:
+![](vignettes/MethylcirclesSNP_fullmapq.png)
+This is an example where there is differential SNP-ASM, where there is gain of ASM in CR-cancer tissue.
+
+tuple-ASM only relies on the reads, therefore I order the reads by methylation state, a bit like this:
+![](vignettes/MethylcirclesCpG_topDAME.png)
+This is another example where there is differential gain of ASM, also in CRC.
+
+**DAMEfinder** makes plots like these, as well as MDS plots.
 
 ## How do I install it?
 
