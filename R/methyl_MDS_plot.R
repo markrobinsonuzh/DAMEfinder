@@ -6,7 +6,6 @@
 #'
 #' @param x \code{RangedSummarizedExperiment}, output from
 #'   \code{calc_derivedasm} or \code{calc_asm}.
-#' @param color Vector of colors for each group label.
 #' @param group Vector of group or any other labels, same length as number of
 #'   samples.
 #' @param top Number of top CpG sites used to calculate pairwise distances.
@@ -21,7 +20,7 @@
 #' @import ggplot2
 #'
 #' @export
-methyl_MDS_plot <- function(x, color = NA,
+methyl_MDS_plot <- function(x,
                             group, top = 1000, coverage = 5,
                             adj = 0.02, pointSize = 4){
 
@@ -55,19 +54,10 @@ methyl_MDS_plot <- function(x, color = NA,
   df <- data.frame(dim1 = mds_meth[,1], dim2 = mds_meth[,2],
                    names = colnames(x), treat = group)
 
-  if(!is.vector(color)){
   ggplot()+
     geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
                size = pointSize) +
     geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-adj, label=~names)) +
     theme_bw()
-  } else{
-    ggplot()+
-      geom_point(data = df, mapping = aes_(x=~dim1, y=~dim2, color=~treat),
-                 size = pointSize) +
-      geom_text(data = df, mapping = aes_(x=~dim1, y=~dim2-adj, label=~names)) +
-      scale_color_manual(values = color) +
-      theme_bw()
-    }
 
 }

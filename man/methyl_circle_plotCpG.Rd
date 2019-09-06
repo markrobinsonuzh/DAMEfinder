@@ -5,7 +5,8 @@
 \title{Draw methylation circle plot without SNP}
 \usage{
 methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bamFile,
-  pointSize = 3, refFile = refFile, dame = NULL, order = FALSE)
+  pointSize = 3, refFile = refFile, dame = NULL, order = FALSE,
+  sampleName = NULL, sampleReads = FALSE, numReads = 20)
 }
 \arguments{
 \item{cpgsite}{GRanges object containing a single CpG site location of
@@ -21,6 +22,13 @@ interest}
 
 \item{order}{Whether reads should be sorted by methylation status. Default=
 False.}
+
+\item{sampleName}{Plot title.}
+
+\item{sampleReads}{Whether a subset of reads should be plotted.
+Default = FALSE.}
+
+\item{numReads}{Number of reads to plot, if sampleReads is TRUE. Default = 20}
 }
 \value{
 Plot

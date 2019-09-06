@@ -5,14 +5,12 @@
 \title{Multidimensional scaling plot of distances between methylation proportions
 (beta values)}
 \usage{
-methyl_MDS_plot(x, color = NA, group, top = 1000, coverage = 5,
-  adj = 0.02, pointSize = 4)
+methyl_MDS_plot(x, group, top = 1000, coverage = 5, adj = 0.02,
+  pointSize = 4)
 }
 \arguments{
 \item{x}{\code{RangedSummarizedExperiment}, output from
 \code{calc_derivedasm} or \code{calc_asm}.}
-
-\item{color}{Vector of colors for each group label.}
 
 \item{group}{Vector of group or any other labels, same length as number of
 samples.}

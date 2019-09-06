@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.1.3}{
+\itemize{
+    \item Add new function to plot all score tracks
+    \item Number of reads methyl_circle_plot can now be sampled
+}
+}
+
 \section{DAMEfinder VERSION 1.0.3}{
 \itemize{
     \item Fix bug in methyl_circle_plot that ignored reads by mapq

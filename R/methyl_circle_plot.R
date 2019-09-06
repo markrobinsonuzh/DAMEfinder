@@ -12,8 +12,12 @@
 #' @param dame (optional) GRanges object containing a region to plot.
 #' @param letterSize Size of alleles drawn in plot. Default = 2.5.
 #' @param pointSize Size of methylation circles. Default = 3.
-#' @param sampleName FIX: this is to save the vcf file to not generate it every
+#' @param sampleName FIX?: this is to save the vcf file to not generate it every
 #'   time you run the function.
+#' @param sampleReads Whether a subset of reads should be plotted.
+#'   Default = FALSE.
+#' @param numReads Number of reads to plot per allele, if sampleReads is TRUE.
+#'   Default = 20
 #'
 #' @return Plot
 #' @examples
@@ -46,7 +50,8 @@
 
 methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
                                letterSize = 2.5, pointSize = 3,
-                               sampleName = "sample1", cpgsite = NULL){
+                               sampleName = "sample1", cpgsite = NULL,
+                               sampleReads = FALSE, numReads = 20){
 
   message("Reading vcf file")
   if(!file.exists(paste0(sampleName,".RData"))){
@@ -57,7 +62,9 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
   snp.loc <- which(as.integer(vcf[,2]) == start(snp) &
                      vcf[,1] == levels(seqnames(snp)))
   if(length(snp.loc) == 0){
-    stop("Sample does not contain SNP")
+    message("Sample does not contain SNP")
+    return(NULL)
+    stop()
   }
   ref <- vcf[,4][snp.loc]
   alt <- vcf[,5][snp.loc]
@@ -76,6 +83,11 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   alt.reads <- split$alt.reads
   ref.reads <- split$ref.reads
+
+  if(sampleReads){
+    alt.reads <- sample(alt.reads, numReads)
+    ref.reads <- sample(alt.reads, numReads)
+  }
 
   message("Sorting reads")
   #don't unlist, paired
@@ -105,6 +117,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
   if(length(cgsite) < 1){
+    return(NULL)
     stop("No CpG sites associated to this SNP")
   }
 
@@ -219,7 +232,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
   cols <- c("#0E4071", "#d55e00", "#0E4071", "#d55e00")
   names(cols) <- c("a", "r", alt, ref)
 
-  ggplot() +
+  mp <- ggplot() +
     scale_shape_identity() +
     theme_void() +
     geom_segment(data=d2, aes(x=xstart, y=reads, xend=xend, yend=reads,
@@ -230,7 +243,10 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
                    colour = letter), size=letterSize) +
     geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
     scale_color_manual(values=cols) +
-    guides(color=FALSE)
+    guides(color=FALSE) +
+    ggtitle(sampleName)
+
+  return(mp)
 }
 
 #' Draw methylation circle plot without SNP
@@ -246,6 +262,10 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' @param dame (optional) GRanges object containing a region to plot
 #' @param order Whether reads should be sorted by methylation status. Default=
 #' False.
+#' @param sampleName Plot title.
+#' @param sampleReads Whether a subset of reads should be plotted.
+#'   Default = FALSE.
+#' @param numReads Number of reads to plot, if sampleReads is TRUE. Default = 20
 #' @return Plot
 #' @examples
 #' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
@@ -270,13 +290,22 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' @export
 methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
                                   pointSize = 3, refFile = refFile,
-                                  dame = NULL, order = FALSE){
+                                  dame = NULL, order = FALSE,
+                                  sampleName = NULL, sampleReads = FALSE,
+                                  numReads = 20){
 
   alns.pairs <- GenomicAlignments::readGAlignmentPairs(
     bamFile,
     param = Rsamtools::ScanBamParam(tag = c("MD","XM","XR","XG"),
                                     which = cpgsite),
     use.names = TRUE)
+
+
+  if(sampleReads){
+    ran.names <- sample(names(alns.pairs), numReads)
+    alns.pairs <- alns.pairs[names(alns.pairs) %in% ran.names]
+  }
+
   alns <- unlist(alns.pairs)
 
   ####get reference and CpG positions####-------------------------------------
@@ -423,7 +452,8 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
     geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value),
                fill="white", size=pointSize) +
     geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
-    guides(color=FALSE)
+    guides(color=FALSE) +
+    ggtitle(sampleName)
 
 }
 
