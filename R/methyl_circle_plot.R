@@ -86,7 +86,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   if(sampleReads){
     alt.reads <- sample(alt.reads, numReads)
-    ref.reads <- sample(alt.reads, numReads)
+    ref.reads <- sample(ref.reads, numReads)
   }
 
   message("Sorting reads")

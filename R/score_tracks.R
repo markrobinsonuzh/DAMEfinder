@@ -2,13 +2,19 @@
 #'
 #'
 #' @param dame GRanges object containing a region of interest, or detected with
-#' find_dames
+#'   find_dames
 #' @param window Number of CpG sites outside (up or down-stream) of the DAME
-#' should be plotted. Default = 0.
+#'   should be plotted. Default = 0.
+#' @param positions Number of bp sites outside (up or down-stream) of the DAME
+#'   should be plotted. Default = 0.
 #' @param derASM SummarizedExperiment object obtained from calc_derivedasm
-#' (Filtering should be done by the user)
-#' @param ASM SummarizedExperiment object obtained from calc_asm
-#' (Filtering should be done by the user)
+#'   (Filtering should be done by the user)
+#' @param ASM SummarizedExperiment object obtained from calc_asm (Filtering
+#'   should be done by the user)
+#' @param colvec Vector of colors (mainly useful for the SNP plot, because I add
+#'   it with cowplot, so I don't export a ggplot, optional)
+#' @param plotSNP whether to add the SNP track, only if derASM is specified.
+#'   Default = FALSE
 #'
 #' @return Plot
 #' @examples
@@ -25,9 +31,19 @@
 #'
 #' @export
 
-dame_track <- function(dame, window = 0, derASM = NULL, ASM = NULL){
+dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
+                       ASM = NULL, colvec = NULL, plotSNP = FALSE){
+
+  res_dame <- dame
+  start(res_dame) <- start(dame) - positions
+  end(res_dame) <- end(dame) + positions
 
   if(!is.null(derASM)){
+
+    if(!all.equal(colData(derASM)$samples, colnames(derASM))){
+      stop("Sample names in colData() and colnames are different")
+    }
+
     ASMsnp <- assay(derASM, "der.ASM")
     SNP <- assay(derASM, "snp.table")
     ref <- assay(derASM, "ref.meth") / assay(derASM, "ref.cov")
@@ -35,7 +51,7 @@ dame_track <- function(dame, window = 0, derASM = NULL, ASM = NULL){
 
     snpgr <- SummarizedExperiment::rowRanges(derASM)
 
-    over <- GenomicRanges::findOverlaps(snpgr, dame)
+    over <- GenomicRanges::findOverlaps(snpgr, res_dame)
     if(window != 0){
       win <- c(seq(from = (queryHits(over)[1] - window),
                    to = (queryHits(over)[1] - 1),
@@ -84,6 +100,11 @@ dame_track <- function(dame, window = 0, derASM = NULL, ASM = NULL){
   #colData(ASM)$group <- metadata$V2
 
   if(!is.null(ASM)){
+
+    if(!all.equal(colData(ASM)$samples, colnames(ASM))){
+      stop("Sample names in colData() and colnames are different")
+    }
+
     meth <- (assay(ASM,"MM") +
                assay(ASM,"MU") +
                assay(ASM,"UM")) / assay(ASM,"cov")
@@ -93,7 +114,7 @@ dame_track <- function(dame, window = 0, derASM = NULL, ASM = NULL){
 
 
     #ASMtuple
-    over <- GenomicRanges::findOverlaps(tupgr, dame)
+    over <- GenomicRanges::findOverlaps(tupgr, res_dame)
 
     if(window != 0){
     win <- c(seq(from = (queryHits(over)[1] - window),
@@ -168,10 +189,13 @@ dame_track <- function(dame, window = 0, derASM = NULL, ASM = NULL){
     theme_bw() +
     xlab("position") + ggtitle ("Scores")
 
+  cord <- ggplot_build(m1)$layout$panel_scales_x[[1]]$range$range
+
+
   #plot SNP table
-  if(exists("subSNP_long")){
+  if(plotSNP){
     m2 <- ggplot(data = subSNP_long) +
-      geom_point(aes(x=~pos, y = 1, group=~variable, color=~snp.pos),
+      geom_point(aes_(x=~pos, y = 1, group=~variable, color=~snp.pos),
                  shape = 8, size = 1, fill = "white", stroke = 1) +
       facet_grid(variable ~ .) +
       theme_bw() +
@@ -180,13 +204,25 @@ dame_track <- function(dame, window = 0, derASM = NULL, ASM = NULL){
             axis.ticks.y = element_blank(),
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank()) +
+      coord_cartesian(xlim = cord) +
       ylab("") + ggtitle ("SNPs - for ASMsnp") +
       xlab("position")
 
+    if(!is.null(colvec)){
+      m2 <- m2 + scale_color_manual(values = colvec)
+      m1 <- m1 + scale_color_manual(values = colvec)
+    }
+
     p <- cowplot::plot_grid(m1,m2, ncol=1, nrow = 2,
-                            rel_heights = c(2,1), align = "v")
+                            rel_heights = c(3,1), align="v")
+
   } else{
-    p <- m1
+
+    if(!is.null(colvec)){
+      p <- m1 + scale_color_manual(values = colvec)
+    } else{
+      p <- m1
+    }
   }
 
   return(p)
