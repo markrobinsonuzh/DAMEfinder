@@ -17,7 +17,6 @@
 #'   Default = FALSE
 #'
 #' @return Plot
-#' @examples
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -27,6 +26,8 @@
 #' @importFrom SummarizedExperiment assay
 #' @importFrom SummarizedExperiment colData
 #' @importFrom S4Vectors queryHits
+#' @importFrom BiocGenerics start<-
+#' @importFrom BiocGenerics end<-
 #' @import ggplot2
 #'
 #' @export
@@ -96,8 +97,6 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     subSNP_long$snp.pos <- ifelse(is.na(subSNP_long$snp.pos), NA,
                                   sprintf("chr%s:%s", chrom, loc))
   }
-
-  #colData(ASM)$group <- metadata$V2
 
   if(!is.null(ASM)){
 

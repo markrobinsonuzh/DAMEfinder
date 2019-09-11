@@ -4,7 +4,8 @@
 \alias{dame_track}
 \title{Plot score tracks}
 \usage{
-dame_track(dame, window = 0, derASM = NULL, ASM = NULL)
+dame_track(dame, window = 0, positions = 0, derASM = NULL,
+  ASM = NULL, colvec = NULL, plotSNP = FALSE)
 }
 \arguments{
 \item{dame}{GRanges object containing a region of interest, or detected with
@@ -13,18 +14,24 @@ find_dames}
 \item{window}{Number of CpG sites outside (up or down-stream) of the DAME
 should be plotted. Default = 0.}
 
+\item{positions}{Number of bp sites outside (up or down-stream) of the DAME
+should be plotted. Default = 0.}
+
 \item{derASM}{SummarizedExperiment object obtained from calc_derivedasm
 (Filtering should be done by the user)}
 
-\item{ASM}{SummarizedExperiment object obtained from calc_asm
-(Filtering should be done by the user)}
+\item{ASM}{SummarizedExperiment object obtained from calc_asm (Filtering
+should be done by the user)}
+
+\item{colvec}{Vector of colors (mainly useful for the SNP plot, because I add
+it with cowplot, so I don't export a ggplot, optional)}
+
+\item{plotSNP}{whether to add the SNP track, only if derASM is specified.
+Default = FALSE}
 }
 \value{
 Plot
 }
 \description{
 Plot score tracks
-}
-\examples{
-
 }
