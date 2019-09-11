@@ -1,7 +1,7 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 1.0.3
+Version: 1.1.3
 Authors@R: c(person("Stephany", "Orjuela", role = c("aut", "cre"), email = "sorjuelal@gmail.com"),
              person("Dania", "Machlab", role = "aut", email = "dania.machlab@gmail.com"),
              person("Mark", "Robinson", role = "aut", email = "mark.robinson@imls.uzh.ch"))
@@ -30,7 +30,10 @@ Imports:
   methods,
   limma, 
   bumphunter,
-  Biostrings
+  Biostrings,
+  reshape2,
+  cowplot,
+  rtracklayer
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown,
     testthat

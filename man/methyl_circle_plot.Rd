@@ -6,7 +6,7 @@
 \usage{
 methyl_circle_plot(snp, vcfFile, bamFile, refFile, dame = NULL,
   letterSize = 2.5, pointSize = 3, sampleName = "sample1",
-  cpgsite = NULL)
+  cpgsite = NULL, sampleReads = FALSE, numReads = 20)
 }
 \arguments{
 \item{snp}{GRanges object containing SNP location.}
@@ -23,11 +23,17 @@ methyl_circle_plot(snp, vcfFile, bamFile, refFile, dame = NULL,
 
 \item{pointSize}{Size of methylation circles. Default = 3.}
 
-\item{sampleName}{FIX: this is to save the vcf file to not generate it every
+\item{sampleName}{FIX?: this is to save the vcf file to not generate it every
 time you run the function.}
 
 \item{cpgsite}{(optional) GRanges object containing a single CpG site
 location of interest.}
+
+\item{sampleReads}{Whether a subset of reads should be plotted.
+Default = FALSE.}
+
+\item{numReads}{Number of reads to plot per allele, if sampleReads is TRUE.
+Default = 20}
 }
 \value{
 Plot
