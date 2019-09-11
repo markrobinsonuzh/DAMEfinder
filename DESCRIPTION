@@ -32,7 +32,8 @@ Imports:
   bumphunter,
   Biostrings,
   reshape2,
-  cowplot
+  cowplot,
+  rtracklayer
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown,
     testthat
