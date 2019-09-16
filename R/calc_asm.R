@@ -32,10 +32,10 @@
 #' tuple_files <- get_data_path(tuple_files)
 #' ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
 #' ASMscore <- calc_asm(ASM)
-#' 
+#'
 #' @export
 #'
-calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt, 
+calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
                      coverage = 5, verbose=TRUE) {
 
 
@@ -120,23 +120,23 @@ calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
 
   #Build object
   sa <- SummarizedExperiment::SummarizedExperiment(
-    assays=S4Vectors::SimpleList(asm=abs(asm),
+    assays=S4Vectors::SimpleList(asm=asm,
                                  cov = tot.coverage,
                                  MM = MM,
                                  MU = MU,
                                  UM = UM,
                                  UU = UU),
     rowRanges=gr)
-  
+
   #filter by coverage
-  
+
   filt <- rowSums(
     !is.na(SummarizedExperiment::assay(sa, "cov")) &
       SummarizedExperiment::assay(sa, "cov") >= coverage) ==  ncol(sa)
   sa <- sa[filt,]
   gr <- gr[filt]
 
-  if(verbose) message("Returning SummarizedExperiment with ",nrow(asm), 
+  if(verbose) message("Returning SummarizedExperiment with ",nrow(asm),
                       " CpG pairs", appendLF = FALSE)
   o <- order(GenomeInfoDb::seqnames(sa),gr$midpt)
   sa[o]
@@ -175,10 +175,10 @@ calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
 #'
 #' # Calculate ASM score
 #' # sample1 <- calc_score(sample1, beta=0.5, a=0.2)
-#' 
+#'
 calc_score <- function(df, beta = 0.5, a = 0.2) {
   weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
-  df$asm_score <- df$logodds*weights #changed
+  df$asm_score <- df$logodds*weights
   df
 }
 
@@ -212,7 +212,7 @@ calc_logodds <- function(s, eps=1) {
 #'
 #' @param values Vector or matrix of ASM scores where each column is a sample.
 #'   These values are transformed with a square root transformation that
-#'   preserves the sign.
+#'   (doesn't) preserve the sign.
 #'
 #' @return Vector or matrix of transformed scores.
 #'
@@ -220,7 +220,8 @@ calc_logodds <- function(s, eps=1) {
 #' #v <- c(-1,1.5,0,-2.1,4.3)
 #' #modulus_sqrt(v)
 modulus_sqrt <- function(values) {
-  sign(values)*sqrt(abs(values))
+  #sign(values)*sqrt(abs(values))
+  sqrt(abs(values))
 }
 
 
@@ -241,27 +242,27 @@ modulus_sqrt <- function(values) {
 #' @param a parameter for how far from 0.5 we go as a measure of allele-specific
 #'   methylation. The weight is the probability that the MM:(MM+UU) ratio is
 #'   between 0.5-a and 0.5+a. The default is set to 0.2.
-#'   
-#' @details For a given tuple with MM and UU counts, the weight that reflects 
+#'
+#' @details For a given tuple with MM and UU counts, the weight that reflects
 #' allele-scpecificity is calculated as follows:
-#' 
+#'
 #' - Prior:\deqn{p(\theta|\alpha,\beta) \sim Beta(\alpha,\beta),} where
-#' \eqn{\theta = \frac{MM}{MM+UU}} and \eqn{\alpha = \beta = 0.5}. 
-#' \eqn{p(\theta|\alpha,\beta)} represents our prior belief which is that 
-#' tuples are either fully methylated or fully unmethylated, rather than 
+#' \eqn{\theta = \frac{MM}{MM+UU}} and \eqn{\alpha = \beta = 0.5}.
+#' \eqn{p(\theta|\alpha,\beta)} represents our prior belief which is that
+#' tuples are either fully methylated or fully unmethylated, rather than
 #' allele-specifically methylated which is a much rarer event.
-#' - Likelihood: \deqn{p(x|\alpha,\beta) \propto \theta^{MM}(1-\theta)^{UU},} 
+#' - Likelihood: \deqn{p(x|\alpha,\beta) \propto \theta^{MM}(1-\theta)^{UU},}
 #' where x is our observation (the MM and UU counts).
 #' - Posterior:\deqn{p(\theta|x) \propto p(x|\theta)*p(\theta|\alpha,\beta)}
-#' \deqn{p(\theta|x) \propto \theta^{MM-0.5}(1-\theta)^{UU-0.5},} 
-#' where \eqn{\alpha = \beta = 0.5}. This posterior also follows a beta 
+#' \deqn{p(\theta|x) \propto \theta^{MM-0.5}(1-\theta)^{UU-0.5},}
+#' where \eqn{\alpha = \beta = 0.5}. This posterior also follows a beta
 #' distribution \eqn{\sim Beta(\alpha'=MM+0.5, \beta'=UU+0.5)}
 #' @md
 #'
 #' @return A number that reflects allele-specificity given MM and UU counts for
 #'   a CpG pair. This is used as a weight that is multiplied by the log odds
 #'   ratio to give the final ASM score of that tuple.
-#'   
+#'
 #' @examples
 #' #weight1 <- calc_weight(MM=50, UU=50)
 #' #0.9999716
@@ -272,10 +273,10 @@ modulus_sqrt <- function(values) {
 #' #weight3 <- calc_weight(MM=2, UU=3)
 #' #0.6260661
 #'
-#' 
+#'
 calc_weight <- function(MM, UU, beta=0.5, a=.2) {
   s1 <- beta+MM
   s2 <- beta+UU
-  stats::pbeta(.5+a, shape1=s1, shape2=s2)-stats::pbeta(.5-a, 
+  stats::pbeta(.5+a, shape1=s1, shape2=s2)-stats::pbeta(.5-a,
                                                         shape1=s1, shape2=s2)
 }

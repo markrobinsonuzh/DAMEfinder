@@ -5,7 +5,7 @@
 \title{Find DAMEs}
 \usage{
 find_dames(sa, design, coef = 2, contrast = NULL, smooth = TRUE,
-  Q = 0.7, pvalAssign = "simes", maxGap = 20, verbose = TRUE,
+  Q = 0.5, pvalAssign = "simes", maxGap = 20, verbose = TRUE,
   maxPerms = 10, method = "ls", trend = FALSE, ...)
 }
 \arguments{
@@ -24,7 +24,7 @@ Default = TRUE.}
 
 \item{Q}{The percentile set to get a cutoff value K. K is the value on the
 Qth quantile of the absolute values of the given (smoothed) t-statistics.
-Only necessary if \code{pvalAssign} = "empirical". Default = 0.9.}
+Only necessary if \code{pvalAssign} = "empirical". Default = 0.5.}
 
 \item{pvalAssign}{Choose method to assign pvalues, either "simes" (default)
 or "empirical". This second one performs \code{maxPerms} number of
