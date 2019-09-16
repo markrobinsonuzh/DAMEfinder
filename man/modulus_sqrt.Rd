@@ -9,7 +9,7 @@ modulus_sqrt(values)
 \arguments{
 \item{values}{Vector or matrix of ASM scores where each column is a sample.
 These values are transformed with a square root transformation that
-preserves the sign.}
+(doesn't) preserve the sign.}
 }
 \value{
 Vector or matrix of transformed scores.

@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.1.4}{
+\itemize{
+    \item Change default Q in find_dames to 0.5
+    \item small restructure in calc_asm code
+}
+}
+
 \section{DAMEfinder VERSION 1.1.3}{
 \itemize{
     \item Add new function to plot all score tracks
