@@ -30,11 +30,11 @@ I call this the fast-mode because you don't need SNP information. The assumption
 
 ### What does that look like?
 
-1. **SNP-based** ASM is sequence dependent, therefore to draw ASM I split the reads by allele, a bit like this:
+1. **SNP-based** ASM is sequence dependent, therefore to draw ASM I split the reads (horizontal lines) by allele, a bit like this:
 ![](vignettes/DAME_snp_sampledreads.png)
-This is an example where there is differential SNP-ASM, where there is gain of ASM in CR-cancer tissue. The reads shown are a random subset of the total. You could plot all the reads if you like.
+This is a (not so great) example of differential SNP-ASM. There is gain of ASM in CR-cancer tissue (CRC2_cimp). The reads shown are a random subset of the total. You could plot all the reads if you like.
 
-The actual ASM scores in this region, as well as the methylation per allele for several samples look like this:
+The actual ASM scores in this region, as well as the methylation level per allele for several samples looks like this:
 
 ![](vignettes/DAME_snp_allsamps.png)
 
@@ -42,15 +42,12 @@ or summarized by medians:
 
 ![](vignettes/DAME_snp_allsamps_median.png)
 
-2. **tuple-based** ASM only relies on the reads. A random subset of 30 reads (from the same region as above) looks like this:
-![](vignettes/DAME_only30reads.png)
+2. **tuple-based** ASM only relies on the reads.
 
-We can look at the tuple ASM scores in this region, as well as the overall methylation (beta-values) for several samples:
+We can look at the tuple ASM scores in the same region as above, as well as the overall methylation (beta-values) for several samples:
 
-![](vignettes/DAME_tuple_allsamps.png)
+![](vignettes/DAME_tuple_allsamps_median.png)
 
-
-**DAMEfinder** makes plots like these, as well as MDS plots.
 
 ## How do I install it?
 
