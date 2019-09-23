@@ -33,7 +33,8 @@ Imports:
   Biostrings,
   reshape2,
   cowplot,
-  rtracklayer
+  rtracklayer,
+  Biobase
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown,
     testthat
