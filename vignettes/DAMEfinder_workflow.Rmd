@@ -44,18 +44,17 @@ imprinted, one of the parental alleles is hyper-methylated compared to the other
 allele, which leads to parent-allele-specific expression. This asymmetry is
 conferred in the gametes or very early in embryogenesis, and will remain for the
 lifetime of the individual [@kelsey2013; @hanna2014]. ASM not related to
-imprinting or "secondary imprinting", exhibits parental-specific methylation,
+imprinting, exhibits parental-specific methylation,
 but is not inherited from the germline [@hanna2017]. Another example of ASM is X
-chromosome inactivation in females, where methylation coordinates the "random"
-silencing of the X chromosome. DAMEfinder detects ASM for several
+chromosome inactivation in females. DAMEfinder detects ASM for several
 bisulfite-sequenced (BS-seq) samples in a cohort, and performs differential
-detection for regions that exhibit loss or gain in ASM.
+detection for regions that exhibit loss or gain of ASM.
 
 
 # Overview
 
 We focus on any case of ASM in which there is an imbalance in the methylation
-level between two alleles, regardless of its origin.
+level between two alleles, regardless of the allele of origin.
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and
 **tuple-based** (fast-mode), which converge when differential ASM is detected:
@@ -65,16 +64,17 @@ knitr::include_graphics('DAMEfinder_workflow.png')
 ```
 
 ## Why **SNP-based**?
-We call this the "exhaustive-mode" because it extracts an ASM score for every
-CpG site in the reads containing the SNPs in a VCF file. Based on this score,
-DAMEs are detected. From a biological point of view, you might want to run this
-mode if you are interested in loss or gain of allele-specificity linked to
-somatic or germline heterozygous SNPs. More specifically, you could detect genes
-that exhibit loss of imprinting (e.g. as in colorectal cancer [@cui2002]).
+This is the exhaustive mode because it extracts an ASM score for every CpG site
+in the reads containing the SNPs in a VCF file. Based on this score, DAMEs are
+detected. From a biological point of view, you might want to run this mode if
+you are interested in loss or gain of allele-specificity linked to somatic or
+germline heterozygous SNPs (sequence-dependent ASM). More specifically, you
+could detect genes that exhibit loss of imprinting (e.g. as in colorectal cancer
+[@cui2002]).
 
 ## Why **tuple-based**?
 To run the **tuple-based** mode you have to run
-[methtuple](https://github.com/PeteHaitch/methtuple) first [@hickey2015]. The
+[methtuple](https://github.com/PeteHaitch/methtuple)[@hickey2015] first. The
 methtuple output is the only thing needed for this mode. I call this the
 fast-mode because you don't need SNP information. The assumption is that
 intermediate levels of methylation represent ASM along the genome. For example,
@@ -419,65 +419,6 @@ ASM_mat <- calc_asm(tuple_list)
 ASM_mat
 ```
 
-<!-- ### Remove tuples without a SNP -->
-<!-- Some of the tuples obtained above might have a good ASM score, however in
-some cases, this is no guarantee that the ASM is linked to an actual SNP.
-Because of this and to reduce the number of false positives, you can remove CpG
-sites that are "far away" from a SNP. Since in the **tuple-based mode** we
-assume you do not have `VCF` files of your samples, what you can get is a common
-set of variants.  -->
-
-<!-- Here we include some options to obtain such a `VCF` file: -->
-
-<!-- * From
-[dbSNP](https://www.ncbi.nlm.nih.gov/variation/docs/human_variation_vcf/), or
-its [ftp
-site](ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b150_GRCh37p13/VCF/). -->
-<!-- * From [ensembl](http://www.ensembl.org/info/data/ftp/index.html), or its
-[ftp
-site](ftp://ftp.ensembl.org/pub/grch37/release-91/variation/vcf/homo_sapiens/).
--->
-
-<!-- Next, you can load that file into R with `vcfR`. For more info on this
-package click [here](https://knausb.github.io/vcfR_documentation/index.html):
--->
-
-<!-- ```{r, eval =F} -->
-<!-- library(vcfR) -->
-<!-- vcf <-
-read.vcfR("../../Shared_taupo/steph/reference/common_all_20170710.vcf") -->
-<!-- vcf <- getFIX(vcf) -->
-<!-- ``` -->
-
-<!-- This way we get a matrix version of the `VCF` file.  -->
-
-<!-- Next we make a GRanges object from the vcf, and extract the GRanges from
-the SummarizedExperiment. -->
-
-<!-- ```{r, eval=FALSE} -->
-
-<!-- GRvcf <- GRanges(vcf[,1],IRanges(as.numeric(vcf[,2]), width = 1)) -->
-<!-- rm(vcf) #because it's too heavy -->
-
-<!-- GRasm <- rowRanges(ASM_mat) -->
-<!-- ``` -->
-
-<!-- Since we want to keep tuples within a certain proximity of a variant, we
-grab 50 base pairs up and downstream from the SNP and filter the
-SummarizedExperiment to keep the CpG tuples within this window. You can change
-the size of the window depending on for example the read lenght in your data:
--->
-
-<!-- ```{r, eval=FALSE} -->
-
-<!-- #Set 100 bp window (read length) from the SNP -->
-<!-- GRvcf <- GenomicRanges::promoters(GRvcf, upstream=50, downstream=50) -->
-
-<!-- #Filter tuples  -->
-<!-- over <- GenomicRanges::findOverlaps(GRasm, GRvcf) -->
-<!-- ASM_mat <- ASM_mat[unique(S4Vectors::queryHits(over)),] -->
-<!-- ``` -->
-
 
 ### Find DAMEs
 
@@ -494,7 +435,7 @@ ASMscore <- calc_asm(readtuples_output)
 filt <- rowSums(!is.na(assay(ASMscore, "asm"))) == 5 #filt to avoid warnings
 ASMscore <- ASMscore[filt,]
 
-#make design matrix
+#make design matrix (or specify a contrast)
 grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
 mod <- model.matrix(~grp)
 
@@ -512,6 +453,93 @@ head(dames)
 
 
 # Visualization
+
+## DAME tracks
+
+After detecting a set of DAMEs you want to look at them individually. We do this
+with the function `dame_track`.
+
+Depending on which object I used to obtain my DAMEs (tuple or SNP mode), I
+choose which SummarizedExperiment to input in the field `ASM` (for tuple), or
+`derASM` (for SNP). Either way, the SummarizedExperiment must have the columns
+`group` and `samples` in the `colData` field:
+
+```{r, dametrack}
+
+#Here I will use the tuple-ASM SummExp
+colData(ASMscore)$group <- grp
+colData(ASMscore)$samples <- colnames(ASMscore)
+
+#Set a DAME as a GRanges. I choose a one from the tables we obtained above
+dame <- GRanges(19,IRanges(323736,324622))
+
+dame_track(dame = dame,
+           ASM = ASMscore)
+```
+
+Because we used the tuple-ASM object, we get by default two tracks: the ASM
+score, and the marginal methylation (aka beta-value).
+
+The shaded square delimits the DAME we defined to plot. We can look at the
+flanking regions of the DAME by changing `window` or `positions`. With `window`
+we specify the number of CpG positions we want to add to the plot up and
+down-stream. With `positions` we specify the number of base pairs.
+
+```{r, dt2}
+dame_track(dame = dame,
+           ASM = ASMscore,
+           window = 2)
+
+```
+
+If we use the SNP-ASM as input we get different tracks:
+
+```{r, dt3}
+
+dame <- GRanges(19,IRanges(387966,387983))
+
+grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+colData(derASM)$group <- grp
+
+dame_track(dame = dame,
+           derASM = derASM)
+
+```
+
+Here we get three tracks: the SNP-ASM score, and the methylation levels for each
+allele. Since the ASM score here depends on SNPs, we can see what SNPs are involved in the ASM calculation at each CpG position:
+
+```{r, dt4}
+dame_track(dame = dame,
+           derASM = derASM,
+           plotSNP = TRUE)
+
+```
+
+We see that the SNP located at `chr19:388,065` was the one used to split the
+allele methylation.
+
+If you put both SummarizedExperiments with a single DAME, you would get all the
+tracks:
+```{r, dt5}
+dame_track(dame = dame,
+           derASM = derASM,
+           ASM = ASMscore)
+
+```
+
+Notice that the first two tracks depend on the tuple-ASM, hence each point
+represents the midpoint between a pair of CpG sites.
+
+If you think plotting all the samples separately is difficult to see, you can use the function `dame_track_median` to summarize:
+```{r, dt6}
+dame_track_median(dame = dame,
+           derASM = derASM,
+           ASM = ASMscore)
+
+```
+
+As you can see, this region is not a very good DAME.
 
 ## Methyl-circle plot
 
@@ -539,6 +567,11 @@ methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file,
                    refFile = ref.file)
 ```
 
+
+You can reduce the number of reads included with the option `sampleReads`, which
+performs a random sampling of the number of reads to be shows per allele. The
+number of reads can be specified with `numReads`.
+
 If you are interested in a specific CpG site within this plot, you can include
 an extra `GRanges` with its location, and the triangle at the bottom will point
 to it:
@@ -563,20 +596,15 @@ methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bam.file,
 ```
 
 You can also limit both the SNP plot and the CpG plot to a specific window of
-interest (to zoom in or out), say for example after you have identified a DAME:
+interest (to zoom in or out), or if you want to look at the specific DAME
+region:
 
 ```{r, fig4}
 
-#the DAME we identified up in section 4.1.3
+#a DAME we identified up in section 4.1.3
 dame <- GRanges(19, IRanges(388278,388350))
 
-#To find the SNP(s) in this DAME
-index <- which(start(derASM) == 388278)
-
-#Here all samples share the SNP (which is nice)
-assay(derASM, "snp.table")[index,]
-
-#put SNP in GRanges
+#put SNP in GRanges (you can find the SNP with the dame_track function)
 snp <- GRanges(19, IRanges(388413, width = 1)) #always set the width if your 
 #GRanges has 1 site
 
@@ -591,11 +619,12 @@ methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file,
 
 To plot a multidimensional scaling plot (MDS), we provide a wrapper to
 `plotMDS()` from `limma`, which adjusts the ASM score to calculate the euclidean
-distances. The input is the `SummarizedExperiment`, and the vector of covariates
+distances. The input is a SummarizedExperiment, and the vector of covariates
 to color the points by:
 
 ```{r, fig5}
 
+grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
 methyl_MDS_plot(ASMscore, group = grp)
 
 ```

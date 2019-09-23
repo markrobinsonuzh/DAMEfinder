@@ -3,6 +3,7 @@
 export(calc_asm)
 export(calc_derivedasm)
 export(dame_track)
+export(dame_track_median)
 export(empirical_pval)
 export(extract_bams)
 export(find_dames)
