@@ -78,11 +78,11 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     #marg.meth per allele
     subref_long <- reshape2::melt(subref, id.vars = "pos",
                                      measure.vars = colnames(ASMsnp))
-    subref_long$score <- "REF:marg.meth"
+    subref_long$score <- "REF:meth"
 
     subalt_long <- reshape2::melt(subalt, id.vars = "pos",
                                   measure.vars = colnames(ASMsnp))
-    subalt_long$score <- "ALT:marg.meth"
+    subalt_long$score <- "ALT:meth"
 
     #SNP
     subSNP <- as.data.frame(SNP[win,])
@@ -137,7 +137,7 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     #Marginal meth
     submeth_long <- reshape2::melt(submeth, id.vars = "pos",
                                    measure.vars = colnames(meth))
-    submeth_long$score <- "marg.meth"
+    submeth_long$score <- "meth"
 
   }
 
@@ -147,8 +147,8 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     full_long <- rbind(subASMtuple_long, submeth_long, subASMsnp_long,
                        subref_long, subalt_long)
     full_long$score <- factor(full_long$score,
-                              levels = c("ASMtuple", "marg.meth", "ASMsnp",
-                                         "REF:marg.meth", "ALT:marg.meth"))
+                              levels = c("ASMtuple", "meth", "ASMsnp",
+                                         "REF:meth", "ALT:meth"))
     full_long$group <- colData(derASM)$group[match(full_long$variable,
                                                    colData(derASM)$samples)]
   }
@@ -157,8 +157,8 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     message("Using ASMsnp score")
     full_long <- rbind(subASMsnp_long, subref_long, subalt_long)
     full_long$score <- factor(full_long$score,
-                              levels = c("ASMsnp", "REF:marg.meth",
-                                         "ALT:marg.meth"))
+                              levels = c("ASMsnp", "REF:meth",
+                                         "ALT:meth"))
     full_long$group <- colData(derASM)$group[match(full_long$variable,
                                                    colData(derASM)$samples)]
   }

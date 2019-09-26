@@ -1,6 +1,15 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+
+\section{DAMEfinder VERSION 1.1.5}{
+\itemize{
+    \item New function dame_track_mean to plot means with s.e. at each position
+    \item Change marg.meth labels to meth
+    \item Vignette update
+}
+}
+
 \section{DAMEfinder VERSION 1.1.4}{
 \itemize{
     \item Change default Q in find_dames to 0.5

@@ -533,7 +533,7 @@ represents the midpoint between a pair of CpG sites.
 
 If you think plotting all the samples separately is difficult to see, you can use the function `dame_track_median` to summarize:
 ```{r, dt6}
-dame_track_median(dame = dame,
+dame_track_mean(dame = dame,
            derASM = derASM,
            ASM = ASMscore)
 

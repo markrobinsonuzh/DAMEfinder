@@ -1,4 +1,4 @@
-#' Plot medians or means? per group of score tracks.
+#' Plot means per group of score tracks.
 #'
 #'
 #' @param dame GRanges object containing a region of interest, or detected with
@@ -30,31 +30,24 @@
 #'
 #' @export
 
-dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
+dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
                        ASM = NULL, colvec = NULL){
 
   res_dame <- dame
   start(res_dame) <- start(dame) - positions
   end(res_dame) <- end(dame) + positions
 
-  #custom min and max functions
-  min_rem <- function(v){
+  #custom se function
+  sd_rem <- function(v){
     if(sum(is.na(v)) == length(v)){
       return(NA)
       stop()
     }
-    if(any(is.na(v))){return(min(v, na.rm = TRUE))} else{return(min(v))}
+    v <- stats::na.omit(v)
+    return(sqrt(stats::var(v)/length(v)))
   }
 
-  max_rem <- function(v){
-    if(sum(is.na(v)) == length(v)){
-      return(NA)
-      stop()
-    }
-    if(any(is.na(v))){return(max(v, na.rm = TRUE))} else{return(max(v))}
-  }
-
-  if(!is.null(derASM)){
+    if(!is.null(derASM)){
 
     if(!all.equal(colData(derASM)$samples, colnames(derASM))){
       stop("Sample names in colData() and colnames are different")
@@ -87,10 +80,11 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
 
     ASMsnp_meds <-lapply(unique(colData(derASM)$group), function(cond){
       idx <- colData(derASM)$group == cond
-      medians <- Biobase::rowMedians(as.matrix(subASMsnp)[,idx], na.rm=TRUE)
-      mins <- apply((as.matrix(subASMsnp)[,idx]), 1, FUN=min_rem)
-      maxs <- apply((as.matrix(subASMsnp)[,idx]), 1, FUN=max_rem)
-      return(data.frame(Medians = medians,
+      medians <- BiocGenerics::rowMeans(as.matrix(subASMsnp)[,idx], na.rm=TRUE)
+
+      mins <- medians - (apply((as.matrix(subASMsnp)[,idx]), 1, FUN=sd_rem))
+      maxs <- medians + (apply((as.matrix(subASMsnp)[,idx]), 1, FUN=sd_rem))
+      return(data.frame(Means = medians,
                         lower = mins,
                         upper = maxs,
                         Group = cond,
@@ -100,27 +94,27 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
 
     ref_meds <-lapply(unique(colData(derASM)$group), function(cond){
       idx <- colData(derASM)$group == cond
-      medians <- Biobase::rowMedians(as.matrix(subref)[,idx], na.rm = TRUE)
-      mins <- apply((as.matrix(subref)[,idx]), 1, FUN=min_rem)
-      maxs <- apply((as.matrix(subref)[,idx]), 1, FUN=max_rem)
-      return(data.frame(Medians = medians,
+      medians <- BiocGenerics::rowMeans(as.matrix(subref)[,idx], na.rm = TRUE)
+      mins <- medians - (apply((as.matrix(subref)[,idx]), 1, FUN=sd_rem))
+      maxs <- medians + (apply((as.matrix(subref)[,idx]), 1, FUN=sd_rem))
+      return(data.frame(Means = medians,
                         lower = mins,
                         upper = maxs,
                         Group = cond,
-                        Score = "REF:marg.meth",
+                        Score = "REF:meth",
                         pos = substart))
     })
 
     alt_meds <-lapply(unique(colData(derASM)$group), function(cond){
       idx <- colData(derASM)$group == cond
-      medians <- Biobase::rowMedians(as.matrix(subalt)[,idx], na.rm=TRUE)
-      mins <- apply((as.matrix(subalt)[,idx]), 1, FUN=min_rem)
-      maxs <- apply((as.matrix(subalt)[,idx]), 1, FUN=max_rem)
-      return(data.frame(Medians = medians,
+      medians <- BiocGenerics::rowMeans(as.matrix(subalt)[,idx], na.rm=TRUE)
+      mins <- medians - (apply((as.matrix(subalt)[,idx]), 1, FUN=sd_rem))
+      maxs <- medians + (apply((as.matrix(subalt)[,idx]), 1, FUN=sd_rem))
+      return(data.frame(Means = medians,
                         lower = mins,
                         upper = maxs,
                         Group = cond,
-                        Score = "ALT:marg.meth",
+                        Score = "ALT:meth",
                         pos = substart))
     })
 
@@ -165,10 +159,10 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
 
     ASMtuple_meds <- lapply(unique(colData(ASM)$group), function(cond){
       idx <- colData(ASM)$group == cond
-      medians <- Biobase::rowMedians(as.matrix(subASMtuple)[,idx], na.rm=TRUE)
-      mins <- apply((as.matrix(subASMtuple)[,idx]), 1, FUN=min_rem)
-      maxs <- apply((as.matrix(subASMtuple)[,idx]), 1, FUN=max_rem)
-      return(data.frame(Medians = medians,
+      medians <- BiocGenerics::rowMeans(as.matrix(subASMtuple)[,idx], na.rm=TRUE)
+      mins <- medians - (apply((as.matrix(subASMtuple)[,idx]), 1, FUN=sd_rem))
+      maxs <- medians + (apply((as.matrix(subASMtuple)[,idx]), 1, FUN=sd_rem))
+      return(data.frame(Means = medians,
                  lower = mins,
                  upper = maxs,
                  Group = cond,
@@ -180,14 +174,14 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
 
     meth_meds <- lapply(unique(colData(ASM)$group), function(cond){
       idx <- colData(ASM)$group == cond
-      medians <- Biobase::rowMedians(as.matrix(submeth)[,idx], na.rm=TRUE)
-      mins <- apply((as.matrix(submeth)[,idx]), 1, FUN=min_rem)
-      maxs <- apply((as.matrix(submeth)[,idx]), 1, FUN=max_rem)
-      return(data.frame(Medians = medians,
+      medians <- BiocGenerics::rowMeans(as.matrix(submeth)[,idx], na.rm=TRUE)
+      mins <- medians - (apply((as.matrix(submeth)[,idx]), 1, FUN=sd_rem))
+      maxs <- medians + (apply((as.matrix(submeth)[,idx]), 1, FUN=sd_rem))
+      return(data.frame(Means = medians,
                         lower = mins,
                         upper = maxs,
                         Group = cond,
-                        Score = "marg.meth",
+                        Score = "meth",
                         pos = subtupger))
     })
 
@@ -200,8 +194,8 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
     full_long <- rbind(ASMtuple_meds_full, meth_meds_full, ASMsnp_meds_full,
                        ref_meds_full, alt_meds_full)
     full_long$Score <- factor(full_long$Score,
-                               levels = c("ASMtuple", "marg.meth", "ASMsnp",
-                                          "REF:marg.meth", "ALT:marg.meth"))
+                               levels = c("ASMtuple", "meth", "ASMsnp",
+                                          "REF:meth", "ALT:meth"))
   }
 
   if(is.null(ASM) & !is.null(derASM)){
@@ -209,8 +203,8 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
     full_long <- rbind(ASMsnp_meds_full,
                        ref_meds_full, alt_meds_full)
     full_long$Score <- factor(full_long$Score,
-                              levels = c("ASMsnp", "REF:marg.meth",
-                                         "ALT:marg.meth"))
+                              levels = c("ASMsnp", "REF:meth",
+                                         "ALT:meth"))
   }
 
   if(is.null(derASM) & !is.null(ASM)){
@@ -227,7 +221,7 @@ dame_track_median <- function(dame, window = 0, positions = 0, derASM = NULL,
 
   #plot scores
   m1 <- ggplot(data = full_long) +
-    geom_line(mapping = aes_(x=~pos, y=~Medians, color=~Group)) +
+    geom_line(mapping = aes_(x=~pos, y=~Means, color=~Group)) +
     geom_ribbon(mapping = aes_(x=~pos, ymin=~lower, ymax=~upper, fill=~Group),
                 alpha = 0.2) +
     geom_rect(data = forect, aes_(xmin=~xmin, xmax=~xmax, ymin=~ymin,
