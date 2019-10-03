@@ -1,4 +1,4 @@
-context("test-dame_track_median")
+context("test-dame_track_mean")
 library(GenomicRanges)
 
 data(extractbams_output)
@@ -9,7 +9,7 @@ DAME <- GRanges(19, IRanges(306443,310272))
 SummarizedExperiment::colData(derASM)$group <- c(rep("CRC",4), rep("NORM", 4))
 
 test_that("SNP dame track", {
-  p <- dame_track_median(dame = DAME, derASM = derASM)
+  p <- dame_track_mean(dame = DAME, derASM = derASM)
   expect_true(is.ggplot(p))
 })
 
@@ -19,6 +19,6 @@ SummarizedExperiment::colData(ASM)$group <- c(rep("CRC",3), rep("NORM", 2))
 SummarizedExperiment::colData(ASM)$samples <- colnames(ASM)
 
 test_that("dame track with both", {
-  p <- dame_track_median(dame = DAME, derASM = derASM, ASM = ASM)
+  p <- dame_track_mean(dame = DAME, derASM = derASM, ASM = ASM)
   expect_true(is.ggplot(p))
 })
