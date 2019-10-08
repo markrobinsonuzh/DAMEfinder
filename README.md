@@ -42,7 +42,7 @@ The actual ASM scores in this region, as well as the methylation level per allel
 
 or summarized by means:
 
-<img src="vignettes/DAME_snp_allsamps_median.png width="550">
+<img src="vignettes/DAME_snp_allsamps_median.png" width="550">
 
 2. **tuple-based** ASM only relies on the reads.
 
