@@ -43,7 +43,7 @@ of allele-specific methylation (ASM) is genomic imprinting. When a gene is
 imprinted, one of the parental alleles is hyper-methylated compared to the other
 allele, which leads to parent-allele-specific expression. This asymmetry is
 conferred in the gametes or very early in embryogenesis, and will remain for the
-lifetime of the individual [@kelsey2013; @hanna2014]. ASM not related to
+lifetime of the individual [@kelsey2013]. ASM not related to
 imprinting, exhibits parental-specific methylation,
 but is not inherited from the germline [@hanna2017]. Another example of ASM is X
 chromosome inactivation in females. DAMEfinder detects ASM for several
@@ -531,7 +531,7 @@ dame_track(dame = dame,
 Notice that the first two tracks depend on the tuple-ASM, hence each point
 represents the midpoint between a pair of CpG sites.
 
-If you think plotting all the samples separately is difficult to see, you can use the function `dame_track_median` to summarize:
+If you think plotting all the samples separately is difficult to see, you can use the function `dame_track_mean` to summarize:
 ```{r, dt6}
 dame_track_mean(dame = dame,
            derASM = derASM,
