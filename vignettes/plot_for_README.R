@@ -1,4 +1,7 @@
 #plots for README.md
+library(GenomicRanges)
+library(SummarizedExperiment)
+library(DAMEfinder)
 
 load("data/tupleASM_fullCancer.RData")
 load("data/derASM_fullcancer2.RData")
@@ -13,9 +16,9 @@ myColor <- RColorBrewer::brewer.pal(9, "Set1")
 
 ##SNP ASM
 dame_track(DAME, derASM = derASM[,seq(2,12,2)], colvec = myColor, window = 3)
-ggsave("../DAMEfinder_git/vignettes/DAME_snp_allsamps.png")
-dame_track_median(DAME, derASM = derASM[,seq(2,12,2)], colvec = myColor, window = 3)
-ggsave("../DAMEfinder_git/vignettes/DAME_snp_allsamps_median.png")
+ggsave("../DAMEfinder_git/vignettes/DAME_snp_allsamps.png", width = 7, height = 5)
+dame_track_mean(DAME, derASM = derASM[,seq(2,12,2)], colvec = myColor, window = 3)
+ggsave("../DAMEfinder_git/vignettes/DAME_snp_allsamps_median.png", width = 7, height = 5)
 
 reference_file <- "/home/Shared_taupo/data/annotation/Human/Ensembl_GRCh37.91/GRCh37.91.fa"
 metadata <- read.table("data/fullCancerSamples.txt", stringsAsFactors = FALSE)
@@ -43,10 +46,10 @@ ggsave("../DAMEfinder_git/vignettes/DAME_snp_sampledreads.png")
 
 ##Tuple ASM
 dame_track(DAME, ASM = ASM[,seq(2,12,2)], colvec = myColor, window = 3)
-ggsave("../DAMEfinder_git/vignettes/DAME_tuple_allsamps.png")
+ggsave("../DAMEfinder_git/vignettes/DAME_tuple_allsamps.png", width = 7, height = 4)
 
-dame_track_median(DAME, ASM = ASM[,seq(2,12,2)], colvec = myColor, window = 3)
-ggsave("../DAMEfinder_git/vignettes/DAME_tuple_allsamps_median.png")
+dame_track_mean(DAME, ASM = ASM[,seq(2,12,2)], colvec = myColor, window = 3)
+ggsave("../DAMEfinder_git/vignettes/DAME_tuple_allsamps_median.png", width = 7, height = 5)
 
 allps <- mapply(methyl_circle_plotCpG,
                 #vcfFile = gsub("/home/",path, metadata$V4)[c(2,8)],

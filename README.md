@@ -1,6 +1,6 @@
 <!--- [![Build Status](https://travis-ci.com/csoneson/rnaseqworkflow.svg?branch=master)](https://travis-ci.com/csoneson/rnaseqworkflow) -->
 
-# DAMEfinder
+# DAMEfinder <img src="docs/damefinderstricker.png" width="200" align="right" />
 
 **DAMEfinder** (**D**ifferential **A**llele-specific **ME**thylation **finder**) is an R-package that detects allele-specific methylation (ASM) in a cohort of samples, and detects regions of differential ASM within groups of interest, based on **Bisulfite-sequencing** files.
 
@@ -38,7 +38,7 @@ The actual ASM scores in this region, as well as the methylation level per allel
 
 ![](vignettes/DAME_snp_allsamps.png)
 
-or summarized by medians:
+or summarized by means:
 
 ![](vignettes/DAME_snp_allsamps_median.png)
 
