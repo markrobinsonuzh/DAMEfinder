@@ -8,7 +8,8 @@ DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and **tuple-based*
 
 <img src="vignettes/DAMEfinder_workflow.png" width="520">
 
-Please refer to the vignette for more details on running the pipeline.
+Please refer to the vignette for more details on running the pipeline. 
+[Preprint out!](https://www.biorxiv.org/content/10.1101/800383v1)
 
 ## What mode should I choose?
 
