@@ -4,8 +4,7 @@
 \alias{read_tuples}
 \title{Read in list of methtuple files}
 \usage{
-read_tuples(files, sampleNames, minCoverage = 2, maxGap = 20,
-  verbose = TRUE)
+read_tuples(files, sampleNames, minCoverage = 2, maxGap = 20, verbose = TRUE)
 }
 \arguments{
 \item{files}{List of methtuple files.}

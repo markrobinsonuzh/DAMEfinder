@@ -4,9 +4,17 @@
 \alias{methyl_circle_plotCpG}
 \title{Draw methylation circle plot without SNP}
 \usage{
-methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bamFile,
-  pointSize = 3, refFile = refFile, dame = NULL, order = FALSE,
-  sampleName = NULL, sampleReads = FALSE, numReads = 20)
+methyl_circle_plotCpG(
+  cpgsite = cpgsite,
+  bamFile = bamFile,
+  pointSize = 3,
+  refFile = refFile,
+  dame = NULL,
+  order = FALSE,
+  sampleName = NULL,
+  sampleReads = FALSE,
+  numReads = 20
+)
 }
 \arguments{
 \item{cpgsite}{GRanges object containing a single CpG site location of

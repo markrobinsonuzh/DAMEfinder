@@ -4,9 +4,19 @@
 \alias{methyl_circle_plot}
 \title{Draw methylation circle plot}
 \usage{
-methyl_circle_plot(snp, vcfFile, bamFile, refFile, dame = NULL,
-  letterSize = 2.5, pointSize = 3, sampleName = "sample1",
-  cpgsite = NULL, sampleReads = FALSE, numReads = 20)
+methyl_circle_plot(
+  snp,
+  vcfFile,
+  bamFile,
+  refFile,
+  dame = NULL,
+  letterSize = 2.5,
+  pointSize = 3,
+  sampleName = "sample1",
+  cpgsite = NULL,
+  sampleReads = FALSE,
+  numReads = 20
+)
 }
 \arguments{
 \item{snp}{GRanges object containing SNP location.}

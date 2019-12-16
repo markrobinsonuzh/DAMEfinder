@@ -4,8 +4,14 @@
 \alias{dame_track_mean}
 \title{Plot means per group of score tracks.}
 \usage{
-dame_track_mean(dame, window = 0, positions = 0, derASM = NULL,
-  ASM = NULL, colvec = NULL)
+dame_track_mean(
+  dame,
+  window = 0,
+  positions = 0,
+  derASM = NULL,
+  ASM = NULL,
+  colvec = NULL
+)
 }
 \arguments{
 \item{dame}{GRanges object containing a region of interest, or detected with

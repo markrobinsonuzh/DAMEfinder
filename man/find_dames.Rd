@@ -4,9 +4,21 @@
 \alias{find_dames}
 \title{Find DAMEs}
 \usage{
-find_dames(sa, design, coef = 2, contrast = NULL, smooth = TRUE,
-  Q = 0.5, pvalAssign = "simes", maxGap = 20, verbose = TRUE,
-  maxPerms = 10, method = "ls", trend = FALSE, ...)
+find_dames(
+  sa,
+  design,
+  coef = 2,
+  contrast = NULL,
+  smooth = TRUE,
+  Q = 0.5,
+  pvalAssign = "simes",
+  maxGap = 20,
+  verbose = TRUE,
+  maxPerms = 10,
+  method = "ls",
+  trend = FALSE,
+  ...
+)
 }
 \arguments{
 \item{sa}{A \code{SummarizedExperiment} containing ASM values where each row

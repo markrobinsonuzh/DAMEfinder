@@ -4,8 +4,19 @@
 \alias{empirical_pval}
 \title{Calculate empirical region-level p-value}
 \usage{
-empirical_pval(presa, design, rforiginal, coeff, cont, smooth,
-  maxPerms = 10, Q, maxGap, method, ...)
+empirical_pval(
+  presa,
+  design,
+  rforiginal,
+  coeff,
+  cont,
+  smooth,
+  maxPerms = 10,
+  Q,
+  maxGap,
+  method,
+  ...
+)
 }
 \arguments{
 \item{presa}{SExperiment output from \code{calc_derivedasm} or

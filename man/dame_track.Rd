@@ -4,8 +4,15 @@
 \alias{dame_track}
 \title{Plot score tracks}
 \usage{
-dame_track(dame, window = 0, positions = 0, derASM = NULL,
-  ASM = NULL, colvec = NULL, plotSNP = FALSE)
+dame_track(
+  dame,
+  window = 0,
+  positions = 0,
+  derASM = NULL,
+  ASM = NULL,
+  colvec = NULL,
+  plotSNP = FALSE
+)
 }
 \arguments{
 \item{dame}{GRanges object containing a region of interest, or detected with

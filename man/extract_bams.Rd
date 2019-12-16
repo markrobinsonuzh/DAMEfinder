@@ -4,8 +4,15 @@
 \alias{extract_bams}
 \title{Detect allele-specific methylation from a bam file}
 \usage{
-extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile,
-  coverage = 4, cores = 1, verbose = TRUE)
+extract_bams(
+  bamFiles,
+  vcfFiles,
+  sampleNames,
+  referenceFile,
+  coverage = 4,
+  cores = 1,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{bamFiles}{List of bam files.}
