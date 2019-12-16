@@ -38,6 +38,7 @@
 calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
                      coverage = 5, verbose=TRUE) {
 
+  if(!is.vector(sampleList)) stop("Input is not a list of more than one tibble")
 
   if(verbose) message("Calculating log odds.")
   sampleList <- lapply(sampleList, calc_logodds)

@@ -3,7 +3,6 @@
 \docType{package}
 \name{DAMEfinder}
 \alias{DAMEfinder}
-\alias{DAMEfinder-package}
 \title{DAMEfinder: Method to detect allele-specific methylation (ASM), and
 differential ASM from Bisulfite sequencing data in R.}
 \description{

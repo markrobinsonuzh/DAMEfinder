@@ -4,8 +4,14 @@
 \alias{calc_asm}
 \title{Calculate ASM Score}
 \usage{
-calc_asm(sampleList, beta = 0.5, a = 0.2, transform = modulus_sqrt,
-  coverage = 5, verbose = TRUE)
+calc_asm(
+  sampleList,
+  beta = 0.5,
+  a = 0.2,
+  transform = modulus_sqrt,
+  coverage = 5,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{sampleList}{List of samples returned from \code{\link{read_tuples}}}

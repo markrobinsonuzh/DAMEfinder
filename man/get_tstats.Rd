@@ -4,8 +4,18 @@
 \alias{get_tstats}
 \title{Get t-Statistics}
 \usage{
-get_tstats(sa, design, contrast = NULL, method = "ls", trend = FALSE,
-  smooth = FALSE, maxGap = 20, coef = 2, verbose = TRUE, ...)
+get_tstats(
+  sa,
+  design,
+  contrast = NULL,
+  method = "ls",
+  trend = FALSE,
+  smooth = FALSE,
+  maxGap = 20,
+  coef = 2,
+  verbose = TRUE,
+  ...
+)
 }
 \arguments{
 \item{sa}{A SummarizedExperiment containing ASM values where each row and

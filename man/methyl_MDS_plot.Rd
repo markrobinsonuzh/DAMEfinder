@@ -5,8 +5,7 @@
 \title{Multidimensional scaling plot of distances between methylation proportions
 (beta values)}
 \usage{
-methyl_MDS_plot(x, group, top = 1000, coverage = 5, adj = 0.02,
-  pointSize = 4)
+methyl_MDS_plot(x, group, top = 1000, coverage = 5, adj = 0.02, pointSize = 4)
 }
 \arguments{
 \item{x}{\code{RangedSummarizedExperiment}, output from

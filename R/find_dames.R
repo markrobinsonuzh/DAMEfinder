@@ -83,6 +83,10 @@ find_dames <- function(sa, design, coef = 2, contrast = NULL, smooth = TRUE, Q =
                        pvalAssign = "simes", maxGap = 20, verbose = TRUE,
                        maxPerms = 10, method = "ls", trend = FALSE, ...){
 
+
+  if("asm" %in% names(assays(sa))) message("Using ASMtuple", appendLF = TRUE)
+  if("der.ASM" %in% names(assays(sa))) message("Using ASMsnp", appendLF = TRUE)
+
   pre_sa <- sa
 
   #get tstats with limma
@@ -144,13 +148,13 @@ find_dames <- function(sa, design, coef = 2, contrast = NULL, smooth = TRUE, Q =
                          method = method,
                          ...)
 
+    rf <- rf[order(rf$pvalEmp),]
+
     rf$FDR <- stats::p.adjust(rf$pvalEmp, method = "BH")
 
     rf <- rf[,-c(6:8)]
     colnames(rf) <- c("chr","start","end","meanTstat", "sumTstat","segmentL",
                       "clusterL", "pvalEmp", "FDR")
-
-    rf <- rf[order(rf$pvalEmp),]
 
   }
   if(verbose) message(nrow(rf), " DAMEs found.", appendLF = TRUE)
