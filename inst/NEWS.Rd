@@ -1,6 +1,11 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.1.6}{
+\itemize{
+    \item Add extra checks
+}
+}
 
 \section{DAMEfinder VERSION 1.1.5}{
 \itemize{
