@@ -74,9 +74,11 @@ empirical_pval <- function(presa, design, rforiginal, coeff, cont, smooth,
 
   #Detect permuted dames
   message("Generating ", ncol(perms), " permutations", appendLF = TRUE)
+  #num_perms <- 1:ncol(perms)
+
   areas <- apply(perms, 2, function(i){
 
-    message("Permutation ", i, appendLF = TRUE)
+    #message("Permutation ", num_perms[i], appendLF = TRUE)
     reorder <- i
     designr <- design
 

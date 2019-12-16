@@ -40,11 +40,9 @@ test_that("end to end tstat calc", {
 test_that("end to end find_dames", {
   dames <- find_dames(ASMscore, mod, verbose = FALSE)
   expect_is(dames, "data.frame")
-  #expect_equal(dim(dames)[1], 19)
 })
 
-# test_that("change tstat params", {
-#   dames <- find_dames(ASMscore, mod, verbose = FALSE)
-#   expect_is(dames, "data.frame")
-#   expect_equal(dim(dames)[1], 52)
-# })
+test_that("use permutations", {
+  dames <- find_dames(ASMscore, mod, pvalAssign = "empirical", verbose = FALSE)
+  expect_is(dames, "data.frame")
+})

@@ -25,14 +25,9 @@ test_that("end to end tstat calc", {
   derASMt <- get_tstats(derASM, mod, verbose = FALSE)
   expect_s4_class(derASMt, "RangedSummarizedExperiment")
   expect_s4_class(rowData(derASMt), "DataFrame")
-  #expect_length(colnames(rowData(derASMt)), 3)
-  #expect_equal(sum(is.na(rowData(derASMt)$smooth_tstat)), 0)
 })
-
-#TODO: test different lmfit methods and pvalAssign
 
 test_that("end to end find_dames", {
   dames <- find_dames(derASM, mod, verbose = FALSE)
   expect_is(dames, "data.frame")
-  #expect_equal(dim(dames)[1], 2)
 })
