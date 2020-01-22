@@ -42,7 +42,7 @@
 #' @export
 
 get_tstats <- function(sa, design, contrast = NULL, method="ls", trend=FALSE, smooth=FALSE,
-                       maxGap=20, coef=2, verbose=TRUE, ...) {
+                       maxGap=20, coef=2, verbose=TRUE, filter = TRUE, ...) {
 
   # choose SumExp type
   if(names(assays(sa))[1] == "asm"){
@@ -103,7 +103,7 @@ get_tstats <- function(sa, design, contrast = NULL, method="ls", trend=FALSE, sm
   }
 
   #filter for empty tstats
-  sa <- sa[!is.na(S4Vectors::mcols(sa)$tstat),]
+  if(filter) sa <- sa[!is.na(S4Vectors::mcols(sa)$tstat),]
 
   return(sa)
 }
