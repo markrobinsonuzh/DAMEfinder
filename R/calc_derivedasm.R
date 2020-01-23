@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' data(extractbams_output)
-#' derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
+#' #derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 #' 
 #' @importFrom S4Vectors mcols
 #' @importFrom S4Vectors mcols<-

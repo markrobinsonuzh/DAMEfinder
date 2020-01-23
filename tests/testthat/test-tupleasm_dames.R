@@ -20,21 +20,22 @@ test_that("end to end read_tuples", {
   expect_length(ASM, 2)
 })
 
-test_that("end to end calc_asm", {
-  ASMscore <- calc_asm(readtuples_output)
-  expect_s4_class(ASMscore, "RangedSummarizedExperiment")
-  expect_length(colnames(ASMscore), 5)
-  expect_length(assays(ASMscore), 6)
-})
 
 ASMscore <- calc_asm(readtuples_output)
 filt <- rowSums(!is.na(assay(ASMscore, "asm"))) == 5 #filt to avoid warnings
 ASMscore <- ASMscore[filt,]
 
-test_that("end to end tstat calc", {
-  ASMt <- get_tstats(ASMscore, mod, maxGap = 300, verbose = FALSE)
-  expect_s4_class(ASMt, "RangedSummarizedExperiment")
+test_that("end to end calc_asm", {
+  #ASMscore <- calc_asm(readtuples_output)
+  expect_s4_class(ASMscore, "RangedSummarizedExperiment")
+  expect_length(colnames(ASMscore), 5)
+  expect_length(assays(ASMscore), 6)
 })
+
+# test_that("end to end tstat calc", {
+#   ASMt <- get_tstats(ASMscore, mod, maxGap = 300, verbose = FALSE)
+#   expect_s4_class(ASMt, "RangedSummarizedExperiment")
+# })
 
 
 test_that("end to end find_dames", {

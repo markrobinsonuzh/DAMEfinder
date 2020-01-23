@@ -7,3 +7,4 @@ vignettes/*.RData
 vignettes/.Rhistory
 ^Meta$
 vignettes/plot_for_README.R
+^doc$
