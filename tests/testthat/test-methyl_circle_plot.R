@@ -12,7 +12,13 @@ vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
 
 sample_names <- "NORM1"
 
-reference_file <- get_data_path("19.fa")
+#reference_file <- get_data_path("19.fa")
+#Get reference file 
+library(BSgenome.Hsapiens.UCSC.hg19)
+genome <- BSgenome.Hsapiens.UCSC.hg19
+seqnames(genome) <- gsub("chr","",seqnames(genome))
+reference_file <- DNAStringSet(genome[[19]], use.names = TRUE)
+names(reference_file) <- 19
 
 snp <- GRanges(19, IRanges(388065, width = 1))
 cpgsite <- GRanges(19, IRanges(387982, width = 1))

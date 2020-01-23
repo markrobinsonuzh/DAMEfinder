@@ -27,7 +27,7 @@ bibliography: papers.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(cache = 0, fig.path = "figure/", fig.width = 6, 
+knitr::opts_chunk$set(cache = 0, fig.width = 6, 
                       fig.height = 7)
 ```
 
@@ -57,11 +57,7 @@ We focus on any case of ASM in which there is an imbalance in the methylation
 level between two alleles, regardless of the allele of origin.
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and
-**tuple-based** (fast-mode), which converge when differential ASM is detected:
-
-```{r, echo=FALSE, out.width='250%', fig.align='center'}
-knitr::include_graphics('DAMEfinder_workflow.png')
-```
+**tuple-based** (fast-mode), which converge when differential ASM is detected.
 
 ## Why **SNP-based**?
 This is the exhaustive mode because it extracts an ASM score for every CpG site
@@ -162,6 +158,7 @@ suppressPackageStartupMessages({
   library(DAMEfinder)
   library(SummarizedExperiment)
   library(GenomicRanges)
+  library(BSgenome.Hsapiens.UCSC.hg19)
   })
 
 bam_files <- c(system.file("extdata", "NORM1_chr19_trim.bam", 
@@ -176,7 +173,11 @@ vcf_files <- c(system.file("extdata", "NORM1.chr19.trim.vcf",
 
 sample_names <- c("NORM1", "CRC1")
 
-reference_file <- system.file("extdata", "19.fa", package = "DAMEfinder")
+#Use another reference file for demonstration, and fix the seqnames
+genome <- BSgenome.Hsapiens.UCSC.hg19
+seqnames(genome) <- gsub("chr","",seqnames(genome))
+reference_file <- DNAStringSet(genome[[19]], use.names = TRUE)
+names(reference_file) <- 19
 
 #Extract reads and extract methylation according to allele
 snp.list <- extract_bams(bam_files, vcf_files, sample_names, reference_file,
@@ -561,10 +562,8 @@ bam.file <- system.file("extdata", "CRC1_chr19_trim.bam",
 vcf.file <- system.file("extdata", "CRC1.chr19.trim.vcf", 
                         package = "DAMEfinder")
 
-ref.file <- system.file("extdata", "19.fa", package = "DAMEfinder")
-
 methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
-                   refFile = ref.file)
+                   refFile = reference_file)
 ```
 
 
@@ -581,7 +580,7 @@ to it:
 cpgsite <- GRanges(19, IRanges(266998, width = 1))
 
 methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
-                   refFile = ref.file, cpgsite = cpgsite)
+                   refFile = reference_file, cpgsite = cpgsite)
 ```
 
 If you are instead interested in reads overlapping a CpG site, you can use
@@ -592,7 +591,7 @@ If you are instead interested in reads overlapping a CpG site, you can use
 cpgsite <- GRanges(19, IRanges(266998, width = 1))
 
 methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bam.file, 
-                      refFile = ref.file)
+                      refFile = reference_file)
 ```
 
 You can also limit both the SNP plot and the CpG plot to a specific window of
@@ -610,7 +609,7 @@ snp <- GRanges(19, IRanges(388413, width = 1)) #always set the width if your
 
 #as expected, this DAME is not really good (given the high p-value)
 methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
-                   refFile = ref.file, dame = dame)
+                   refFile = reference_file, dame = dame)
 
 ```
 

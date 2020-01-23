@@ -14,6 +14,7 @@ get_tstats(
   maxGap = 20,
   coef = 2,
   verbose = TRUE,
+  filter = TRUE,
   ...
 )
 }
@@ -44,6 +45,8 @@ clustering of genomic regions to be used in smoothing. Default = 20.}
 Default = 2. If \code{contrast} specified, column with contrast of interest.}
 
 \item{verbose}{Set verbose. Default = TRUE.}
+
+\item{filter}{Remove empty tstats. Default = TRUE.}
 
 \item{...}{Arguments passed to \code{\link{loessByCluster}}. Only used if
 \code{smooth} = TRUE.}

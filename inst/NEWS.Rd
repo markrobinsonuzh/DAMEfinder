@@ -4,8 +4,7 @@
 \section{DAMEfinder VERSION 1.1.7}{
 \itemize{
     \item Parameter fixes in some functions
-    \item extract_bams() accepts a DNAStringSet
-
+    \item extract_bams() and methyl_circle_plot() accepts a DNAStringSet
 }
 }
 

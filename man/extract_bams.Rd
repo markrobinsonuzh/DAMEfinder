@@ -21,7 +21,8 @@ extract_bams(
 
 \item{sampleNames}{Names of files in the list.}
 
-\item{referenceFile}{fasta file used to generate the bam files.}
+\item{referenceFile}{fasta file used to generate the bam files. Or 
+\code{DNAStringSet} with DNA sequence.}
 
 \item{coverage}{Minimum number of reads covering a CpG site on each allele.
 Default = 2.}

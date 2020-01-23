@@ -8,7 +8,8 @@
 #'   location of interest.
 #' @param vcfFile vcf file.
 #' @param bamFile bismark bam file path.
-#' @param refFile fasta reference file path.
+#' @param refFile fasta reference file path. Or \code{DNAStringSet} with DNA
+#'  sequence.
 #' @param dame (optional) GRanges object containing a region to plot.
 #' @param letterSize Size of alleles drawn in plot. Default = 2.5.
 #' @param pointSize Size of methylation circles. Default = 3.
@@ -27,17 +28,17 @@
 #' bam_files <- get_data_path("NORM1_chr19_trim.bam")
 #' vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
 #' sample_names <- "NORM1"
-#' reference_file <- get_data_path("19.fa")
+#' #reference_file <- get_data_path("19.fa")
 #'
 #' snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
-#' methyl_circle_plot(snp = snp,
-#'  vcfFile = vcf_files,
-#'  bamFile = bam_files,
-#'  refFile = reference_file,
-#'  letterSize = 3,
+#' #methyl_circle_plot(snp = snp,
+#'  #vcfFile = vcf_files,
+#'  #bamFile = bam_files,
+#'  #refFile = reference_file,
+#'  #letterSize = 3,
 #'  #dame = dame,
-#'  sampleName = sample_names,
-#'  pointSize = 2)
+#'  #sampleName = sample_names,
+#'  #pointSize = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -111,8 +112,14 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
-  fa <- open(Rsamtools::FaFile(refFile))
-  dna <- Rsamtools::scanFa(fa, param=window)
+  if(typeof(refFile) == "character"){
+    fa <- open(Rsamtools::FaFile(refFile,
+                                 index = paste0(refFile, ".fai")))
+    dna <- Rsamtools::scanFa(fa, param=window)
+  } else{
+    dna <- refFile[window]
+  }
+  
 
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
@@ -271,14 +278,14 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 #'
 #' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
-#' reference_file <- get_data_path("19.fa")
+#' #reference_file <- get_data_path("19.fa")
 #' bam_files <- get_data_path("NORM1_chr19_trim.bam")
 #' cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
 #'
-#' methyl_circle_plotCpG(cpgsite = cpgsite,
-#'  bamFile = bam_files,
-#'  refFile = reference_file,
-#'  pointSize = 2)
+#' #methyl_circle_plotCpG(cpgsite = cpgsite,
+#'  #bamFile = bam_files,
+#'  #refFile = reference_file,
+#'  #pointSize = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -324,9 +331,13 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
 
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
-  fa <- open(Rsamtools::FaFile(refFile))
-  #idx <- scanFaIndex(fa)
-  dna <- Rsamtools::scanFa(fa, param=window)
+  if(typeof(refFile) == "character"){
+    fa <- open(Rsamtools::FaFile(refFile,
+                                 index = paste0(refFile, ".fai")))
+    dna <- Rsamtools::scanFa(fa, param=window)
+  } else{
+    dna <- refFile[window]
+  }
 
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 

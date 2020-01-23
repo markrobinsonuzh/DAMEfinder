@@ -17,8 +17,8 @@ calc_asm(
 \item{sampleList}{List of samples returned from \code{\link{read_tuples}}}
 
 \item{beta}{The beta parameter used to calculate the weight in the ASM score.
-\code{link{calc_weight}} uses this parameter for \code{\link{pbeta}}.
-Default = 0.5.}
+\code{link{calc_weight}} uses this parameter to penalize fully methylated
+or unmethylated tuples. Default = 0.5.}
 
 \item{a}{The distance from 0.5 allowed, where 0.5 is a perfect MM:UU balance
 for a tuple. In the default mode this value is set to 0.2, and we account

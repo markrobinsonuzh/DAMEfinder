@@ -25,7 +25,8 @@ methyl_circle_plot(
 
 \item{bamFile}{bismark bam file path.}
 
-\item{refFile}{fasta reference file path.}
+\item{refFile}{fasta reference file path. Or \code{DNAStringSet} with DNA
+sequence.}
 
 \item{dame}{(optional) GRanges object containing a region to plot.}
 
@@ -59,16 +60,16 @@ get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 bam_files <- get_data_path("NORM1_chr19_trim.bam")
 vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
 sample_names <- "NORM1"
-reference_file <- get_data_path("19.fa")
+#reference_file <- get_data_path("19.fa")
 
 snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
-methyl_circle_plot(snp = snp,
- vcfFile = vcf_files,
- bamFile = bam_files,
- refFile = reference_file,
- letterSize = 3,
+#methyl_circle_plot(snp = snp,
+ #vcfFile = vcf_files,
+ #bamFile = bam_files,
+ #refFile = reference_file,
+ #letterSize = 3,
  #dame = dame,
- sampleName = sample_names,
- pointSize = 2)
+ #sampleName = sample_names,
+ #pointSize = 2)
 
 }

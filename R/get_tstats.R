@@ -31,6 +31,7 @@
 #' @param maxGap The maximum allowed gap between genomic positions for
 #'   clustering of genomic regions to be used in smoothing. Default = 20.
 #' @param verbose Set verbose. Default = TRUE.
+#' @param filter Remove empty tstats. Default = TRUE.
 #' @param ... Arguments passed to \code{\link{loessByCluster}}. Only used if
 #'   \code{smooth} = TRUE.
 #'
