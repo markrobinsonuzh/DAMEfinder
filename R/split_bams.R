@@ -10,7 +10,8 @@
 #' @param bamFiles List of bam files.
 #' @param vcfFiles List of vcf files.
 #' @param sampleNames Names of files in the list.
-#' @param referenceFile fasta file used to generate the bam files.
+#' @param referenceFile fasta file used to generate the bam files. Or 
+#'   \code{DNAStringSet} with DNA sequence.
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 2.
 #' @param cores Number of cores to use. See package {parallel} for description
@@ -25,9 +26,9 @@
 #' bamFiles <- get_data_path("NORM1_chr19_trim.bam")
 #' vcfFiles <- get_data_path("NORM1.chr19.trim.vcf")
 #' sampleNames <- "NORM1"
-#' referenceFile <- get_data_path("19.fa")
+#' #referenceFile <- get_data_path("19.fa")
 #'
-#' GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
+#' #GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
 #'
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
@@ -42,8 +43,11 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                        coverage = 4, cores = 1, verbose = TRUE){
 
 if(verbose) message("Reading reference file", appendLF = TRUE)
-fa <- open(Rsamtools::FaFile(referenceFile,
-                             index = paste0(referenceFile, ".fai")))
+if(typeof(referenceFile) == "character"){
+  fa <- open(Rsamtools::FaFile(referenceFile,
+                               index = paste0(referenceFile, ".fai")))
+  
+}
 
 #get names and indeces per sample to apply to
 sample_list <- 1:length(sampleNames)
@@ -114,8 +118,12 @@ lapply(sample_list, function(samp){
     right <- max(end(alns))
     window <- GRanges(GenomeInfoDb::seqnames(snp), IRanges(left, right))
 
+    if(typeof(referenceFile) == "S4"){
+      dna <- referenceFile[window]
+      
+    } else if(typeof(referenceFile) == "character"){
     #open reference seq to get correct CpG locations within that reference chunk
-    dna <- Rsamtools::scanFa(fa, param=window)
+    dna <- Rsamtools::scanFa(fa, param=window)}
 
     cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 

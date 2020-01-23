@@ -1,6 +1,14 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.1.7}{
+\itemize{
+    \item Parameter fixes in some functions
+    \item extract_bams() accepts a DNAStringSet
+
+}
+}
+
 \section{DAMEfinder VERSION 1.1.6}{
 \itemize{
     \item Add extra checks
