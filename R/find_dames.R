@@ -21,7 +21,8 @@
 #' @param design A design matrix created with \code{\link{model.matrix}}.
 #' @param coef Column in \code{design} specifying the parameter to estimate.
 #'   Default = 2.
-#' @param contrast a contrast matrix, generated with \code{\link{makeContrasts}}.
+#' @param contrast a contrast matrix, generated with
+#'   \code{\link{makeContrasts}}.
 #' @param Q The percentile set to get a cutoff value K. K is the value on the
 #'   Qth quantile of the absolute values of the given (smoothed) t-statistics.
 #'   Only necessary if \code{pvalAssign} = "empirical". Default = 0.5.
@@ -66,7 +67,7 @@
 #' @examples
 #'
 #' ##Using snp-based mode
-#' #data(extractbams_output)
+#' data(extractbams_output)
 #' #derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
 #' #grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
 #' #mod <- model.matrix(~grp)
@@ -79,7 +80,8 @@
 #' @export
 #'
 #'
-find_dames <- function(sa, design, coef = 2, contrast = NULL, smooth = TRUE, Q = 0.5,
+find_dames <- function(sa, design, coef = 2, contrast = NULL, smooth = TRUE, 
+                       Q = 0.5,
                        pvalAssign = "simes", maxGap = 20, verbose = TRUE,
                        maxPerms = 10, method = "ls", trend = FALSE, ...){
 

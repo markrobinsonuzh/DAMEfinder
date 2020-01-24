@@ -50,7 +50,7 @@ if(typeof(referenceFile) == "character"){
 }
 
 #get names and indeces per sample to apply to
-sample_list <- 1:length(sampleNames)
+sample_list <- seq(from=1,to=length(sampleNames),by=1)
 names(sample_list) <- sampleNames
 
 lapply(sample_list, function(samp){
@@ -69,25 +69,11 @@ lapply(sample_list, function(samp){
     snp <- GRanges(seqnames = t, IRanges(start = as.integer(u), width = 1))
 
     #Ignore non-standard chromosomes
-    if(length(grep(t, c(as.character(1:22), "X", "Y"))) == 0){
+    if(length(grep(t, c(as.character(seq(from=1,to=22,by=2)), "X", "Y"))) == 0){
       if(verbose) message("Bad chrom", appendLF = TRUE)
       return(NULL)
       }
-
-    #message(sprintf("Processing chromosome %s",t))
-    #message(".")
     chrom <- t
-
-    #Get the reads that align to the specified SNP
-    # flags <- Rsamtools::scanBamFlag(
-    #   isPaired = T,
-    #   isProperPair = T,
-    #   isUnmappedQuery = F,
-    #   hasUnmappedMate = F,
-    #   isNotPassingQualityControls = F,
-    #   isDuplicate = F,
-    #   isSecondaryAlignment = F,
-    #   isSupplementaryAlignment = F)
 
     params <- Rsamtools::ScanBamParam(
       #flag = flags,
@@ -149,7 +135,7 @@ lapply(sample_list, function(samp){
       read.start <- start(x) - left + 1 #start of read
       read.end <- end(x) - left + 1 #end
 
-      for(pair in 1:2){
+      for(pair in c(1,2)){
         something <- mcols(x[pair])$MD
         tag <- getMD(something)
         MDtag <- tag$MDtag

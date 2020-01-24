@@ -9,8 +9,7 @@ get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 bam_files <- get_data_path("NORM1_chr19_trim.bam")
 
 vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
-#vcf_files <- get_data_path("test.vcf")
-  
+
 sample_names <- "NORM1"
 
 #This fasta is from ftp://ftp.ensembl.org/pub/grch37/release-91/fasta/homo_sapiens/dna/

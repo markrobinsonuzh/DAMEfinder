@@ -4,7 +4,7 @@ DATA_PATH_DIR <- "inst/extdata"
 
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
-bam_files <- sapply(c("CRC1_chr19_trim.bam",
+bam_files <- vapply(c("CRC1_chr19_trim.bam",
                       "moredata/CRC2_chr19_trim.bam",
                       "moredata/CRC3_chr19_trim.bam",
                       "moredata/CRC4_chr19_trim.bam",
@@ -14,7 +14,7 @@ bam_files <- sapply(c("CRC1_chr19_trim.bam",
                       "moredata/NORM4_chr19_trim.bam"),get_data_path,
                     USE.NAMES = FALSE)
 
-vcf_files <- sapply(c("CRC1.chr19.trim.vcf",
+vcf_files <- vapply(c("CRC1.chr19.trim.vcf",
                       "moredata/CRC2.chr19.trim.vcf",
                       "moredata/CRC3.chr19.trim.vcf",
                       "moredata/CRC4.chr19.trim.vcf",

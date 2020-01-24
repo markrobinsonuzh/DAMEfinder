@@ -147,7 +147,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
     read.start <- start(x) - left + 1 #start of read
     read.end <- end(x) - left + 1 #end
 
-    for(pair in 1:2){
+    for(pair in c(1,2)){
 
       something <- mcols(x[pair])$MD
       tag <- getMD(something)
@@ -213,24 +213,24 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
-                  read=rep(1:length(alns.pairs), each=length(cgsite)),
+                  read=rep(seq(from=1,to=length(alns.pairs),by=1), each=length(cgsite)),
                   value=as.vector(conversion),
                   stringsAsFactors = FALSE)
 
   #data for segments
   reads <- d$read
 
-  xstart <- sapply(reads, function(x){
+  xstart <- vapply(reads, function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     min(newd$CpG[vals], snp.start)
-  })
+  },FUN.VALUE = double(1))
 
-  xend <- sapply(reads,function(x){
+  xend <- vapply(reads,function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     max(newd$CpG[vals], snp.start)
-  })
+  },FUN.VALUE = double(1))
 
   d2 <- unique(data.frame(xstart, xend, reads, stringsAsFactors = FALSE))
   d2$snp <- c(rep("a", length(alt.reads)), rep("r", length(ref.reads)))
@@ -246,8 +246,8 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
                               colour=snp), size=0.2) +
     geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), fill="white",
                size=pointSize) +
-    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape=letter,
-                   colour = letter), size=letterSize) +
+    geom_point(aes(x=snp.start, y=seq(from=1,to=length(alns.pairs),by=1), 
+                   shape=letter, colour = letter), size=letterSize) +
     geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
     scale_color_manual(values=cols) +
     guides(color=FALSE) +
@@ -364,7 +364,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
     read.start <- start(x) - left + 1 #start of read
     read.end <- end(x) - left + 1 #end
 
-    for(pair in 1:2){
+    for(pair in c(1,2)){
 
       something <- mcols(x[pair])$MD
       tag <- getMD(something)
@@ -421,14 +421,14 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
 
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
-                  read=rep(1:length(alns.pairs), each=length(cgsite)),
+                  read=rep(seq(from=1,to=length(alns.pairs),by=1), each=length(cgsite)),
                   value=as.vector(conversion))
 
   #reorder reads to plot
   if(isTRUE(order)){
   trans <- ifelse(d$value == 19, 1, 0)
   und <- unique(d$read)
-  sums_per_read <- sapply(und, function(i) sum(trans[d$read == i],na.rm = TRUE))
+  sums_per_read <- vapply(und, function(i) sum(trans[d$read == i],na.rm = TRUE))
   und_ord <- und[order(sums_per_read)]
 
   d$order <- 0
@@ -441,17 +441,17 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
   #data for segments
   reads <- d$read
 
-  xstart <- sapply(reads, function(x){
+  xstart <- vapply(reads, function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     min(newd$CpG[vals])
-  })
+  },FUN.VALUE = double(1))
 
-  xend <- sapply(reads,function(x){
+  xend <- vapply(reads,function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     max(newd$CpG[vals])
-  })
+  },FUN.VALUE = double(1))
 
   d2 <- unique(data.frame(xstart, xend, reads))
 

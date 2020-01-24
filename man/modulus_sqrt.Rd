@@ -18,6 +18,6 @@ Vector or matrix of transformed scores.
 Function to calculate signed square root (aka modulus square root).
 }
 \examples{
-#v <- c(-1,1.5,0,-2.1,4.3)
-#modulus_sqrt(v)
+v <- c(-1,1.5,0,-2.1,4.3)
+modulus_sqrt(v)
 }

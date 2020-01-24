@@ -7,7 +7,7 @@ DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 bam.file <- get_data_path("NORM1_chr19_trim.bam")
 
-snp <- GRanges(19, IRanges(388065, width = 1))
+snp <- GRanges(19, IRanges(267039, width = 1))
 
 params <- ScanBamParam(
   tag = c("MD","XM","XR","XG"),
@@ -20,10 +20,10 @@ alns.pairs <- readGAlignmentPairs(bam.file,
 alns <- unlist(alns.pairs)
 
 test_that("end to end split_reads", {
-  split <- splitReads(alns, "A", snp)
+  split <- splitReads(alns, "C", snp)
   expect_is(split, "list")
-  expect_length(split$ref.reads, 72)
-  expect_length(split$alt.reads, 14)
+  expect_length(split$ref.reads, 37)
+  expect_length(split$alt.reads, 42)
 })
 
 test_that("end to end get_MD", {

@@ -85,7 +85,9 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     subalt_long$score <- "ALT:meth"
 
     #SNP
-    subSNP <- as.data.frame(SNP[win,])
+    subSNP <- SNP[win,]
+    subSNP[is.na(subSNP)] <- "none"
+    subSNP <- data.frame(subSNP, stringsAsFactors = FALSE)
     subSNP$pos <- start(snpgr)[win]
     subSNP_long <- reshape2::melt(subSNP, id.vars = "pos",
                                   measure.vars = colnames(ASMsnp),
@@ -94,7 +96,7 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     #Make SNP name nicer
     loc <- as.integer(stringr::str_extract(subSNP_long$snp.pos, "[0-9]+$"))
     chrom <- as.integer(stringr::str_extract(subSNP_long$snp.pos, "^[0-9]+"))
-    subSNP_long$snp.pos <- ifelse(is.na(subSNP_long$snp.pos), NA,
+    subSNP_long$snp.pos <- ifelse(subSNP_long$snp.pos == "none", "none",
                                   sprintf("chr%s:%s", chrom, loc))
   }
 

@@ -218,8 +218,8 @@ calc_logodds <- function(s, eps=1) {
 #' @return Vector or matrix of transformed scores.
 #'
 #' @examples
-#' #v <- c(-1,1.5,0,-2.1,4.3)
-#' #modulus_sqrt(v)
+#' v <- c(-1,1.5,0,-2.1,4.3)
+#' modulus_sqrt(v)
 modulus_sqrt <- function(values) {
   #sign(values)*sqrt(abs(values))
   sqrt(abs(values))
@@ -265,14 +265,12 @@ modulus_sqrt <- function(values) {
 #'   ratio to give the final ASM score of that tuple.
 #'
 #' @examples
-#' #weight1 <- calc_weight(MM=50, UU=50)
+#' weight1 <- calc_weight(MM=50, UU=50)
 #' #0.9999716
 #'
-#' #weight2 <- calc_weight(MM=20, UU=60)
+#' weight2 <- calc_weight(MM=20, UU=60)
 #' #0.1646916
 #'
-#' #weight3 <- calc_weight(MM=2, UU=3)
-#' #0.6260661
 #'
 #'
 calc_weight <- function(MM, UU, beta=0.5, a=.2) {

@@ -75,7 +75,7 @@ calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE){
                        as.numeric(cols[4,]),
                        cols[5,],
                        as.numeric(cols[6,]),
-                       stringsAsFactors = F
+                       stringsAsFactors = FALSE
     )
     colnames(mcol) <- colnames(mcols(w))
     ss <- limma::strsplit2(unique.keys,".",fixed=TRUE)
