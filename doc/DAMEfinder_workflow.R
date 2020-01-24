@@ -170,7 +170,9 @@ dame_track_mean(dame = dame,
 
 
 ## ---- fig1--------------------------------------------------------------------
-snp <- GRanges(19, IRanges(267039, width = 1))
+#put SNP in GRanges (you can find the SNP with the dame_track function)
+snp <- GRanges(19, IRanges(267039, width = 1)) #always set the width if your 
+#GRanges has 1 site
 
 snp
 
@@ -199,14 +201,9 @@ methyl_circle_plotCpG(cpgsite = cpgsite, bamFile = bam.file,
 
 ## ---- fig4--------------------------------------------------------------------
 
-#a DAME we identified up in section 4.1.3
-dame <- GRanges(19, IRanges(388278,388350))
+#a random region
+dame <- GRanges(19, IRanges(266998,267100))
 
-#put SNP in GRanges (you can find the SNP with the dame_track function)
-snp <- GRanges(19, IRanges(388413, width = 1)) #always set the width if your 
-#GRanges has 1 site
-
-#as expected, this DAME is not really good (given the high p-value)
 methyl_circle_plot(snp = snp, vcfFile = vcf.file, bamFile = bam.file, 
                    refFile = reference_file, dame = dame)
 
@@ -228,7 +225,7 @@ methyl_MDS_plot(ASMscore, group = grp)
 #              chromsizes.file = chromsizes)
 #  
 #  #For all samples in object
-#  sapply(colnames(derASM), make_bigwig, scoreObj = derASM, folder = "",
+#  vapply(colnames(derASM), make_bigwig, scoreObj = derASM, folder = "",
 #         chromsizesFile = chromsizes)
 #  
 

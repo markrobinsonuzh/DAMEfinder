@@ -49,12 +49,10 @@ distribution \eqn{\sim Beta(\alpha'=MM+0.5, \beta'=UU+0.5)}
 }
 }
 \examples{
-weight1 <- calc_weight(MM=50, UU=50)
+calc_weight(MM=50, UU=50)
 #0.9999716
 
-weight2 <- calc_weight(MM=20, UU=60)
+calc_weight(MM=20, UU=60)
 #0.1646916
-
-
 
 }
