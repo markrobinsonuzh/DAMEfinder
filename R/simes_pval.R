@@ -13,7 +13,6 @@
 #' @param midpt Coordinate vector for each CpG site/tuple.
 #' @return Vector of summarized pvals
 #'
-#' @export
 simes_pval <- function(sat, smtstat, midpt){
 
   #try to use this strategy using full clusters, not segments which means

@@ -11,8 +11,9 @@ Description: 'DAMEfinder' offers functionality for taking methtuple or bismark o
 License: MIT + file LICENSE
 LazyData: TRUE
 RoxygenNote: 7.0.2
-biocViews: Software
-Depends: R (>= 2.10)
+biocViews: DNAMethylation, DifferentialMethylation
+#Depends: R (>= 4.0)
+Depends: R (>= 3.0)
 Imports:
   stats, 
   GenomeInfoDb, 
@@ -34,7 +35,8 @@ Imports:
   bumphunter,
   Biostrings,
   reshape2,
-  cowplot
+  cowplot,
+  utils
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown,
     testthat, rtracklayer, BSgenome.Hsapiens.UCSC.hg19

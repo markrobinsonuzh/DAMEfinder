@@ -166,16 +166,6 @@ calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
 #'
 #'
 #' @return The same object with an additional column for the ASM score.
-#' @examples
-#' # Get list of samples containing tuple count information
-#' #sampleList <- read_tuples(files = file_list,
-#' #sample_names = names(file_list))
-#'
-#' # Calculate log odds ratio per tuple for the first sample in the list
-#' #sample1 <- calc_logodds(sampleList[[1]])
-#'
-#' # Calculate ASM score
-#' # sample1 <- calc_score(sample1, beta=0.5, a=0.2)
 #'
 calc_score <- function(df, beta = 0.5, a = 0.2) {
   weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
@@ -217,10 +207,6 @@ calc_logodds <- function(s, eps=1) {
 #'
 #' @return Vector or matrix of transformed scores.
 #'
-#' @examples
-#' v <- c(-1,1.5,0,-2.1,4.3)
-#' modulus_sqrt(v)
-#' @export
 modulus_sqrt <- function(values) {
   #sign(values)*sqrt(abs(values))
   sqrt(abs(values))
@@ -265,14 +251,13 @@ modulus_sqrt <- function(values) {
 #'   a CpG pair. This is used as a weight that is multiplied by the log odds
 #'   ratio to give the final ASM score of that tuple.
 #'
-#' @examples
-#' calc_weight(MM=50, UU=50)
+#' #calc_weight(MM=50, UU=50)
 #' #0.9999716
 #'
-#' calc_weight(MM=20, UU=60)
+#' #calc_weight(MM=20, UU=60)
 #' #0.1646916
 #'
-#' @export
+#' 
 #'
 calc_weight <- function(MM, UU, beta=0.5, a=.2) {
   s1 <- beta+MM

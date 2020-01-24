@@ -24,6 +24,12 @@ between 0.5-a and 0.5+a. The default is set to 0.2.}
 A number that reflects allele-specificity given MM and UU counts for
 a CpG pair. This is used as a weight that is multiplied by the log odds
 ratio to give the final ASM score of that tuple.
+
+#calc_weight(MM=50, UU=50)
+#0.9999716
+
+#calc_weight(MM=20, UU=60)
+#0.1646916
 }
 \description{
 This function calculates a weight which reflects MM to UU balance, where M
@@ -47,12 +53,4 @@ where x is our observation (the MM and UU counts).
 where \eqn{\alpha = \beta = 0.5}. This posterior also follows a beta
 distribution \eqn{\sim Beta(\alpha'=MM+0.5, \beta'=UU+0.5)}
 }
-}
-\examples{
-calc_weight(MM=50, UU=50)
-#0.9999716
-
-calc_weight(MM=20, UU=60)
-#0.1646916
-
 }

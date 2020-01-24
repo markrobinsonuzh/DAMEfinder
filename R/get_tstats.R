@@ -39,6 +39,13 @@
 #'   \code{RangedSummarizedExperiment}.
 #' @importFrom BiocGenerics start
 #' @importFrom SummarizedExperiment assays
+#' 
+#' @examples 
+#' data(extractbams_output)
+#' derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = TRUE)
+#' grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+#' mod <- model.matrix(~grp)
+#' tstats <- get_tstats(derASM, mod)
 #'
 #' @export
 

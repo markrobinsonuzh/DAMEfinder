@@ -42,7 +42,7 @@ splitReads <- function(alns, v, snp){
     }
     return(MDtag[i])
   }, a = fullMD, x = fullstart, MoreArgs = list(snp.loc = snp.loc),
-  USE.NAMES = F)
+  USE.NAMES = FALSE)
 
   #Get read names from alt and ref reads
   names(alleles) <- names(alns)

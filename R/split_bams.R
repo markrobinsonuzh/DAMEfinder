@@ -220,7 +220,7 @@ lapply(sample_list, function(samp){
     gr <- GR[filt]
     return(gr)
 
-  },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F,
+  },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = FALSE, USE.NAMES = FALSE,
   mc.cores = cores)
 
   message(sprintf("Done with sample %s", sampleNames[samp]))

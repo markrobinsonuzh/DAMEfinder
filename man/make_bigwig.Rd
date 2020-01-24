@@ -36,4 +36,5 @@ goldenPath.
 #To apply to all samples in SummarizedExperiment
 #vapply(colnames(ASM_score_matrix), make_bigwig, 
 #scoreObj = ASM_score_matrix, folder = , chromsizesFile = )
+
 }

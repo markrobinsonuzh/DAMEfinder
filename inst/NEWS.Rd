@@ -5,6 +5,7 @@
 \itemize{
     \item Parameter fixes in some functions
     \item extract_bams() and methyl_circle_plot() accepts a DNAStringSet
+    \item Fix tests for smaller raw data
 }
 }
 

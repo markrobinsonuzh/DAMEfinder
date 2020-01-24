@@ -42,3 +42,14 @@ Plot
 \description{
 Plot score tracks
 }
+\examples{
+library(GenomicRanges)
+DAME <- GRanges(19, IRanges(306443,310272))
+data(extractbams_output)
+derASM <- calc_derivedasm(extractbams_output, cores = 1)
+SummarizedExperiment::colData(derASM)$group <- c("CRC","NORM")
+dame_track(dame = DAME, 
+              derASM = derASM
+ ) 
+
+}
