@@ -28,6 +28,16 @@
 #' @importFrom BiocGenerics end<-
 #' @import ggplot2
 #'
+#' @examples 
+#' library(GenomicRanges)
+#' DAME <- GRanges(19, IRanges(306443,310272))
+#' data("readtuples_output")
+#' ASM <- calc_asm(readtuples_output)
+#' SummarizedExperiment::colData(ASM)$group <- c(rep("CRC",3),rep("NORM",2))
+#' SummarizedExperiment::colData(ASM)$samples <- colnames(ASM)
+#' dame_track_mean(dame = DAME, 
+#'                 ASM = ASM)
+#' 
 #' @export
 
 dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
@@ -36,6 +46,15 @@ dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
   res_dame <- dame
   start(res_dame) <- start(dame) - positions
   end(res_dame) <- end(dame) + positions
+  
+  summarize_dat <- function(cond, SumExp, scorename, subtab, pos){
+    idx <- colData(SumExp)$group == cond
+    medians <- BiocGenerics::rowMeans(as.matrix(subtab)[,idx], na.rm=TRUE)
+    mins <- medians - (apply((as.matrix(subtab)[,idx]), 1, FUN=sd_rem))
+    maxs <- medians + (apply((as.matrix(subtab)[,idx]), 1, FUN=sd_rem))
+    return(data.frame(Means = medians, lower = mins, upper = maxs, Group = cond,
+                      Score = scorename, pos = pos))
+  }
 
   #custom se function
   sd_rem <- function(v){
@@ -62,12 +81,10 @@ dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
     over <- GenomicRanges::findOverlaps(snpgr, res_dame)
     if(window != 0){
       win <- c(seq(from = (queryHits(over)[1] - window),
-                   to = (queryHits(over)[1] - 1),
-                   by = 1),
+                   to = (queryHits(over)[1] - 1), by = 1),
                queryHits(over),
                seq(from = (utils::tail(queryHits(over),n = 1) + 1),
-                   to = (utils::tail(queryHits(over), n = 1) + window),
-                   by = 1))
+                   to = (utils::tail(queryHits(over), n = 1) + window), by = 1))
     } else{
       win <- queryHits(over)
     }
@@ -78,45 +95,18 @@ dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
     subalt <- as.data.frame(alt[win,])
     substart <- start(snpgr)[win]
 
-    ASMsnp_meds <-lapply(unique(colData(derASM)$group), function(cond){
-      idx <- colData(derASM)$group == cond
-      medians <- BiocGenerics::rowMeans(as.matrix(subASMsnp)[,idx], na.rm=TRUE)
+    ASMsnp_meds <-lapply(unique(colData(derASM)$group),
+                         summarize_dat, SumExp = derASM,
+                         scorename = "ASMsnp", subtab = subASMsnp, 
+                         pos = substart)
 
-      mins <- medians - (apply((as.matrix(subASMsnp)[,idx]), 1, FUN=sd_rem))
-      maxs <- medians + (apply((as.matrix(subASMsnp)[,idx]), 1, FUN=sd_rem))
-      return(data.frame(Means = medians,
-                        lower = mins,
-                        upper = maxs,
-                        Group = cond,
-                        Score = "ASMsnp",
-                        pos = substart))
-    })
+    ref_meds <-lapply(unique(colData(derASM)$group), 
+                      summarize_dat, SumExp = derASM, scorename = "REF:meth",
+                      subtab = subref, pos = substart)
 
-    ref_meds <-lapply(unique(colData(derASM)$group), function(cond){
-      idx <- colData(derASM)$group == cond
-      medians <- BiocGenerics::rowMeans(as.matrix(subref)[,idx], na.rm = TRUE)
-      mins <- medians - (apply((as.matrix(subref)[,idx]), 1, FUN=sd_rem))
-      maxs <- medians + (apply((as.matrix(subref)[,idx]), 1, FUN=sd_rem))
-      return(data.frame(Means = medians,
-                        lower = mins,
-                        upper = maxs,
-                        Group = cond,
-                        Score = "REF:meth",
-                        pos = substart))
-    })
-
-    alt_meds <-lapply(unique(colData(derASM)$group), function(cond){
-      idx <- colData(derASM)$group == cond
-      medians <- BiocGenerics::rowMeans(as.matrix(subalt)[,idx], na.rm=TRUE)
-      mins <- medians - (apply((as.matrix(subalt)[,idx]), 1, FUN=sd_rem))
-      maxs <- medians + (apply((as.matrix(subalt)[,idx]), 1, FUN=sd_rem))
-      return(data.frame(Means = medians,
-                        lower = mins,
-                        upper = maxs,
-                        Group = cond,
-                        Score = "ALT:meth",
-                        pos = substart))
-    })
+    alt_meds <-lapply(unique(colData(derASM)$group), 
+                      summarize_dat, SumExp = derASM, scorename = "ALT:meth",
+                      subtab = subalt, pos = substart)
 
     ASMsnp_meds_full <- do.call(rbind, ASMsnp_meds)
     ref_meds_full <- do.call(rbind, ref_meds)
@@ -130,25 +120,21 @@ dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
       stop("Sample names in colData() and colnames are different")
     }
 
-    meth <- (assay(ASM,"MM") +
-               assay(ASM,"MU") +
+    meth <- (assay(ASM,"MM") + assay(ASM,"MU") +
                assay(ASM,"UM")) / assay(ASM,"cov")
 
     ASMtuple <- assay(ASM, "asm")
     tupgr <- SummarizedExperiment::rowRanges(ASM)
-
 
     #ASMtuple
     over <- GenomicRanges::findOverlaps(tupgr, res_dame)
 
     if(window != 0){
       win <- c(seq(from = (queryHits(over)[1] - window),
-                   to = (queryHits(over)[1] - 1),
-                   by = 1),
+                   to = (queryHits(over)[1] - 1), by = 1),
                queryHits(over),
                seq(from = (utils::tail(queryHits(over),n = 1) + 1),
-                   to = (utils::tail(queryHits(over), n = 1) + window),
-                   by = 1))
+                   to = (utils::tail(queryHits(over), n = 1) + window), by = 1))
     } else{
       win <- queryHits(over)
     }
@@ -157,33 +143,15 @@ dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
     submeth <- as.data.frame(meth[win,])
     subtupger <- tupgr$midpt[win]
 
-    ASMtuple_meds <- lapply(unique(colData(ASM)$group), function(cond){
-      idx <- colData(ASM)$group == cond
-      medians <- BiocGenerics::rowMeans(as.matrix(subASMtuple)[,idx], na.rm=TRUE)
-      mins <- medians - (apply((as.matrix(subASMtuple)[,idx]), 1, FUN=sd_rem))
-      maxs <- medians + (apply((as.matrix(subASMtuple)[,idx]), 1, FUN=sd_rem))
-      return(data.frame(Means = medians,
-                 lower = mins,
-                 upper = maxs,
-                 Group = cond,
-                 Score = "ASMtuple",
-                 pos = subtupger))
-    })
+    ASMtuple_meds <- lapply(unique(colData(ASM)$group), 
+                            summarize_dat, SumExp = ASM, scorename = "ASMtuple",
+                            subtab = subASMtuple, pos = subtupger)
 
     ASMtuple_meds_full <- do.call(rbind, ASMtuple_meds)
 
-    meth_meds <- lapply(unique(colData(ASM)$group), function(cond){
-      idx <- colData(ASM)$group == cond
-      medians <- BiocGenerics::rowMeans(as.matrix(submeth)[,idx], na.rm=TRUE)
-      mins <- medians - (apply((as.matrix(submeth)[,idx]), 1, FUN=sd_rem))
-      maxs <- medians + (apply((as.matrix(submeth)[,idx]), 1, FUN=sd_rem))
-      return(data.frame(Means = medians,
-                        lower = mins,
-                        upper = maxs,
-                        Group = cond,
-                        Score = "meth",
-                        pos = subtupger))
-    })
+    meth_meds <- lapply(unique(colData(ASM)$group), summarize_dat, SumExp = ASM,
+                        scorename = "meth",
+                        subtab = submeth, pos = subtupger)
 
     meth_meds_full <- do.call(rbind, meth_meds)
   }
@@ -238,5 +206,4 @@ dame_track_mean <- function(dame, window = 0, positions = 0, derASM = NULL,
   }
 
   return(p)
-
 }

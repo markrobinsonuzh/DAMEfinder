@@ -32,15 +32,3 @@ This function returns an allele-specific methylation (ASM) score for
   ratio and a weight reflecting a measure of allele-specificity using the MM
   and UU counts.
 }
-\examples{
-# Get list of samples containing tuple count information
-#sampleList <- read_tuples(files = file_list,
-#sample_names = names(file_list))
-
-# Calculate log odds ratio per tuple for the first sample in the list
-#sample1 <- calc_logodds(sampleList[[1]])
-
-# Calculate ASM score
-# sample1 <- calc_score(sample1, beta=0.5, a=0.2)
-
-}

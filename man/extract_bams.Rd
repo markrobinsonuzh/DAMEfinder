@@ -21,7 +21,8 @@ extract_bams(
 
 \item{sampleNames}{Names of files in the list.}
 
-\item{referenceFile}{fasta file used to generate the bam files.}
+\item{referenceFile}{fasta file used to generate the bam files. Or 
+\code{DNAStringSet} with DNA sequence.}
 
 \item{coverage}{Minimum number of reads covering a CpG site on each allele.
 Default = 2.}
@@ -48,8 +49,8 @@ get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 bamFiles <- get_data_path("NORM1_chr19_trim.bam")
 vcfFiles <- get_data_path("NORM1.chr19.trim.vcf")
 sampleNames <- "NORM1"
-referenceFile <- get_data_path("19.fa")
+#referenceFile <- get_data_path("19.fa")
 
-GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
+#GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
 
 }

@@ -10,8 +10,8 @@
 #'
 #' @param sampleList List of samples returned from \code{\link{read_tuples}}
 #' @param beta The beta parameter used to calculate the weight in the ASM score.
-#'   \code{link{calc_weight}} uses this parameter for \code{\link{pbeta}}.
-#'   Default = 0.5.
+#'   \code{link{calc_weight}} uses this parameter to penalize fully methylated
+#'   or unmethylated tuples. Default = 0.5.
 #' @param verbose If the function should be verbose. Default = TRUE.
 #' @param a The distance from 0.5 allowed, where 0.5 is a perfect MM:UU balance
 #'   for a tuple. In the default mode this value is set to 0.2, and we account
@@ -35,26 +35,27 @@
 #'
 #' @export
 #'
-calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
-                     coverage = 5, verbose=TRUE) {
+calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt, 
+                      coverage = 5, verbose=TRUE) {
 
-  if(!is.vector(sampleList)) stop("Input is not a list of more than one tibble")
+   if(!is.vector(sampleList)) 
+     stop("Input is not a list of more than one tibble")
 
-  if(verbose) message("Calculating log odds.")
-  sampleList <- lapply(sampleList, calc_logodds)
+   if(verbose) message("Calculating log odds.")
+   sampleList <- lapply(sampleList, calc_logodds)
 
-  if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
-  sampleList <- lapply(sampleList, function(u) {
+   if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
+   sampleList <- lapply(sampleList, function(u) {
     if(verbose) message(".", appendLF=FALSE)
     calc_score(u, beta=beta, a=a)
   })
-  if(verbose) message(" done.")
+   if(verbose) message(" done.")
 
-  if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
-  # get key of unique tuples
-  all_keys <- lapply(sampleList, function(u) {
-    if(verbose) message(".", appendLF=FALSE)
-    paste0(u$chr,'.',u$pos1, '.', u$pos2)
+   if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
+   # get key of unique tuples
+   all_keys <- lapply(sampleList, function(u) {
+     if(verbose) message(".", appendLF=FALSE)
+     paste0(u$chr,'.',u$pos1, '.', u$pos2)
   })
   key <- unique(unlist(all_keys))
   if(verbose) message(" done.")
@@ -166,16 +167,6 @@ calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
 #'
 #'
 #' @return The same object with an additional column for the ASM score.
-#' @examples
-#' # Get list of samples containing tuple count information
-#' #sampleList <- read_tuples(files = file_list,
-#' #sample_names = names(file_list))
-#'
-#' # Calculate log odds ratio per tuple for the first sample in the list
-#' #sample1 <- calc_logodds(sampleList[[1]])
-#'
-#' # Calculate ASM score
-#' # sample1 <- calc_score(sample1, beta=0.5, a=0.2)
 #'
 calc_score <- function(df, beta = 0.5, a = 0.2) {
   weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
@@ -217,9 +208,6 @@ calc_logodds <- function(s, eps=1) {
 #'
 #' @return Vector or matrix of transformed scores.
 #'
-#' @examples
-#' #v <- c(-1,1.5,0,-2.1,4.3)
-#' #modulus_sqrt(v)
 modulus_sqrt <- function(values) {
   #sign(values)*sqrt(abs(values))
   sqrt(abs(values))
@@ -264,16 +252,13 @@ modulus_sqrt <- function(values) {
 #'   a CpG pair. This is used as a weight that is multiplied by the log odds
 #'   ratio to give the final ASM score of that tuple.
 #'
-#' @examples
-#' #weight1 <- calc_weight(MM=50, UU=50)
+#' #calc_weight(MM=50, UU=50)
 #' #0.9999716
 #'
-#' #weight2 <- calc_weight(MM=20, UU=60)
+#' #calc_weight(MM=20, UU=60)
 #' #0.1646916
 #'
-#' #weight3 <- calc_weight(MM=2, UU=3)
-#' #0.6260661
-#'
+#' 
 #'
 calc_weight <- function(MM, UU, beta=0.5, a=.2) {
   s1 <- beta+MM

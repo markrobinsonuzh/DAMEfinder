@@ -10,7 +10,8 @@
 #' @param bamFiles List of bam files.
 #' @param vcfFiles List of vcf files.
 #' @param sampleNames Names of files in the list.
-#' @param referenceFile fasta file used to generate the bam files.
+#' @param referenceFile fasta file used to generate the bam files. Or 
+#'   \code{DNAStringSet} with DNA sequence.
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 2.
 #' @param cores Number of cores to use. See package {parallel} for description
@@ -25,9 +26,9 @@
 #' bamFiles <- get_data_path("NORM1_chr19_trim.bam")
 #' vcfFiles <- get_data_path("NORM1.chr19.trim.vcf")
 #' sampleNames <- "NORM1"
-#' referenceFile <- get_data_path("19.fa")
+#' #referenceFile <- get_data_path("19.fa")
 #'
-#' GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
+#' #GRanges_list <- extract_bams(bamFiles, vcfFiles, sampleNames, referenceFile)
 #'
 #' @importFrom BiocGenerics start
 #' @importFrom BiocGenerics end
@@ -42,11 +43,14 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                        coverage = 4, cores = 1, verbose = TRUE){
 
 if(verbose) message("Reading reference file", appendLF = TRUE)
-fa <- open(Rsamtools::FaFile(referenceFile,
-                             index = paste0(referenceFile, ".fai")))
+if(typeof(referenceFile) == "character"){
+  fa <- open(Rsamtools::FaFile(referenceFile,
+                               index = paste0(referenceFile, ".fai")))
+  
+}
 
 #get names and indeces per sample to apply to
-sample_list <- 1:length(sampleNames)
+sample_list <- seq(from=1,to=length(sampleNames),by=1)
 names(sample_list) <- sampleNames
 
 lapply(sample_list, function(samp){
@@ -65,25 +69,11 @@ lapply(sample_list, function(samp){
     snp <- GRanges(seqnames = t, IRanges(start = as.integer(u), width = 1))
 
     #Ignore non-standard chromosomes
-    if(length(grep(t, c(as.character(1:22), "X", "Y"))) == 0){
+    if(length(grep(t, c(as.character(seq(from=1,to=22,by=2)), "X", "Y"))) == 0){
       if(verbose) message("Bad chrom", appendLF = TRUE)
       return(NULL)
       }
-
-    #message(sprintf("Processing chromosome %s",t))
-    #message(".")
     chrom <- t
-
-    #Get the reads that align to the specified SNP
-    # flags <- Rsamtools::scanBamFlag(
-    #   isPaired = T,
-    #   isProperPair = T,
-    #   isUnmappedQuery = F,
-    #   hasUnmappedMate = F,
-    #   isNotPassingQualityControls = F,
-    #   isDuplicate = F,
-    #   isSecondaryAlignment = F,
-    #   isSupplementaryAlignment = F)
 
     params <- Rsamtools::ScanBamParam(
       #flag = flags,
@@ -114,13 +104,18 @@ lapply(sample_list, function(samp){
     right <- max(end(alns))
     window <- GRanges(GenomeInfoDb::seqnames(snp), IRanges(left, right))
 
+    if(typeof(referenceFile) == "S4"){
+      dna <- referenceFile[window]
+      
+    } else if(typeof(referenceFile) == "character"){
     #open reference seq to get correct CpG locations within that reference chunk
-    dna <- Rsamtools::scanFa(fa, param=window)
+    dna <- Rsamtools::scanFa(fa, param=window)}
 
     cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
     if(length(cgsite) < 1){
-      if(verbose) message("No CpG sites associated to this SNP", appendLF = TRUE)
+      if(verbose) message("No CpG sites associated to this SNP", 
+                          appendLF = TRUE)
       return(NULL)
       #next
     }
@@ -141,7 +136,7 @@ lapply(sample_list, function(samp){
       read.start <- start(x) - left + 1 #start of read
       read.end <- end(x) - left + 1 #end
 
-      for(pair in 1:2){
+      for(pair in c(1,2)){
         something <- mcols(x[pair])$MD
         tag <- getMD(something)
         MDtag <- tag$MDtag
@@ -226,7 +221,7 @@ lapply(sample_list, function(samp){
     gr <- GR[filt]
     return(gr)
 
-  },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = F, USE.NAMES = F,
+  },t = vcf[,1], u = vcf[,2], v = vcf[,4], SIMPLIFY = FALSE, USE.NAMES = FALSE,
   mc.cores = cores)
 
   message(sprintf("Done with sample %s", sampleNames[samp]))

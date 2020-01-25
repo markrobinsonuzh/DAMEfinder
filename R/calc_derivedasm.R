@@ -20,7 +20,8 @@
 #'
 #' @examples
 #' data(extractbams_output)
-#' derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
+#' derASM <- calc_derivedasm(extractbams_output[c(1,2)], cores = 1, 
+#'    verbose = FALSE)
 #' 
 #' @importFrom S4Vectors mcols
 #' @importFrom S4Vectors mcols<-
@@ -75,7 +76,7 @@ calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE){
                        as.numeric(cols[4,]),
                        cols[5,],
                        as.numeric(cols[6,]),
-                       stringsAsFactors = F
+                       stringsAsFactors = FALSE
     )
     colnames(mcol) <- colnames(mcols(w))
     ss <- limma::strsplit2(unique.keys,".",fixed=TRUE)

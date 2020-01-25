@@ -20,10 +20,12 @@
 #' @return A bigwig file for the sample chosen.
 #'
 #' @importFrom utils write.table
+#' 
 #' @examples
 #' #To apply to all samples in SummarizedExperiment
-#' #sapply(colnames(ASM_score_matrix), make_bigwig, 
+#' #vapply(colnames(ASM_score_matrix), make_bigwig, 
 #' #scoreObj = ASM_score_matrix, folder = , chromsizesFile = )
+#' 
 #' @export
 #'
 make_bigwig <- function(sample, scoreObj, folder, chromsizesFile){
@@ -41,7 +43,7 @@ make_bigwig <- function(sample, scoreObj, folder, chromsizesFile){
                    start = as.integer(midpt),
                    end = as.integer(midpt),
                    score = abs(asm[,grep(sample, colnames(asm))]),
-                   stringsAsFactors = F,
+                   stringsAsFactors = FALSE,
                    row.names = NULL)
 
   #remove NAs (this is just to double check, the user should input a filtered
@@ -55,7 +57,7 @@ make_bigwig <- function(sample, scoreObj, folder, chromsizesFile){
   #make bedgraph
   scorename <- names(SummarizedExperiment::assays(scoreObj))[1]
   write.table(bg, file = sprintf("%s%s.%s.bedgraph", folder, scorename, sample),
-              sep = "\t", row.names = F, col.names = F, quote = F)
+              sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
 
   #sort file
   cmd1 <- sprintf(

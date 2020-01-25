@@ -24,7 +24,7 @@ test_that("dame track with both", {
 })
 
 test_that("other options", {
-  p <- dame_track(dame = DAME, derASM = derASM, ASM = ASM, window = 10,
+  p <- dame_track(dame = DAME, derASM = derASM, ASM = ASM,
                   plotSNP = TRUE)
   expect_true(is.ggplot(p))
 })

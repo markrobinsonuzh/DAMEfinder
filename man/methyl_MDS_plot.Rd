@@ -2,8 +2,8 @@
 % Please edit documentation in R/methyl_MDS_plot.R
 \name{methyl_MDS_plot}
 \alias{methyl_MDS_plot}
-\title{Multidimensional scaling plot of distances between methylation proportions
-(beta values)}
+\title{Multidimensional scaling plot of distances between methylation 
+proportions (beta values)}
 \usage{
 methyl_MDS_plot(x, group, top = 1000, coverage = 5, adj = 0.02, pointSize = 4)
 }
@@ -29,4 +29,11 @@ Two-dimensional MDS plot.
 \description{
 Same as \code{\link{plotMDS}}, except for an arc-sine transformation of the
 methylation proportions.
+}
+\examples{
+data(readtuples_output)
+ASM <- calc_asm(readtuples_output)
+grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
+methyl_MDS_plot(ASM, grp)
+
 }

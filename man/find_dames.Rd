@@ -29,7 +29,8 @@ correspond to a tuple/site and a column to sample/replicate.}
 \item{coef}{Column in \code{design} specifying the parameter to estimate.
 Default = 2.}
 
-\item{contrast}{a contrast matrix, generated with \code{\link{makeContrasts}}.}
+\item{contrast}{a contrast matrix, generated with
+\code{\link{makeContrasts}}.}
 
 \item{smooth}{Whether smoothing should be applied to the t-Statistics.
 Default = TRUE.}
@@ -102,13 +103,13 @@ parameters.
 
 ##Using snp-based mode
 data(extractbams_output)
-derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
-grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
-mod <- model.matrix(~grp)
+#derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
+#grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+#mod <- model.matrix(~grp)
 #filt to avoid warnings and get nice regions
-filt <- rowSums(!is.na(
-SummarizedExperiment::assay(derASM, "der.ASM"))) == 8
-derASM <- derASM[filt,]
-dames <- find_dames(derASM, mod, verbose = FALSE)
+#filt <- rowSums(!is.na(
+#SummarizedExperiment::assay(derASM, "der.ASM"))) == 8
+#derASM <- derASM[filt,]
+#dames <- find_dames(derASM, mod, verbose = FALSE)
 
 }

@@ -1,5 +1,5 @@
-#' Multidimensional scaling plot of distances between methylation proportions
-#' (beta values)
+#' Multidimensional scaling plot of distances between methylation 
+#' proportions (beta values)
 #'
 #' Same as \code{\link{plotMDS}}, except for an arc-sine transformation of the
 #' methylation proportions.
@@ -18,6 +18,12 @@
 #'
 #' @importFrom SummarizedExperiment assays
 #' @import ggplot2
+#' 
+#' @examples 
+#' data(readtuples_output)
+#' ASM <- calc_asm(readtuples_output)
+#' grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
+#' methyl_MDS_plot(ASM, grp)
 #'
 #' @export
 methyl_MDS_plot <- function(x,

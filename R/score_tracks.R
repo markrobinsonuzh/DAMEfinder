@@ -29,6 +29,16 @@
 #' @importFrom BiocGenerics start<-
 #' @importFrom BiocGenerics end<-
 #' @import ggplot2
+#' 
+#' @examples 
+#' library(GenomicRanges)
+#' DAME <- GRanges(19, IRanges(306443,310272))
+#' data("readtuples_output")
+#' ASM <- calc_asm(readtuples_output)
+#' SummarizedExperiment::colData(ASM)$group <- c(rep("CRC",3),rep("NORM",2))
+#' SummarizedExperiment::colData(ASM)$samples <- colnames(ASM)
+#' dame_track(dame = DAME, 
+#'            ASM = ASM) 
 #'
 #' @export
 
@@ -85,7 +95,9 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     subalt_long$score <- "ALT:meth"
 
     #SNP
-    subSNP <- as.data.frame(SNP[win,])
+    subSNP <- SNP[win,]
+    subSNP[is.na(subSNP)] <- "none"
+    subSNP <- data.frame(subSNP, stringsAsFactors = FALSE)
     subSNP$pos <- start(snpgr)[win]
     subSNP_long <- reshape2::melt(subSNP, id.vars = "pos",
                                   measure.vars = colnames(ASMsnp),
@@ -94,7 +106,7 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     #Make SNP name nicer
     loc <- as.integer(stringr::str_extract(subSNP_long$snp.pos, "[0-9]+$"))
     chrom <- as.integer(stringr::str_extract(subSNP_long$snp.pos, "^[0-9]+"))
-    subSNP_long$snp.pos <- ifelse(is.na(subSNP_long$snp.pos), NA,
+    subSNP_long$snp.pos <- ifelse(subSNP_long$snp.pos == "none", "none",
                                   sprintf("chr%s:%s", chrom, loc))
   }
 
@@ -141,7 +153,6 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
 
   }
 
-
   if((!is.null(derASM)) & (!is.null(ASM))){
     message("Using both scores")
     full_long <- rbind(subASMtuple_long, submeth_long, subASMsnp_long,
@@ -168,7 +179,6 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     full_long <- rbind(subASMtuple_long, submeth_long)
     full_long$group <- colData(ASM)$group[match(full_long$variable,
                                                 colData(ASM)$samples)]
-
   }
 
   #To draw rectangle on region
@@ -181,15 +191,16 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
   m1 <- ggplot(data = full_long) +
     geom_line(mapping = aes_(x=~pos, y=~value, group=~variable, color=~group),
               alpha = 0.5) +
-    geom_point(mapping = aes_(x=~pos, y=~value, group=~variable, color=~group)) +
-    geom_rect(data = forect, aes_(xmin=~xmin, xmax=~xmax, ymin=~ymin, ymax=~ymax),
+    geom_point(mapping = aes_(x=~pos, y=~value, group=~variable, 
+                              color=~group)) +
+    geom_rect(data = forect, aes_(xmin=~xmin, xmax=~xmax, ymin=~ymin, 
+                                  ymax=~ymax),
               alpha = 0.1) +
     facet_grid(score ~ ., scales = "free_y") +
     theme_bw() +
     xlab("position") + ggtitle ("Scores")
 
   cord <- ggplot_build(m1)$layout$panel_scales_x[[1]]$range$range
-
 
   #plot SNP table
   if(plotSNP){
@@ -214,7 +225,6 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
 
     p <- cowplot::plot_grid(m1,m2, ncol=1, nrow = 2,
                             rel_heights = c(3,1), align="v")
-
   } else{
 
     if(!is.null(colvec)){
@@ -225,5 +235,4 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
   }
 
   return(p)
-
 }

@@ -1,16 +1,20 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 1.1.6
-Authors@R: c(person("Stephany", "Orjuela", role = c("aut", "cre"), email = "sorjuelal@gmail.com"),
+Version: 0.99.0
+Authors@R: c(person("Stephany", "Orjuela", role = c("aut", "cre"), 
+           email = "sorjuelal@gmail.com", comment = c(ORCID = "0000-0002-1508-461X")),
              person("Dania", "Machlab", role = "aut", email = "dania.machlab@gmail.com"),
              person("Mark", "Robinson", role = "aut", email = "mark.robinson@imls.uzh.ch"))
 Maintainer: Stephany Orjuela <sorjuelal@gmail.com>
-Description: 'DAMEfinder' offers functionality for taking methtuple or bismark outputs to calculate ASM scores and compute DAMEs. 
+Description: 'DAMEfinder' offers functionality for taking methtuple or bismark 
+        outputs to calculate ASM scores and compute DAMEs. 
         It also offers nice visualization of methyl-circle plots.
 License: MIT + file LICENSE
-LazyData: TRUE
-RoxygenNote: 7.0.1
+LazyData: FALSE
+RoxygenNote: 7.0.2
+biocViews: DNAMethylation, DifferentialMethylation
+Depends: R (>= 4.0)
 Imports:
   stats, 
   GenomeInfoDb, 
@@ -33,7 +37,7 @@ Imports:
   Biostrings,
   reshape2,
   cowplot,
-  rtracklayer
+  utils
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown,
-    testthat
+    testthat, rtracklayer, BSgenome.Hsapiens.UCSC.hg19

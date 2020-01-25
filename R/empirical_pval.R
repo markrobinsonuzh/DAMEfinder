@@ -19,7 +19,6 @@
 #' @param ... Passed to \code{get_tstats} and then to \code{loessByCluster}.
 #' @return Vector of empirical p-values.
 #'
-#' @export
 empirical_pval <- function(presa, design, rforiginal, coeff, cont, smooth,
                            maxPerms = 10, Q, maxGap, method, ...){
 
@@ -74,7 +73,6 @@ empirical_pval <- function(presa, design, rforiginal, coeff, cont, smooth,
 
   #Detect permuted dames
   message("Generating ", ncol(perms), " permutations", appendLF = TRUE)
-  #num_perms <- 1:ncol(perms)
 
   areas <- apply(perms, 2, function(i){
 
@@ -132,10 +130,10 @@ empirical_pval <- function(presa, design, rforiginal, coeff, cont, smooth,
   all_areas <- sort(unlist(areas))
   total_areas <- length(all_areas)
 
-  pvalEmp <- sapply(rforiginal$area, function(a){
+  pvalEmp <- vapply(rforiginal$area, function(a){
     pperm <- (sum(all_areas > abs(a)) + 1) / (total_areas + 1)
     return(pperm)
-  })
+  }, FUN.VALUE = double(1))
 
   return(pvalEmp)
 }

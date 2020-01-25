@@ -1,6 +1,6 @@
 <!--- [![Build Status](https://travis-ci.com/csoneson/rnaseqworkflow.svg?branch=master)](https://travis-ci.com/csoneson/rnaseqworkflow) -->
 
-# DAMEfinder <img src="docs/damefindersticker.png" width="200" align="right" />
+# DAMEfinder <img src="vignettes/damefindersticker.png" width="200" align="right" />
 
 **DAMEfinder** (**D**ifferential **A**llele-specific **ME**thylation **finder**) is an R-package that detects allele-specific methylation (ASM) in a cohort of samples, and detects regions of differential ASM within groups of interest, based on **Bisulfite-sequencing** files.
 
@@ -54,32 +54,12 @@ We can look at the tuple ASM scores in the same region as above, as well as the 
 
 ## How do I install it?
 
-Since DAMEfinder is not on Bioconductor, you have to install all dependencies before:
+This should do:
 
 ```{r}
-## Install `BiocManager` if needed
-if (!("BiocManager" %in% installed.packages()[, "Package"])) {
-  install.packages("BiocManager")
-}
 
-## List dependencies
-pkg <- c("BiocGenerics", "GenomeInfoDb", "GenomicRanges", "IRanges", 
-"SummarizedExperiment", "limma", "bumphunter", "readr", 
-"Rsamtools", "ggplot2",)
-
-## Check if dependencies are already installed
-pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
-
-## If some dependency is missing, install it
-if (length(pkg) > 0) {
-	BiocManager::install(pkg, dependencies = TRUE, ask = FALSE)
-}
-```
-
-Now you can install DAMEfinder
-
-```{r}
 BiocManager::install("markrobinsonuzh/DAMEfinder")
+
 ```
 
 ## Feedback

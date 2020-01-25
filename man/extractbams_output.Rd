@@ -18,7 +18,8 @@ that SNP}
 \item{\code{snp}}{The SNP containing the reads}
 }
 
-For further details, see \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-6949/}
+For further details, 
+see \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-6949/}
 sample names in in ArrayExpress do not necessarily match names given here!}
 \usage{
 extractbams_output

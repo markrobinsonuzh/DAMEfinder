@@ -8,7 +8,8 @@
 #'   location of interest.
 #' @param vcfFile vcf file.
 #' @param bamFile bismark bam file path.
-#' @param refFile fasta reference file path.
+#' @param refFile fasta reference file path. Or \code{DNAStringSet} with DNA
+#'  sequence.
 #' @param dame (optional) GRanges object containing a region to plot.
 #' @param letterSize Size of alleles drawn in plot. Default = 2.5.
 #' @param pointSize Size of methylation circles. Default = 3.
@@ -27,17 +28,17 @@
 #' bam_files <- get_data_path("NORM1_chr19_trim.bam")
 #' vcf_files <- get_data_path("NORM1.chr19.trim.vcf")
 #' sample_names <- "NORM1"
-#' reference_file <- get_data_path("19.fa")
+#' #reference_file <- get_data_path("19.fa")
 #'
 #' snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
-#' methyl_circle_plot(snp = snp,
-#'  vcfFile = vcf_files,
-#'  bamFile = bam_files,
-#'  refFile = reference_file,
-#'  letterSize = 3,
+#' #methyl_circle_plot(snp = snp,
+#'  #vcfFile = vcf_files,
+#'  #bamFile = bam_files,
+#'  #refFile = reference_file,
+#'  #letterSize = 3,
 #'  #dame = dame,
-#'  sampleName = sample_names,
-#'  pointSize = 2)
+#'  #sampleName = sample_names,
+#'  #pointSize = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -111,8 +112,14 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
-  fa <- open(Rsamtools::FaFile(refFile))
-  dna <- Rsamtools::scanFa(fa, param=window)
+  if(typeof(refFile) == "character"){
+    fa <- open(Rsamtools::FaFile(refFile,
+                                 index = paste0(refFile, ".fai")))
+    dna <- Rsamtools::scanFa(fa, param=window)
+  } else{
+    dna <- refFile[window]
+  }
+  
 
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
@@ -140,7 +147,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
     read.start <- start(x) - left + 1 #start of read
     read.end <- end(x) - left + 1 #end
 
-    for(pair in 1:2){
+    for(pair in c(1,2)){
 
       something <- mcols(x[pair])$MD
       tag <- getMD(something)
@@ -206,24 +213,25 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
-                  read=rep(1:length(alns.pairs), each=length(cgsite)),
+                  read=rep(seq(from=1,to=length(alns.pairs),by=1), 
+                           each=length(cgsite)),
                   value=as.vector(conversion),
                   stringsAsFactors = FALSE)
 
   #data for segments
   reads <- d$read
 
-  xstart <- sapply(reads, function(x){
+  xstart <- vapply(reads, function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     min(newd$CpG[vals], snp.start)
-  })
+  },FUN.VALUE = double(1))
 
-  xend <- sapply(reads,function(x){
+  xend <- vapply(reads,function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     max(newd$CpG[vals], snp.start)
-  })
+  },FUN.VALUE = double(1))
 
   d2 <- unique(data.frame(xstart, xend, reads, stringsAsFactors = FALSE))
   d2$snp <- c(rep("a", length(alt.reads)), rep("r", length(ref.reads)))
@@ -239,8 +247,8 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
                               colour=snp), size=0.2) +
     geom_point(data=d, aes_(x=~CpG, y=~read, shape=~value), fill="white",
                size=pointSize) +
-    geom_point(aes(x=snp.start, y=1:length(alns.pairs), shape=letter,
-                   colour = letter), size=letterSize) +
+    geom_point(aes(x=snp.start, y=seq(from=1,to=length(alns.pairs),by=1), 
+                   shape=letter, colour = letter), size=letterSize) +
     geom_point(aes(x=cpg.start, y=0), shape=24, size=3, fill="green") +
     scale_color_manual(values=cols) +
     guides(color=FALSE) +
@@ -271,14 +279,14 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 #' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
 #'
 #' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
-#' reference_file <- get_data_path("19.fa")
+#' #reference_file <- get_data_path("19.fa")
 #' bam_files <- get_data_path("NORM1_chr19_trim.bam")
 #' cpgsite <- GenomicRanges::GRanges(19, IRanges::IRanges(387982, width = 1))
 #'
-#' methyl_circle_plotCpG(cpgsite = cpgsite,
-#'  bamFile = bam_files,
-#'  refFile = reference_file,
-#'  pointSize = 2)
+#' #methyl_circle_plotCpG(cpgsite = cpgsite,
+#'  #bamFile = bam_files,
+#'  #refFile = reference_file,
+#'  #pointSize = 2)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
@@ -324,9 +332,13 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
 
   message("Reading reference")
   #open reference seq to get correct CpG locations within that reference chunk
-  fa <- open(Rsamtools::FaFile(refFile))
-  #idx <- scanFaIndex(fa)
-  dna <- Rsamtools::scanFa(fa, param=window)
+  if(typeof(refFile) == "character"){
+    fa <- open(Rsamtools::FaFile(refFile,
+                                 index = paste0(refFile, ".fai")))
+    dna <- Rsamtools::scanFa(fa, param=window)
+  } else{
+    dna <- refFile[window]
+  }
 
   cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
@@ -353,7 +365,7 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
     read.start <- start(x) - left + 1 #start of read
     read.end <- end(x) - left + 1 #end
 
-    for(pair in 1:2){
+    for(pair in c(1,2)){
 
       something <- mcols(x[pair])$MD
       tag <- getMD(something)
@@ -410,14 +422,15 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
 
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
-                  read=rep(1:length(alns.pairs), each=length(cgsite)),
+                  read=rep(seq(from=1,to=length(alns.pairs),by=1), 
+                           each=length(cgsite)),
                   value=as.vector(conversion))
 
   #reorder reads to plot
   if(isTRUE(order)){
   trans <- ifelse(d$value == 19, 1, 0)
   und <- unique(d$read)
-  sums_per_read <- sapply(und, function(i) sum(trans[d$read == i],na.rm = TRUE))
+  sums_per_read <- vapply(und, function(i) sum(trans[d$read == i],na.rm = TRUE))
   und_ord <- und[order(sums_per_read)]
 
   d$order <- 0
@@ -430,17 +443,17 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
   #data for segments
   reads <- d$read
 
-  xstart <- sapply(reads, function(x){
+  xstart <- vapply(reads, function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     min(newd$CpG[vals])
-  })
+  },FUN.VALUE = double(1))
 
-  xend <- sapply(reads,function(x){
+  xend <- vapply(reads,function(x){
     newd <- d[which(d$read == x),]
     vals <- which(!is.na(newd$value))
     max(newd$CpG[vals])
-  })
+  },FUN.VALUE = double(1))
 
   d2 <- unique(data.frame(xstart, xend, reads))
 

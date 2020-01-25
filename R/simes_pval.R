@@ -13,7 +13,6 @@
 #' @param midpt Coordinate vector for each CpG site/tuple.
 #' @return Vector of summarized pvals
 #'
-#' @export
 simes_pval <- function(sat, smtstat, midpt){
 
   #try to use this strategy using full clusters, not segments which means
@@ -28,27 +27,37 @@ simes_pval <- function(sat, smtstat, midpt){
   starts <- midpt
   ends <- midpt
   
-  simes <- function(pval) min((length(pval)*pval[order(pval)])/1:length(pval))
+  simes <- function(pval) min((length(pval)*pval[order(pval)])/
+                                seq(from=1,to=length(pval),by=1))
 
   realregs <- data.frame(
-    chr=sapply(cluster.ids,
-               function(Index) chr[cluster == Index][1]),
-    start=sapply(cluster.ids,
-                 function(Index) min(starts[cluster == Index])),
-    end=sapply(cluster.ids, 
-               function(Index) max(ends[cluster == Index])),
-    meanTstat=sapply(cluster.ids, 
-                     function(Index) mean(smtstat[cluster == Index])),
-    sumTstat=sapply(cluster.ids, 
-                    function(Index) sum(smtstat[cluster == Index])),
-    pvalSimes=sapply(cluster.ids, 
-                     function(Index) simes(pval[cluster == Index])),
-    clusterL=sapply(cluster.ids, 
-                 function(Index) length(cluster[cluster == Index])),
-    numup=sapply(cluster.ids, 
-                 function(Index) sum(smtstat[cluster == Index] > 0)),
-    numdown=sapply(cluster.ids, 
-                   function(Index) sum(smtstat[cluster == Index] < 0)))
+    chr=vapply(cluster.ids,
+               function(Index) chr[cluster == Index][1], 
+               FUN.VALUE = character(1)),
+    start=vapply(cluster.ids,
+                 function(Index) min(starts[cluster == Index]), 
+                 FUN.VALUE = double(1)),
+    end=vapply(cluster.ids, 
+               function(Index) max(ends[cluster == Index]), 
+               FUN.VALUE = double(1)),
+    meanTstat=vapply(cluster.ids, 
+                     function(Index) mean(smtstat[cluster == Index]),
+                     FUN.VALUE = double(1)),
+    sumTstat=vapply(cluster.ids, 
+                    function(Index) sum(smtstat[cluster == Index]),
+                    FUN.VALUE = double(1)),
+    pvalSimes=vapply(cluster.ids, 
+                     function(Index) simes(pval[cluster == Index]),
+                     FUN.VALUE = double(1)),
+    clusterL=vapply(cluster.ids, 
+                 function(Index) length(cluster[cluster == Index]),
+                 FUN.VALUE = double(1)),
+    numup=vapply(cluster.ids, 
+                 function(Index) sum(smtstat[cluster == Index] > 0),
+                 FUN.VALUE = double(1)),
+    numdown=vapply(cluster.ids, 
+                   function(Index) sum(smtstat[cluster == Index] < 0),
+                   FUN.VALUE = double(1)))
   
   return(realregs)
 }
