@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 0.99.0}{
+\itemize{
+    \item First version submitted to Bioconductor
+}
+}
+
+
 \section{DAMEfinder VERSION 1.1.7}{
 \itemize{
     \item Parameter fixes in some functions

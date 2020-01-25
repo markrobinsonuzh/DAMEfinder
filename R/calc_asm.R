@@ -35,26 +35,27 @@
 #'
 #' @export
 #'
-calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
-                     coverage = 5, verbose=TRUE) {
+calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt, 
+                      coverage = 5, verbose=TRUE) {
 
-  if(!is.vector(sampleList)) stop("Input is not a list of more than one tibble")
+   if(!is.vector(sampleList)) 
+     stop("Input is not a list of more than one tibble")
 
-  if(verbose) message("Calculating log odds.")
-  sampleList <- lapply(sampleList, calc_logodds)
+   if(verbose) message("Calculating log odds.")
+   sampleList <- lapply(sampleList, calc_logodds)
 
-  if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
-  sampleList <- lapply(sampleList, function(u) {
+   if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
+   sampleList <- lapply(sampleList, function(u) {
     if(verbose) message(".", appendLF=FALSE)
     calc_score(u, beta=beta, a=a)
   })
-  if(verbose) message(" done.")
+   if(verbose) message(" done.")
 
-  if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
-  # get key of unique tuples
-  all_keys <- lapply(sampleList, function(u) {
-    if(verbose) message(".", appendLF=FALSE)
-    paste0(u$chr,'.',u$pos1, '.', u$pos2)
+   if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
+   # get key of unique tuples
+   all_keys <- lapply(sampleList, function(u) {
+     if(verbose) message(".", appendLF=FALSE)
+     paste0(u$chr,'.',u$pos1, '.', u$pos2)
   })
   key <- unique(unlist(all_keys))
   if(verbose) message(" done.")

@@ -17,8 +17,9 @@
 #'   column correspond to a tuple/site and sample respectively.
 #' @param design a design matrix created with \code{\link{model.matrix}}.
 #' @param coef Column in model.matrix specifying the parameter to estimate.
-#'   Default = 2. If \code{contrast} specified, column with contrast of interest.
-#' @param contrast a contrast matrix, generated with \code{\link{makeContrasts}}.
+#' Default = 2. If \code{contrast} specified, column with contrast of interest.
+#' @param contrast a contrast matrix, generated with
+#'   \code{\link{makeContrasts}}.
 #' @param method The method to be used in limma's \code{\link{lmFit}}. The
 #'   default is set to "ls" but can also be set to "robust", which is
 #'   recommended on a real data set.
@@ -41,15 +42,16 @@
 #' @importFrom SummarizedExperiment assays
 #' 
 #' @examples 
-#' data(extractbams_output)
-#' derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = TRUE)
-#' grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+#' data(readtuples_output)
+#' ASM <- calc_asm(readtuples_output)
+#' grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
 #' mod <- model.matrix(~grp)
-#' tstats <- get_tstats(derASM, mod)
+#' tstats <- get_tstats(ASM, mod)
 #'
 #' @export
 
-get_tstats <- function(sa, design, contrast = NULL, method="ls", trend=FALSE, smooth=FALSE,
+get_tstats <- function(sa, design, contrast = NULL, method="ls", trend=FALSE, 
+                       smooth=FALSE,
                        maxGap=20, coef=2, verbose=TRUE, filter = TRUE, ...) {
 
   # choose SumExp type

@@ -45,11 +45,11 @@ Plot score tracks
 \examples{
 library(GenomicRanges)
 DAME <- GRanges(19, IRanges(306443,310272))
-data(extractbams_output)
-derASM <- calc_derivedasm(extractbams_output, cores = 1)
-SummarizedExperiment::colData(derASM)$group <- c("CRC","NORM")
+data("readtuples_output")
+ASM <- calc_asm(readtuples_output)
+SummarizedExperiment::colData(ASM)$group <- c(rep("CRC",3),rep("NORM",2))
+SummarizedExperiment::colData(ASM)$samples <- colnames(ASM)
 dame_track(dame = DAME, 
-              derASM = derASM
- ) 
+           ASM = ASM) 
 
 }

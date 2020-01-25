@@ -3,13 +3,13 @@ title: "DAMEfinder Workflow"
 author: 
 - name: Stephany Orjuela
   affiliation:
-    - &IMLS Institute for Molecular Life Sciences, University of Zurich, Switzerland
-    - &IMCR Institute for Molecular Cancer Research, University of Zurich, Switzerland
+    - &IMLS Institute for Molecular Life Sciences, University of Zurich
+    - &IMCR Institute for Molecular Cancer Research, University of Zurich
     - &SIB SIB Swiss Institute of Bioinformatics, Switzerland
   email: sorjuelal@gmail.com
 - name: Dania Machlab
   affiliation:
-    - &FMI Friedrich Miescher Institute for Biomedical Research, Basel, Switzerland
+    - &FMI Friedrich Miescher Institute for Biomedical Research, Basel
     - *SIB 
 - name: Mark Robinson
   affiliation:
@@ -35,7 +35,9 @@ knitr::opts_chunk$set(cache = 0, fig.width = 6,
 BiocStyle::markdown()
 ```
 
-# What is allele-specific methylation?
+# Introduction
+
+## What is allele-specific methylation?
 
 The phenomenon occurs when there is an asymmetry in methylation between one
 specific allele and the alternative allele [@hu2013]. The best studied example
@@ -77,6 +79,15 @@ intermediate levels of methylation represent ASM along the genome. For example,
 we have shown (paper in prep) that the ASM score can distinguish females from
 males in the X chromosome. Using SNP information this wouldn't be possible.
 
+## Installation
+
+```{r eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("DAMEfinder")
+```
+
 # Get bam files 
 In order to run any of the two modes, you must obtain aligned bam files using
 [`bismark`](http://www.bioinformatics.babraham.ac.uk/projects/bismark/). Here we
@@ -86,7 +97,7 @@ bisulfite-treated reads:
 ```{bash eval=FALSE}
 #Check quality of reads
 fastqc -t 2  sample1_R1.fastq.gz sample1_R2.fastq.gz
-	
+
 #Trim reads to remove bad quality regions and adapter sequence
 trim_galore --paired sample1_R1.fastq.gz sample2_R2.fastq.gz
 ```
@@ -508,7 +519,8 @@ dame_track(dame = dame,
 ```
 
 Here we get three tracks: the SNP-ASM score, and the methylation levels for each
-allele. Since the ASM score here depends on SNPs, we can see what SNPs are involved in the ASM calculation at each CpG position:
+allele. Since the ASM score here depends on SNPs, we can see what SNPs are
+involved in the ASM calculation at each CpG position:
 
 ```{r, dt4}
 dame_track(dame = dame,
@@ -532,7 +544,8 @@ dame_track(dame = dame,
 Notice that the first two tracks depend on the tuple-ASM, hence each point
 represents the midpoint between a pair of CpG sites.
 
-If you think plotting all the samples separately is difficult to see, you can use the function `dame_track_mean` to summarize:
+If you think plotting all the samples separately is difficult to see, you can
+use the function `dame_track_mean` to summarize:
 ```{r, dt6}
 dame_track_mean(dame = dame,
            derASM = derASM,
@@ -649,3 +662,7 @@ vapply(colnames(derASM), make_bigwig, scoreObj = derASM, folder = "",
 ```
 
 # References
+
+```{r}
+utils::sessionInfo()
+```

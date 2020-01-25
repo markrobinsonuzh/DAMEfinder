@@ -32,6 +32,7 @@ TODO: Doesn't work for one sample
 }
 \examples{
 data(extractbams_output)
-derASM <- calc_derivedasm(extractbams_output[c(1,2)], cores = 1, verbose = FALSE)
+derASM <- calc_derivedasm(extractbams_output[c(1,2)], cores = 1, 
+   verbose = FALSE)
 
 }

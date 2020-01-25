@@ -114,7 +114,8 @@ lapply(sample_list, function(samp){
     cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1] #also look at GpCs?
 
     if(length(cgsite) < 1){
-      if(verbose) message("No CpG sites associated to this SNP", appendLF = TRUE)
+      if(verbose) message("No CpG sites associated to this SNP", 
+                          appendLF = TRUE)
       return(NULL)
       #next
     }

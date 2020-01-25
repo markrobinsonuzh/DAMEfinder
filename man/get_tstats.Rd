@@ -24,7 +24,8 @@ column correspond to a tuple/site and sample respectively.}
 
 \item{design}{a design matrix created with \code{\link{model.matrix}}.}
 
-\item{contrast}{a contrast matrix, generated with \code{\link{makeContrasts}}.}
+\item{contrast}{a contrast matrix, generated with
+\code{\link{makeContrasts}}.}
 
 \item{method}{The method to be used in limma's \code{\link{lmFit}}. The
 default is set to "ls" but can also be set to "robust", which is
@@ -71,10 +72,10 @@ containing ASM across samples, and the index of control and treatment
 samples.
 }
 \examples{
-data(extractbams_output)
-derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = TRUE)
-grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+data(readtuples_output)
+ASM <- calc_asm(readtuples_output)
+grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
 mod <- model.matrix(~grp)
-tstats <- get_tstats(derASM, mod)
+tstats <- get_tstats(ASM, mod)
 
 }

@@ -5,6 +5,12 @@ knitr::opts_chunk$set(cache = 0, fig.width = 6,
 ## ----style, echo = FALSE, results = 'asis'------------------------------------
 BiocStyle::markdown()
 
+## ----eval=FALSE---------------------------------------------------------------
+#  if (!requireNamespace("BiocManager", quietly = TRUE))
+#      install.packages("BiocManager")
+#  
+#  BiocManager::install("DAMEfinder")
+
 ## -----------------------------------------------------------------------------
 suppressPackageStartupMessages({
   library(DAMEfinder)
@@ -228,4 +234,7 @@ methyl_MDS_plot(ASMscore, group = grp)
 #  vapply(colnames(derASM), make_bigwig, scoreObj = derASM, folder = "",
 #         chromsizesFile = chromsizes)
 #  
+
+## -----------------------------------------------------------------------------
+utils::sessionInfo()
 

@@ -213,7 +213,8 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, dame = NULL,
 
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
-                  read=rep(seq(from=1,to=length(alns.pairs),by=1), each=length(cgsite)),
+                  read=rep(seq(from=1,to=length(alns.pairs),by=1), 
+                           each=length(cgsite)),
                   value=as.vector(conversion),
                   stringsAsFactors = FALSE)
 
@@ -421,7 +422,8 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
 
   #data for points
   d <- data.frame(CpG=rep(cgsite,length(alns.pairs)),
-                  read=rep(seq(from=1,to=length(alns.pairs),by=1), each=length(cgsite)),
+                  read=rep(seq(from=1,to=length(alns.pairs),by=1), 
+                           each=length(cgsite)),
                   value=as.vector(conversion))
 
   #reorder reads to plot
