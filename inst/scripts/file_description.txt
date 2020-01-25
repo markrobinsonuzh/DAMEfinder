@@ -1,0 +1,21 @@
+
+# All data used originated from https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-6949/
+# NORM1 and CRC1 are a single patient (C1 in ArrayExpress) from this study.
+#
+# BAM files: 
+# BAM files are aligned BS-seq reads from the normal and cancerous tissue of this patient, using the Ensembl GRCH37 genome from ftp://ftp.ensembl.org/pub/grch37/release-91/fasta/homo_sapiens/dna/
+# The data includes a subset of chromosome 19.
+# .bai files are generated with `samtools index <file>`
+# See Package vignette for detailed description of alignment with Bismark to obtain BAM files
+#
+# VCF files:
+# SNPs were called with the Bis-SNP tool. They also include a subset of chromosome 19.
+#
+# tsv.gz files
+# Were obtained by running methtuple as described in the vignette.
+#
+# See https://www.biorxiv.org/content/10.1101/800383v2 for detailed description on samples
+# See https://github.com/markrobinsonuzh/allele_specificity_paper for code to analyze samples
+
+
+
