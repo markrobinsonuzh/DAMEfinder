@@ -35,7 +35,7 @@
 #' dna <- DNAStringSet(genome[[19]], use.names = TRUE)
 #' names(dna) <- 19
 #'
-#' snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
+#' snp <- GenomicRanges::GRanges(19, IRanges::IRanges(292082, width = 1))
 #' methyl_circle_plot(snp = snp,
 #'  vcfFile = vcf_files,
 #'  bamFile = bam_files,
@@ -290,6 +290,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile,
 #' @param numReads Number of reads to plot, if sampleReads is TRUE. Default = 20
 #' @return Plot
 #' @examples
+#' DATA_PATH_DIR <- system.file('extdata', '.', package = 'DAMEfinder')
 #' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 #' bam_files <- get_data_path('NORM1_chr19_trim.bam')
 #' sample_names <- 'NORM1'
@@ -300,11 +301,10 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile,
 #' dna <- DNAStringSet(genome[[19]], use.names = TRUE)
 #' names(dna) <- 19
 #'
-#' cpg <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
+#' cpg <- GenomicRanges::GRanges(19, IRanges::IRanges(292082, width = 1))
 #' methyl_circle_plotCpG(cpgsite = cpg,
 #'  bamFile = bam_files,
-#'  refFile = dna,
-#'  sampleName = sample_names)
+#'  refFile = dna)
 #'
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges

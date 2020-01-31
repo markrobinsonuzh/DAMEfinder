@@ -46,6 +46,7 @@ Draws CpG site methylation status as points, in reads containing a specific
 CpG site. Generates one plot per bam file.
 }
 \examples{
+DATA_PATH_DIR <- system.file('extdata', '.', package = 'DAMEfinder')
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 bam_files <- get_data_path('NORM1_chr19_trim.bam')
 sample_names <- 'NORM1'
@@ -56,10 +57,9 @@ seqnames(genome) <- gsub("chr","",seqnames(genome))
 dna <- DNAStringSet(genome[[19]], use.names = TRUE)
 names(dna) <- 19
 
-cpg <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
+cpg <- GenomicRanges::GRanges(19, IRanges::IRanges(292082, width = 1))
 methyl_circle_plotCpG(cpgsite = cpg,
  bamFile = bam_files,
- refFile = dna,
- sampleName = sample_names)
+ refFile = dna)
 
 }

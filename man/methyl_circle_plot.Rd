@@ -67,7 +67,7 @@ seqnames(genome) <- gsub("chr","",seqnames(genome))
 dna <- DNAStringSet(genome[[19]], use.names = TRUE)
 names(dna) <- 19
 
-snp <- GenomicRanges::GRanges(19, IRanges::IRanges(388065, width = 1))
+snp <- GenomicRanges::GRanges(19, IRanges::IRanges(292082, width = 1))
 methyl_circle_plot(snp = snp,
  vcfFile = vcf_files,
  bamFile = bam_files,
