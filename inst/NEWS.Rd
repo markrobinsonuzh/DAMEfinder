@@ -1,6 +1,13 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 0.99.2}{
+\itemize{
+    \item Fix spacing (ggplot code looks funky now)
+    \item Remove make_bigwigs func
+    \item Fix examples for plotting functions
+}
+}
 
 \section{DAMEfinder VERSION 0.99.1}{
 \itemize{
