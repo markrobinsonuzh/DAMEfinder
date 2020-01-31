@@ -18,10 +18,10 @@ calc_derivedasm(sampleList, cores = 1, verbose = TRUE)
 \itemize{
 \item der.ASM: matrix with SNP-based ASM
 \item snp.table: Matrix with SNP associated to the CpG site.
-\item ref.cov: Coverage of the "reference" allele.
-\item alt.cov: Coevarage of the "alternative" allele.
-\item ref.meth: Methylated reads from the "reference" allele.
-\item alt.meth: Methylated reads from the "alternative" allele.
+\item ref.cov: Coverage of the 'reference' allele.
+\item alt.cov: Coevarage of the 'alternative' allele.
+\item ref.meth: Methylated reads from the 'reference' allele.
+\item alt.meth: Methylated reads from the 'alternative' allele.
 }
 }
 \description{

@@ -8,7 +8,7 @@
 #' signal across a region is better controlled with the empirical method, since
 #' it uses \code{regionFinder} and \code{getSegments} to find regions with
 #' t-statistics above a cuttof (controled with parameter \code{Q}), whereas
-#' with the "simes" option, we initially detects clusters of CpG sites/tuples,
+#' with the 'simes' option, we initially detects clusters of CpG sites/tuples,
 #' and then test if at least 1 differential site/tuple is present in the
 #' cluster.
 #'
@@ -25,18 +25,18 @@
 #'   \code{\link{makeContrasts}}.
 #' @param Q The percentile set to get a cutoff value K. K is the value on the
 #'   Qth quantile of the absolute values of the given (smoothed) t-statistics.
-#'   Only necessary if \code{pvalAssign} = "empirical". Default = 0.5.
-#' @param pvalAssign Choose method to assign pvalues, either "simes" (default)
-#'   or "empirical". This second one performs \code{maxPerms} number of
+#'   Only necessary if \code{pvalAssign} = 'empirical'. Default = 0.5.
+#' @param pvalAssign Choose method to assign pvalues, either 'simes' (default)
+#'   or 'empirical'. This second one performs \code{maxPerms} number of
 #'   permutations to calculate null statistics, and runs \code{regionFinder}.
 #' @param maxGap Maximum gap between CpGs in a cluster (in bp). NOTE: Regions
 #' can be as small as 1 bp. Default = 20.
 #' @param smooth Whether smoothing should be applied to the t-Statistics.
 #'   Default = TRUE.
 #' @param maxPerms Maximum possible permutations generated. Only necessary if
-#' \code{pvalAssign} = "empirical". Default = 10.
+#' \code{pvalAssign} = 'empirical'. Default = 10.
 #' @param method The method to be used in limma's \code{\link{lmFit}}. The
-#'   default is set to "ls" but can also be set to "robust", which is
+#'   default is set to 'ls' but can also be set to 'robust', which is
 #'   recommended on a real data set.
 #' @param trend Passed to \code{\link{eBayes}}. Should an intensity-trend be
 #' allowed for the prior variance? Default is that the prior variance is
@@ -65,100 +65,80 @@
 #' @md
 #'
 #' @examples
-#'
-#' ##Using snp-based mode
-#' data(extractbams_output)
-#' #derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
-#' #grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
-#' #mod <- model.matrix(~grp)
-#' #filt to avoid warnings and get nice regions
-#' #filt <- rowSums(!is.na(
-#' #SummarizedExperiment::assay(derASM, "der.ASM"))) == 8
-#' #derASM <- derASM[filt,]
-#' #dames <- find_dames(derASM, mod, verbose = FALSE)
+#' data(readtuples_output)
+#' ASM <- calc_asm(readtuples_output)
+#' grp <- factor(c(rep('CRC',3),rep('NORM',2)), levels = c('NORM', 'CRC'))
+#' mod <- model.matrix(~grp)
+#' dames <- find_dames(ASM, mod, verbose = FALSE)
 #'
 #' @export
 #'
 #'
-find_dames <- function(sa, design, coef = 2, contrast = NULL, smooth = TRUE, 
-                       Q = 0.5,
-                       pvalAssign = "simes", maxGap = 20, verbose = TRUE,
-                       maxPerms = 10, method = "ls", trend = FALSE, ...){
-
-
-  if("asm" %in% names(assays(sa))) message("Using ASMtuple", appendLF = TRUE)
-  if("der.ASM" %in% names(assays(sa))) message("Using ASMsnp", appendLF = TRUE)
-
-  pre_sa <- sa
-
-  #get tstats with limma
-  sat <- get_tstats(pre_sa, design,
-                    maxGap = maxGap,
-                    coef = coef,
-                    contrast = contrast,
-                    smooth = smooth,
-                    method = method,
-                    trend = trend,
-                    ...)
-
-  # choose smoothed if true
-  if(smooth){
-  sm_tstat <- S4Vectors::mcols(sat)$smooth_tstat
-  } else {
-    sm_tstat <- S4Vectors::mcols(sat)$tstat
-  }
-
-  #choose position to find regions
-  if(names(assays(sa))[1] == "asm"){
-    midpt <- S4Vectors::mcols(sat)$midpt
-  } else {
-    midpt <- BiocGenerics::start(sat)
-  }
-
-  message("Detecting DAMEs", appendLF = TRUE)
-  #detect dames
-  K <- stats::quantile(abs(sm_tstat), Q, na.rm=TRUE)
-
-  if(pvalAssign == "simes"){
-
-    rf <- simes_pval(sat, sm_tstat, midpt)
-    rf <- rf[order(rf$pvalSimes),]
-    rf$FDR <- stats::p.adjust(rf$pvalSimes, method="BH")
-
-  } else if(pvalAssign == "empirical"){
-
-    rf <- bumphunter::regionFinder(
-      x = sm_tstat,
-      chr = as.character(GenomeInfoDb::seqnames(sat)),
-      pos = midpt,
-      cluster = S4Vectors::mcols(sat)$cluster,
-      cutoff = K,
-      maxGap = maxGap,
-      assumeSorted = TRUE,
-      order = FALSE,
-      verbose = verbose)
-
-    rf$pvalEmp <- empirical_pval(presa = pre_sa,
-                         design = design,
-                         rforiginal = rf,
-                         coeff = coef,
-                         cont = contrast,
-                         smooth = smooth,
-                         maxPerms = maxPerms,
-                         Q = Q,
-                         maxGap = maxGap,
-                         method = method,
-                         ...)
-
-    rf <- rf[order(rf$pvalEmp),]
-
-    rf$FDR <- stats::p.adjust(rf$pvalEmp, method = "BH")
-
-    rf <- rf[,-c(6:8)]
-    colnames(rf) <- c("chr","start","end","meanTstat", "sumTstat","segmentL",
-                      "clusterL", "pvalEmp", "FDR")
-
-  }
-  if(verbose) message(nrow(rf), " DAMEs found.", appendLF = TRUE)
-  return(rf)
+find_dames <- function(sa, design, coef = 2, contrast = NULL, 
+    smooth = TRUE, Q = 0.5, pvalAssign = "simes", maxGap = 20, 
+    verbose = TRUE, maxPerms = 10, method = "ls", trend = FALSE, 
+    ...) {
+    
+    
+    if ("asm" %in% names(assays(sa))) 
+        message("Using ASMtuple", appendLF = TRUE)
+    if ("der.ASM" %in% names(assays(sa))) 
+        message("Using ASMsnp", appendLF = TRUE)
+    
+    pre_sa <- sa
+    
+    # get tstats with limma
+    sat <- get_tstats(pre_sa, design, maxGap = maxGap, coef = coef, 
+        contrast = contrast, smooth = smooth, method = method, 
+        trend = trend, ...)
+    
+    # choose smoothed if true
+    if (smooth) {
+        sm_tstat <- S4Vectors::mcols(sat)$smooth_tstat
+    } else {
+        sm_tstat <- S4Vectors::mcols(sat)$tstat
+    }
+    
+    # choose position to find regions
+    if (names(assays(sa))[1] == "asm") {
+        midpt <- S4Vectors::mcols(sat)$midpt
+    } else {
+        midpt <- BiocGenerics::start(sat)
+    }
+    
+    message("Detecting DAMEs", appendLF = TRUE)
+    # detect dames
+    K <- stats::quantile(abs(sm_tstat), Q, na.rm = TRUE)
+    
+    if (pvalAssign == "simes") {
+        
+        rf <- simes_pval(sat, sm_tstat, midpt)
+        rf <- rf[order(rf$pvalSimes), ]
+        rf$FDR <- stats::p.adjust(rf$pvalSimes, method = "BH")
+        
+    } else if (pvalAssign == "empirical") {
+        
+        rf <- bumphunter::regionFinder(x = sm_tstat, 
+            chr = as.character(GenomeInfoDb::seqnames(sat)), 
+            pos = midpt, cluster = S4Vectors::mcols(sat)$cluster, 
+            cutoff = K, maxGap = maxGap, assumeSorted = TRUE, 
+            order = FALSE, verbose = verbose)
+        
+        rf$pvalEmp <- empirical_pval(presa = pre_sa, design = design, 
+            rforiginal = rf, coeff = coef, cont = contrast, smooth = smooth, 
+            maxPerms = maxPerms, Q = Q, maxGap = maxGap, method = method, 
+            ...)
+        
+        rf <- rf[order(rf$pvalEmp), ]
+        
+        rf$FDR <- stats::p.adjust(rf$pvalEmp, method = "BH")
+        
+        rf <- rf[, -c(6:8)]
+        colnames(rf) <- c("chr", "start", "end", "meanTstat", 
+            "sumTstat", "segmentL", "clusterL", "pvalEmp", "FDR")
+        
+    }
+    if (verbose) 
+        message(nrow(rf), " DAMEs found.", appendLF = TRUE)
+    return(rf)
 }

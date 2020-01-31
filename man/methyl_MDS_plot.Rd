@@ -33,7 +33,7 @@ methylation proportions.
 \examples{
 data(readtuples_output)
 ASM <- calc_asm(readtuples_output)
-grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
+grp <- factor(c(rep('CRC',3),rep('NORM',2)), levels = c('NORM', 'CRC'))
 methyl_MDS_plot(ASM, grp)
 
 }

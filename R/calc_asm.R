@@ -25,123 +25,136 @@
 #' @return A \code{SummarizedExperiment} of ASM scores where the rows are all
 #'   the tuples and the columns the sample names.
 #' @examples
-#' DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+#' DATA_PATH_DIR <- system.file('extdata', '.', package = 'DAMEfinder')
 #' get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 #'
-#' tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+#' tuple_files <- list.files(DATA_PATH_DIR, '.tsv.gz')
 #' tuple_files <- get_data_path(tuple_files)
-#' ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
+#' ASM <- read_tuples(tuple_files, c('CRC1', 'NORM1'))
 #' ASMscore <- calc_asm(ASM)
 #'
 #' @export
 #'
-calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt, 
-                      coverage = 5, verbose=TRUE) {
-
-   if(!is.vector(sampleList)) 
-     stop("Input is not a list of more than one tibble")
-
-   if(verbose) message("Calculating log odds.")
-   sampleList <- lapply(sampleList, calc_logodds)
-
-   if(verbose) message("Calculating ASM score: ", appendLF=FALSE)
-   sampleList <- lapply(sampleList, function(u) {
-    if(verbose) message(".", appendLF=FALSE)
-    calc_score(u, beta=beta, a=a)
-  })
-   if(verbose) message(" done.")
-
-   if(verbose) message("Creating position pair keys: ", appendLF = FALSE)
-   # get key of unique tuples
-   all_keys <- lapply(sampleList, function(u) {
-     if(verbose) message(".", appendLF=FALSE)
-     paste0(u$chr,'.',u$pos1, '.', u$pos2)
-  })
-  key <- unique(unlist(all_keys))
-  if(verbose) message(" done.")
-
-  # get matrix of ASM scores across all samples
-  if(verbose) message("Assembling table: ", appendLF = FALSE)
-  asm <- mapply( function(df,k){
-    if(verbose) message(".", appendLF=FALSE)
-    m <- match(key, k)
-    df$asm_score[m]
-  }, sampleList, all_keys)
-
-  rownames(asm) <- key
-  colnames(asm) <- names(sampleList)
-  if(verbose) message(" done.")
-
-  if(verbose) message("Transforming.")
-  asm <- transform(asm)
-
-  # get matrix of coverage, and tuple methylation
-  if(verbose) message("Assembling coverage tables: ", appendLF = FALSE)
-  tot.coverage <- mapply( function(df,k){
-    if(verbose) message(".", appendLF=FALSE)
-    m <- match(key, k)
-    df$cov[m]
-  }, sampleList, all_keys)
-
-
-  #MM
-  MM <- mapply( function(df,k){
-    if(verbose) message(".", appendLF=FALSE)
-    m <- match(key, k)
-    df$MM[m]
-  }, sampleList, all_keys)
-
-  #MU
-  MU <- mapply( function(df,k){
-    if(verbose) message(".", appendLF=FALSE)
-    m <- match(key, k)
-    df$MU[m]
-  }, sampleList, all_keys)
-
-  #UM
-  UM <- mapply( function(df,k){
-    if(verbose) message(".", appendLF=FALSE)
-    m <- match(key, k)
-    df$UM[m]
-  }, sampleList, all_keys)
-
-  #UU
-  UU <- mapply( function(df,k){
-    if(verbose) message(".", appendLF=FALSE)
-    m <- match(key, k)
-    df$UU[m]
-  }, sampleList, all_keys)
-
-  #Get ranges
-  ss <- limma::strsplit2(rownames(asm),".",fixed=TRUE)
-  gr <- GenomicRanges::GRanges(ss[,1],
-                               IRanges::IRanges(as.numeric(ss[,2]),
-                                                as.numeric(ss[,3])))
-  names(gr) <- rownames(asm)
-  gr$midpt <- floor((GenomicRanges::start(gr)+GenomicRanges::end(gr))/2)
-
-  #Build object
-  sa <- SummarizedExperiment::SummarizedExperiment(
-    assays=S4Vectors::SimpleList(asm=asm,
-                                 cov = tot.coverage,
-                                 MM = MM,
-                                 MU = MU,
-                                 UM = UM,
-                                 UU = UU),
-    rowRanges=gr)
-
-  #filter by coverage
-
-  filt <- rowSums(
-    !is.na(SummarizedExperiment::assay(sa, "cov")) &
-      SummarizedExperiment::assay(sa, "cov") >= coverage) ==  ncol(sa)
-  sa <- sa[filt,]
-  gr <- gr[filt]
-
-  if(verbose) message("Returning SummarizedExperiment with ",nrow(asm),
-                      " CpG pairs", appendLF = FALSE)
-  o <- order(GenomeInfoDb::seqnames(sa),gr$midpt)
-  sa[o]
+calc_asm <- function(sampleList, beta = 0.5, a = 0.2, transform = modulus_sqrt, 
+    coverage = 5, verbose = TRUE) {
+    
+    if (!is.vector(sampleList)) 
+        stop("Input is not a list of more than one tibble")
+    
+    if (verbose) 
+        message("Calculating log odds.")
+    sampleList <- lapply(sampleList, calc_logodds)
+    
+    if (verbose) 
+        message("Calculating ASM score: ", appendLF = FALSE)
+    sampleList <- lapply(sampleList, function(u) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        calc_score(u, beta = beta, a = a)
+    })
+    if (verbose) 
+        message(" done.")
+    
+    if (verbose) 
+        message("Creating position pair keys: ", appendLF = FALSE)
+    # get key of unique tuples
+    all_keys <- lapply(sampleList, function(u) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        paste0(u$chr, ".", u$pos1, ".", u$pos2)
+    })
+    key <- unique(unlist(all_keys))
+    if (verbose) 
+        message(" done.")
+    
+    # get matrix of ASM scores across all samples
+    if (verbose) 
+        message("Assembling table: ", appendLF = FALSE)
+    asm <- mapply(function(df, k) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        m <- match(key, k)
+        df$asm_score[m]
+    }, sampleList, all_keys)
+    
+    rownames(asm) <- key
+    colnames(asm) <- names(sampleList)
+    if (verbose) 
+        message(" done.")
+    
+    if (verbose) 
+        message("Transforming.")
+    asm <- transform(asm)
+    
+    # get matrix of coverage, and tuple methylation
+    if (verbose) 
+        message("Assembling coverage tables: ", appendLF = FALSE)
+    tot.coverage <- mapply(function(df, k) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        m <- match(key, k)
+        df$cov[m]
+    }, sampleList, all_keys)
+    
+    
+    # MM
+    MM <- mapply(function(df, k) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        m <- match(key, k)
+        df$MM[m]
+    }, sampleList, all_keys)
+    
+    # MU
+    MU <- mapply(function(df, k) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        m <- match(key, k)
+        df$MU[m]
+    }, sampleList, all_keys)
+    
+    # UM
+    UM <- mapply(function(df, k) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        m <- match(key, k)
+        df$UM[m]
+    }, sampleList, all_keys)
+    
+    # UU
+    UU <- mapply(function(df, k) {
+        if (verbose) 
+            message(".", appendLF = FALSE)
+        m <- match(key, k)
+        df$UU[m]
+    }, sampleList, all_keys)
+    
+    # Get ranges
+    ss <- limma::strsplit2(rownames(asm), ".", fixed = TRUE)
+    gr <- GenomicRanges::GRanges(ss[, 1], IRanges::IRanges(as.numeric(ss[, 
+        2]), as.numeric(ss[, 3])))
+    names(gr) <- rownames(asm)
+    gr$midpt <- floor((GenomicRanges::start(gr) + GenomicRanges::end(gr))/2)
+    
+    # Build object
+    sa <- SummarizedExperiment::SummarizedExperiment(
+        assays = S4Vectors::SimpleList(asm = asm, 
+        cov = tot.coverage, MM = MM, MU = MU, UM = UM, UU = UU), 
+        rowRanges = gr)
+    
+    # filter by coverage
+    
+    filt <- rowSums(!is.na(SummarizedExperiment::assay(sa, "cov")) & 
+        SummarizedExperiment::assay(sa, "cov") >= coverage) == 
+        ncol(sa)
+    sa <- sa[filt, ]
+    gr <- gr[filt]
+    
+    if (verbose) 
+        message("Returning SummarizedExperiment with ", nrow(asm), 
+            " CpG pairs", appendLF = FALSE)
+    o <- order(GenomeInfoDb::seqnames(sa), gr$midpt)
+    sa[o]
 }
 
 
@@ -169,9 +182,9 @@ calc_asm <- function(sampleList, beta=0.5, a=0.2, transform=modulus_sqrt,
 #' @return The same object with an additional column for the ASM score.
 #'
 calc_score <- function(df, beta = 0.5, a = 0.2) {
-  weights <- calc_weight(df$MM, df$UU, beta=beta, a=a)
-  df$asm_score <- df$logodds*weights
-  df
+    weights <- calc_weight(df$MM, df$UU, beta = beta, a = a)
+    df$asm_score <- df$logodds * weights
+    df
 }
 
 #' Calculate the log odds ratio
@@ -191,10 +204,12 @@ calc_score <- function(df, beta = 0.5, a = 0.2) {
 #'
 #' @return The same object is returned with an additional column for the log
 #'   odds ratio.
-calc_logodds <- function(s, eps=1) {
-  ratio <- with(s, ( (MM+eps)*(UU+eps) ) / ( (MU+eps)*(UM+eps) ) )
-  s$logodds <- log10(ratio)
-  s
+calc_logodds <- function(s, eps = 1) {
+    MM <- UU <- MU <- UM <- NULL
+    ratio <- with(s, ((MM + eps) * (UU + eps))/((MU + eps) * 
+        (UM + eps)))
+    s$logodds <- log10(ratio)
+    s
 }
 
 
@@ -209,8 +224,8 @@ calc_logodds <- function(s, eps=1) {
 #' @return Vector or matrix of transformed scores.
 #'
 modulus_sqrt <- function(values) {
-  #sign(values)*sqrt(abs(values))
-  sqrt(abs(values))
+    # sign(values)*sqrt(abs(values))
+    sqrt(abs(values))
 }
 
 
@@ -260,9 +275,9 @@ modulus_sqrt <- function(values) {
 #'
 #' 
 #'
-calc_weight <- function(MM, UU, beta=0.5, a=.2) {
-  s1 <- beta+MM
-  s2 <- beta+UU
-  stats::pbeta(.5+a, shape1=s1, shape2=s2)-stats::pbeta(.5-a,
-                                                        shape1=s1, shape2=s2)
+calc_weight <- function(MM, UU, beta = 0.5, a = 0.2) {
+    s1 <- beta + MM
+    s2 <- beta + UU
+    stats::pbeta(0.5 + a, shape1 = s1, shape2 = s2) - stats::pbeta(0.5 - 
+        a, shape1 = s1, shape2 = s2)
 }

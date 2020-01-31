@@ -21,7 +21,7 @@
 #' @param contrast a contrast matrix, generated with
 #'   \code{\link{makeContrasts}}.
 #' @param method The method to be used in limma's \code{\link{lmFit}}. The
-#'   default is set to "ls" but can also be set to "robust", which is
+#'   default is set to 'ls' but can also be set to 'robust', which is
 #'   recommended on a real data set.
 #' @param trend Passed to \code{\link{eBayes}}. Should an intensity-trend be
 #' allowed for the prior variance? Default is that the prior variance is
@@ -44,76 +44,73 @@
 #' @examples 
 #' data(readtuples_output)
 #' ASM <- calc_asm(readtuples_output)
-#' grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
+#' grp <- factor(c(rep('CRC',3),rep('NORM',2)), levels = c('NORM', 'CRC'))
 #' mod <- model.matrix(~grp)
 #' tstats <- get_tstats(ASM, mod)
 #'
 #' @export
 
-get_tstats <- function(sa, design, contrast = NULL, method="ls", trend=FALSE, 
-                       smooth=FALSE,
-                       maxGap=20, coef=2, verbose=TRUE, filter = TRUE, ...) {
-
-  # choose SumExp type
-  if(names(assays(sa))[1] == "asm"){
-    asm <- assays(sa)[["asm"]]
-  } else {
-    asm <- assays(sa)[["der.ASM"]]
-  }
-
-  # moderated t-statistic using specified column in the design matrix
-  if(verbose) message("Calculating moderated t-statistics", appendLF = TRUE)
-
-  fit <- limma::lmFit(object = asm, design = design, method = method)
-  if(is.matrix(contrast)){
-    fit.cont <- limma::contrasts.fit(fit, contrasts = contrast)
-    fit2 <- limma::eBayes(fit.cont, trend = trend)
-
-  } else{
-    fit2 <- limma::eBayes(fit, trend = trend)
-  }
-
-  S4Vectors::mcols(sa)$tstat <- fit2$t[,coef]
-  S4Vectors::mcols(sa)$p.value <- fit2$p.value[,coef]
-
-
-  if(names(assays(sa))[1] == "asm"){
-    midpt <- S4Vectors::mcols(sa)$midpt
-  } else {
-    midpt <- start(sa)
-  }
-
-  S4Vectors::mcols(sa)$cluster <- bumphunter::clusterMaker(
-    chr = as.character(GenomeInfoDb::seqnames(sa)),
-    pos = midpt,
-    maxGap = maxGap,
-    assumeSorted = TRUE)
-
-  # smooth moderated t-stats
-  if(smooth){
-
-    if(verbose) message("Smoothing moderated t-statistics", appendLF = TRUE)
-
-    smooth <- bumphunter::loessByCluster(
-      y = S4Vectors::mcols(sa)$tstat,
-      x = midpt,
-      cluster = S4Vectors::mcols(sa)$cluster,
-      #minNum = 2,
-      #minInSpan = 2,
-      verbose = verbose,
-      ...)
-
-    S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[,1]
-
-    #replace empty smoothed value for original
-    S4Vectors::mcols(sa)$smooth_tstat <- ifelse(
-      is.na(S4Vectors::mcols(sa)$smooth_tstat),
-      S4Vectors::mcols(sa)$tstat,
-      S4Vectors::mcols(sa)$smooth_tstat)
-  }
-
-  #filter for empty tstats
-  if(filter) sa <- sa[!is.na(S4Vectors::mcols(sa)$tstat),]
-
-  return(sa)
+get_tstats <- function(sa, design, contrast = NULL, method = "ls", 
+    trend = FALSE, smooth = FALSE, maxGap = 20, coef = 2, verbose = TRUE, 
+    filter = TRUE, ...) {
+    
+    # choose SumExp type
+    if (names(assays(sa))[1] == "asm") {
+        asm <- assays(sa)[["asm"]]
+    } else {
+        asm <- assays(sa)[["der.ASM"]]
+    }
+    
+    # moderated t-statistic using specified column in the design
+    # matrix
+    if (verbose) 
+        message("Calculating moderated t-statistics", appendLF = TRUE)
+    
+    fit <- limma::lmFit(object = asm, design = design, method = method)
+    if (is.matrix(contrast)) {
+        fit.cont <- limma::contrasts.fit(fit, contrasts = contrast)
+        fit2 <- limma::eBayes(fit.cont, trend = trend)
+        
+    } else {
+        fit2 <- limma::eBayes(fit, trend = trend)
+    }
+    
+    S4Vectors::mcols(sa)$tstat <- fit2$t[, coef]
+    S4Vectors::mcols(sa)$p.value <- fit2$p.value[, coef]
+    
+    
+    if (names(assays(sa))[1] == "asm") {
+        midpt <- S4Vectors::mcols(sa)$midpt
+    } else {
+        midpt <- start(sa)
+    }
+    
+    S4Vectors::mcols(sa)$cluster <- bumphunter::clusterMaker(
+        chr = as.character(GenomeInfoDb::seqnames(sa)), 
+        pos = midpt, maxGap = maxGap, assumeSorted = TRUE)
+    
+    # smooth moderated t-stats
+    if (smooth) {
+        
+        if (verbose) 
+            message("Smoothing moderated t-statistics", appendLF = TRUE)
+        
+        smooth <- bumphunter::loessByCluster(y = S4Vectors::mcols(sa)$tstat, 
+            x = midpt, cluster = S4Vectors::mcols(sa)$cluster, 
+            verbose = verbose, ...)
+        
+        S4Vectors::mcols(sa)$smooth_tstat <- smooth$fitted[, 
+            1]
+        
+        # replace empty smoothed value for original
+        S4Vectors::mcols(sa)$smooth_tstat <- ifelse(
+            is.na(S4Vectors::mcols(sa)$smooth_tstat), 
+            S4Vectors::mcols(sa)$tstat, S4Vectors::mcols(sa)$smooth_tstat)
+    }
+    
+    # filter for empty tstats
+    if (filter) 
+        sa <- sa[!is.na(S4Vectors::mcols(sa)$tstat), ]
+    
+    return(sa)
 }
