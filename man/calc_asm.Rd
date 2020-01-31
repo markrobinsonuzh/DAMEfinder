@@ -48,12 +48,12 @@ of read_tuples This functions uses the following other functions: process,
 calcScore, calcWeight.
 }
 \examples{
-DATA_PATH_DIR <- system.file("extdata", ".", package = "DAMEfinder")
+DATA_PATH_DIR <- system.file('extdata', '.', package = 'DAMEfinder')
 get_data_path <- function(file_name) file.path(DATA_PATH_DIR, file_name)
 
-tuple_files <- list.files(DATA_PATH_DIR, ".tsv.gz")
+tuple_files <- list.files(DATA_PATH_DIR, '.tsv.gz')
 tuple_files <- get_data_path(tuple_files)
-ASM <- read_tuples(tuple_files, c("CRC1", "NORM1"))
+ASM <- read_tuples(tuple_files, c('CRC1', 'NORM1'))
 ASMscore <- calc_asm(ASM)
 
 }

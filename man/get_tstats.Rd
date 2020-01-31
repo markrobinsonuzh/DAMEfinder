@@ -28,7 +28,7 @@ column correspond to a tuple/site and sample respectively.}
 \code{\link{makeContrasts}}.}
 
 \item{method}{The method to be used in limma's \code{\link{lmFit}}. The
-default is set to "ls" but can also be set to "robust", which is
+default is set to 'ls' but can also be set to 'robust', which is
 recommended on a real data set.}
 
 \item{trend}{Passed to \code{\link{eBayes}}. Should an intensity-trend be
@@ -74,7 +74,7 @@ samples.
 \examples{
 data(readtuples_output)
 ASM <- calc_asm(readtuples_output)
-grp <- factor(c(rep("CRC",3),rep("NORM",2)), levels = c("NORM", "CRC"))
+grp <- factor(c(rep('CRC',3),rep('NORM',2)), levels = c('NORM', 'CRC'))
 mod <- model.matrix(~grp)
 tstats <- get_tstats(ASM, mod)
 

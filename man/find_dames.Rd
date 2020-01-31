@@ -37,10 +37,10 @@ Default = TRUE.}
 
 \item{Q}{The percentile set to get a cutoff value K. K is the value on the
 Qth quantile of the absolute values of the given (smoothed) t-statistics.
-Only necessary if \code{pvalAssign} = "empirical". Default = 0.5.}
+Only necessary if \code{pvalAssign} = 'empirical'. Default = 0.5.}
 
-\item{pvalAssign}{Choose method to assign pvalues, either "simes" (default)
-or "empirical". This second one performs \code{maxPerms} number of
+\item{pvalAssign}{Choose method to assign pvalues, either 'simes' (default)
+or 'empirical'. This second one performs \code{maxPerms} number of
 permutations to calculate null statistics, and runs \code{regionFinder}.}
 
 \item{maxGap}{Maximum gap between CpGs in a cluster (in bp). NOTE: Regions
@@ -49,10 +49,10 @@ can be as small as 1 bp. Default = 20.}
 \item{verbose}{If the function should be verbose. Default = TRUE.}
 
 \item{maxPerms}{Maximum possible permutations generated. Only necessary if
-\code{pvalAssign} = "empirical". Default = 10.}
+\code{pvalAssign} = 'empirical'. Default = 10.}
 
 \item{method}{The method to be used in limma's \code{\link{lmFit}}. The
-default is set to "ls" but can also be set to "robust", which is
+default is set to 'ls' but can also be set to 'robust', which is
 recommended on a real data set.}
 
 \item{trend}{Passed to \code{\link{eBayes}}. Should an intensity-trend be
@@ -91,7 +91,7 @@ The simes method has higher power to detect DAMEs, but the consistency in
 signal across a region is better controlled with the empirical method, since
 it uses \code{regionFinder} and \code{getSegments} to find regions with
 t-statistics above a cuttof (controled with parameter \code{Q}), whereas
-with the "simes" option, we initially detects clusters of CpG sites/tuples,
+with the 'simes' option, we initially detects clusters of CpG sites/tuples,
 and then test if at least 1 differential site/tuple is present in the
 cluster.
 
@@ -104,11 +104,11 @@ parameters.
 ##Using snp-based mode
 data(extractbams_output)
 #derASM <- calc_derivedasm(extractbams_output, cores = 1, verbose = FALSE)
-#grp <- factor(c(rep("CRC",4),rep("NORM",4)), levels = c("NORM", "CRC"))
+#grp <- factor(c(rep('CRC',4),rep('NORM',4)), levels = c('NORM', 'CRC'))
 #mod <- model.matrix(~grp)
 #filt to avoid warnings and get nice regions
 #filt <- rowSums(!is.na(
-#SummarizedExperiment::assay(derASM, "der.ASM"))) == 8
+#SummarizedExperiment::assay(derASM, 'der.ASM'))) == 8
 #derASM <- derASM[filt,]
 #dames <- find_dames(derASM, mod, verbose = FALSE)
 
