@@ -27,7 +27,6 @@
 #' 
 read_tuples <- function(files, sampleNames, minCoverage = 2, 
     maxGap = 20, verbose = TRUE) {
-  
     pos2 <- pos1 <- NULL
     MM <- UU <- MU <- UM <- NULL
     

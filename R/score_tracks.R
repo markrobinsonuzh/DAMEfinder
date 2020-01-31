@@ -67,8 +67,8 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
             win <- c(seq(from = (queryHits(over)[1] - window), 
                 to = (queryHits(over)[1] - 1), by = 1), queryHits(over), 
                 seq(from = (utils::tail(queryHits(over), n = 1) + 
-                  1), to = (utils::tail(queryHits(over), n = 1) + 
-                  window), by = 1))
+                    1), to = (utils::tail(queryHits(over), n = 1) + 
+                    window), by = 1))
         } else {
             win <- queryHits(over)
         }
@@ -129,8 +129,8 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
             win <- c(seq(from = (queryHits(over)[1] - window), 
                 to = (queryHits(over)[1] - 1), by = 1), queryHits(over), 
                 seq(from = (utils::tail(queryHits(over), n = 1) + 
-                  1), to = (utils::tail(queryHits(over), n = 1) + 
-                  window), by = 1))
+                1), to = (utils::tail(queryHits(over), n = 1) + 
+                window), by = 1))
         } else {
             win <- queryHits(over)
         }
@@ -194,14 +194,14 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
     if (plotSNP) {
         m2 <- ggplot(data = subSNP_long) + 
             geom_point(aes_(x = ~pos, y = 1, group = ~variable, 
-                       color = ~snp.pos), shape = 8, size = 1, 
-                       fill = "white", stroke = 1) +
+                        color = ~snp.pos), shape = 8, size = 1, 
+                        fill = "white", stroke = 1) +
             facet_grid(variable ~ .) + 
             theme_bw() + 
             theme(panel.spacing = unit(0, "lines"), 
-            axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
-            panel.grid.major = element_blank(), 
-            panel.grid.minor = element_blank()) + 
+                axis.text.y = element_blank(), axis.ticks.y = element_blank(), 
+                panel.grid.major = element_blank(), 
+                panel.grid.minor = element_blank()) + 
             coord_cartesian(xlim = cord) + 
             ylab("") + 
             ggtitle("SNPs - for ASMsnp") + 

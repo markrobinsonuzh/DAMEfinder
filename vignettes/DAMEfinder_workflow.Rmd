@@ -105,9 +105,7 @@ trim_galore --paired sample1_R1.fastq.gz sample2_R2.fastq.gz
 To trim the reads we use [`Trim
 Galore`](https://github.com/FelixKrueger/TrimGalore) and specify the use of
 paired reads. By default it will remove any adapter sequence it recognizes.
-Please refer to the [user
-guide](https://github.com/FelixKrueger/TrimGalore/blob/master/Docs/Trim_Galore_User_Guide.md)
-for further specifications.
+Please refer to the user guide for further specifications.
 
 ```{bash eval=FALSE}
 #Build bisulfite reference 
@@ -134,7 +132,7 @@ reference. For this we use `bismark_genome_preparation` from the `bismark`
 suite, and specify the folder that contains the fasta file with its index
 file. Depending on the library type and kit used to obtain the reads, you may
 want to deduplicate your bam files (e.g. TruSeq). Please refer to the [user
-guide](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html)
+guide](http://www.bioinformatics.babraham.ac.uk/projects/bismark/)
 for further explanation and specifications.
 
 
@@ -638,28 +636,6 @@ methyl_MDS_plot(ASMscore, group = grp)
 
 ```
 
-
-## Generate bigWig files
-
-You can generate `bigWig` files for each sample, containing either the SNP-based
-or the tuple-based scores by running `make_bigwig()`. This function only works
-as long as `bedGraphToBigWig` is installed in a LINUX or mac-based sytem.
-
-```{r, fig6, eval=FALSE}
-
-#path to chrom.sizes file
-chromsizes <- system.file("extdata", "hg19.chrom.sizes.mod", 
-                          package = "DAMEfinder")
-
-#For a single sample
-make_bigwig(samples = "NORM1", scoreObj = derASM, folder = "", 
-            chromsizes.file = chromsizes)
-
-#For all samples in object
-vapply(colnames(derASM), make_bigwig, scoreObj = derASM, folder = "", 
-       chromsizesFile = chromsizes)
-
-```
 
 # References
 

@@ -38,7 +38,7 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
             coverage) == BiocGenerics::ncol(x), ]
         
         mds_meth <- limma::plotMDS(asm.red, top = top, 
-                                   plot = FALSE)$cmdscale.out
+                                    plot = FALSE)$cmdscale.out
         
     } else {
         
@@ -56,7 +56,7 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
             methsTR <- methsTR[!bad, , drop = FALSE]
         
         mds_meth <- limma::plotMDS(methsTR, top = top, 
-                                   plot = FALSE)$cmdscale.out
+                                    plot = FALSE)$cmdscale.out
     }
     
     df <- data.frame(dim1 = mds_meth[, 1], dim2 = mds_meth[, 
