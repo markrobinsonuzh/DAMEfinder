@@ -1,7 +1,7 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(person("Stephany", "Orjuela", role = c("aut", "cre"), 
            email = "sorjuelal@gmail.com", comment = c(ORCID = "0000-0002-1508-461X")),
              person("Dania", "Machlab", role = "aut", email = "dania.machlab@gmail.com"),
@@ -40,3 +40,4 @@ Imports:
 VignetteBuilder: knitr
 Suggests: BiocStyle, knitr, rmarkdown,
     testthat, rtracklayer, BSgenome.Hsapiens.UCSC.hg19
+BugReports: https://github.com/markrobinsonuzh/DAMEfinder/issues
