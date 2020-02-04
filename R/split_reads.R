@@ -15,7 +15,7 @@
 #' @importFrom stringr str_extract_all
 #' @importFrom stringr str_extract
 #' @importFrom stringr str_locate_all
-#'
+#' @keywords internal
 splitReads <- function(alns, v, snp) {
     
     fullMD <- mcols(alns)$MD
@@ -66,7 +66,7 @@ splitReads <- function(alns, v, snp) {
 #' @return A named list of vectors, each vector a parsed version of MDtag:
 #' - nucl.num: Numeric representation of MDtag.
 #' - MDtag: a split version of MDtag
-#'
+#' @keywords internal
 getMD <- function(a) {
     
     # extract matches and mismatches from MD tag
