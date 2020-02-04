@@ -1,12 +1,11 @@
-<!--- [![Build Status](https://travis-ci.com/csoneson/rnaseqworkflow.svg?branch=master)](https://travis-ci.com/csoneson/rnaseqworkflow) -->
 
-# DAMEfinder <img src="vignettes/damefindersticker.png" width="200" align="right" />
+# DAMEfinder <img src="inst/figures/damefindersticker.png" width="200" align="right" />
 
 **DAMEfinder** (**D**ifferential **A**llele-specific **ME**thylation **finder**) is an R-package that detects allele-specific methylation (ASM) in a cohort of samples, and detects regions of differential ASM within groups of interest, based on **Bisulfite-sequencing** files.
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and **tuple-based** (fast-mode), which converge when calculating differential methylation.
 
-<img src="vignettes/DAMEfinder_workflow.png" width="520">
+<img src="inst/figures/DAMEfinder_workflow.png" width="520">
 
 Please refer to the vignette for more details on running the pipeline. 
 [Preprint out!](https://www.biorxiv.org/content/10.1101/800383v1)
@@ -33,23 +32,23 @@ I call this the fast-mode because you don't need SNP information. The assumption
 
 1. **SNP-based** ASM is sequence dependent, therefore to draw ASM I split the reads (horizontal lines) by allele, a bit like this:
 
-<img src="vignettes/DAME_snp_sampledreads.png" width="550">
+<img src="inst/figures/DAME_snp_sampledreads.png" width="550">
 
 This is a (not so great) example of differential SNP-ASM. There is gain of ASM in CR-cancer tissue (CRC2_cimp). The reads shown are a random subset of the total. You could plot all the reads if you like.
 
 The actual ASM scores in this region, as well as the methylation level per allele for several samples looks like this:
 
-<img src="vignettes/DAME_snp_allsamps.png" width="550">
+<img src="inst/figures/DAME_snp_allsamps.png" width="550">
 
 or summarized by means:
 
-<img src="vignettes/DAME_snp_allsamps_median.png" width="550">
+<img src="inst/figures/DAME_snp_allsamps_median.png" width="550">
 
 2. **tuple-based** ASM only relies on the reads.
 
 We can look at the tuple ASM scores in the same region as above, as well as the overall methylation (beta-values) for several samples:
 
-<img src="vignettes/DAME_tuple_allsamps_median.png" width="550">
+<img src="inst/figures/DAME_tuple_allsamps_median.png" width="550">
 
 
 ## How do I install it?

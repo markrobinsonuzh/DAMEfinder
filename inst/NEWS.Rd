@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 0.99.3}{
+\itemize{
+    \item Change some files to other folders
+}
+}
+
 \section{DAMEfinder VERSION 0.99.2}{
 \itemize{
     \item Fix spacing (ggplot code looks funky now)

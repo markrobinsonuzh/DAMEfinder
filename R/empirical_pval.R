@@ -18,7 +18,8 @@
 #' @param method lmFit method.
 #' @param ... Passed to \code{get_tstats} and then to \code{loessByCluster}.
 #' @return Vector of empirical p-values.
-#'
+#' @keywords internal
+#' 
 empirical_pval <- function(presa, design, rforiginal, coeff, 
     cont, smooth, maxPerms = 10, Q, maxGap, method, ...) {
     
