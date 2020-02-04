@@ -1,5 +1,5 @@
 
-# DAMEfinder <img src="vignettes/damefindersticker.png" width="200" align="right" />
+# DAMEfinder <img src="inst/figures/damefindersticker.png" width="200" align="right" />
 
 **DAMEfinder** (**D**ifferential **A**llele-specific **ME**thylation **finder**) is an R-package that detects allele-specific methylation (ASM) in a cohort of samples, and detects regions of differential ASM within groups of interest, based on **Bisulfite-sequencing** files.
 
