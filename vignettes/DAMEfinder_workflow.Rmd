@@ -639,6 +639,8 @@ methyl_MDS_plot(ASMscore, group = grp)
 
 # References
 
+# Session Info
+
 ```{r}
 utils::sessionInfo()
 ```
