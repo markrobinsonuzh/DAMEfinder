@@ -49,7 +49,7 @@ It depends on what you want to do and how much time you have. Either way you hav
 
 ### SNP-based
 
-To run the **SNP-based** mode you need processed `bam` files *AND* a VCF file for each of your samples with heterozygous SNPs. I know this is typically not the case, so you could alternatively extract heterozygous SNPs using [BisSNP](https://github.com/dnaase/Bis-tools/tree/master/Bis-SNP) (which I have used), or [biscuit](https://github.com/zwdzwd/biscuit) (which I will test at some point).
+To run the **SNP-based** mode you need processed `bam` files *AND* a VCF file for each of your samples with heterozygous SNPs. I know this is typically not the case, so you could alternatively extract heterozygous SNPs using [BisSNP](https://github.com/dnaase/Bis-tools/tree/master/Bis-SNP) (which I have used), or [biscuit](https://github.com/zwdzwd/biscuit).
 
 I call this the "exhaustive-mode" because it extracts an ASM score for every CpG site in the reads containing each SNP from the VCF file. Based on this score DAMEs are detected.
 
