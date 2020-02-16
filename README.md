@@ -1,14 +1,47 @@
 
 # DAMEfinder <img src="inst/figures/damefindersticker.png" width="200" align="right" />
 
+[![platforms](http://bioconductor.org/shields/availability/3.11/DAMEfinder.svg)](https://bioconductor.org/packages/devel/bioc/html/DAMEfinder.html#archives)&nbsp;
+[![posts](http://bioconductor.org/shields/posts/DAMEfinder.svg)](https://support.bioconductor.org/t/DAMEfinder)&nbsp;
+[![build](http://bioconductor.org/shields/build/devel/bioc/DAMEfinder.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/DAMEfinder/)
+
 **DAMEfinder** (**D**ifferential **A**llele-specific **ME**thylation **finder**) is an R-package that detects allele-specific methylation (ASM) in a cohort of samples, and detects regions of differential ASM within groups of interest, based on **Bisulfite-sequencing** files.
 
 DAMEfinder runs in two modes: **SNP-based** (exhaustive-mode) and **tuple-based** (fast-mode), which converge when calculating differential methylation.
 
 <img src="inst/figures/DAMEfinder_workflow.png" width="520">
-
 Please refer to the vignette for more details on running the pipeline. 
-[Preprint out!](https://www.biorxiv.org/content/10.1101/800383v1)
+
+### News:
+
+* Preprint out [here!](https://www.biorxiv.org/content/10.1101/800383v1)
+* Now available on [Bioconductor devel!](https://bioconductor.org/packages/devel/bioc/html/DAMEfinder.html)
+
+---
+
+## How do I install it?
+
+DAMEfinder is currently on R-devel 4.0, Bioconductor 3.11.
+
+To install from Bioconductor use:
+
+```{r}
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# The following initializes usage of Bioc devel
+BiocManager::install(version='devel')
+
+BiocManager::install("DAMEfinder")
+```
+
+Or from the repo:
+
+```{r}
+BiocManager::install("markrobinsonuzh/DAMEfinder")
+
+```
+---
 
 ## What mode should I choose?
 
@@ -16,7 +49,7 @@ It depends on what you want to do and how much time you have. Either way you hav
 
 ### SNP-based
 
-To run the **SNP-based** mode you need processed `bam` files *AND* a VCF file for each of your samples with heterozygous SNPs. I know this is typically not the case, so you could alternatively extract heterozygous SNPs using [BisSNP](https://github.com/dnaase/Bis-tools/tree/master/Bis-SNP) (which I have used), or [biscuit](https://github.com/zwdzwd/biscuit) (which I will test at some point).
+To run the **SNP-based** mode you need processed `bam` files *AND* a VCF file for each of your samples with heterozygous SNPs. I know this is typically not the case, so you could alternatively extract heterozygous SNPs using [BisSNP](https://github.com/dnaase/Bis-tools/tree/master/Bis-SNP) (which I have used), or [biscuit](https://github.com/zwdzwd/biscuit).
 
 I call this the "exhaustive-mode" because it extracts an ASM score for every CpG site in the reads containing each SNP from the VCF file. Based on this score DAMEs are detected.
 
@@ -27,6 +60,8 @@ From a biological point of view, you might want to run this mode if you are inte
 To run the **tuple-based** mode you have to run [methtuple](https://github.com/PeteHaitch/methtuple) first. The methtuple output is the only thing needed for this mode. 
 
 I call this the fast-mode because you don't need SNP information. The assumption is that intermediate levels of methylation represent ASM along the genome. For example, we have shown that the ASM score can distinguish females from males in the X chromosome. Using SNP information this wouldn't be possible.
+
+---
 
 ### What does that look like?
 
@@ -50,16 +85,7 @@ We can look at the tuple ASM scores in the same region as above, as well as the 
 
 <img src="inst/figures/DAME_tuple_allsamps_median.png" width="550">
 
-
-## How do I install it?
-
-This should do:
-
-```{r}
-
-BiocManager::install("markrobinsonuzh/DAMEfinder")
-
-```
+---
 
 ## Feedback
 
