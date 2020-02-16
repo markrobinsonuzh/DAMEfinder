@@ -42,6 +42,7 @@ BiocManager::install("markrobinsonuzh/DAMEfinder")
 
 ```
 ---
+
 ## What mode should I choose?
 
 It depends on what you want to do and how much time you have. Either way you have to align your reads with [Bismark](https://github.com/FelixKrueger/Bismark) (apologies to other-aligner users).
@@ -59,7 +60,9 @@ From a biological point of view, you might want to run this mode if you are inte
 To run the **tuple-based** mode you have to run [methtuple](https://github.com/PeteHaitch/methtuple) first. The methtuple output is the only thing needed for this mode. 
 
 I call this the fast-mode because you don't need SNP information. The assumption is that intermediate levels of methylation represent ASM along the genome. For example, we have shown that the ASM score can distinguish females from males in the X chromosome. Using SNP information this wouldn't be possible.
+
 ---
+
 ### What does that look like?
 
 1. **SNP-based** ASM is sequence dependent, therefore to draw ASM I split the reads (horizontal lines) by allele, a bit like this:
@@ -83,6 +86,7 @@ We can look at the tuple ASM scores in the same region as above, as well as the 
 <img src="inst/figures/DAME_tuple_allsamps_median.png" width="550">
 
 ---
+
 ## Feedback
 
 If you have problems installing, running, or just have questions regarding the package or theory behind it, please open an issue and I will answer as soon as possible. 
