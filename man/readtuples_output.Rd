@@ -4,7 +4,8 @@
 \name{readtuples_output}
 \alias{readtuples_output}
 \title{read_tuples() output.}
-\format{A large list with 5 elements. Each element is a \code{tibble} with
+\format{
+A large list with 5 elements. Each element is a \code{tibble} with
   the coordinates of the pairs of CpG sites (tuples). Rest of the tibble
   contains:
   \describe{
@@ -18,7 +19,8 @@
 
 For further details, 
 see \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-6949/}
-sample names in in ArrayExpress do not necessarily match names given here!}
+sample names in in ArrayExpress do not necessarily match names given here!
+}
 \usage{
 readtuples_output
 }

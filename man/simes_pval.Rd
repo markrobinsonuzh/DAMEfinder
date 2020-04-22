@@ -26,3 +26,4 @@ When used as a FDR-control method, for positively correlated P-values, Simes
 method is even closer to the nominal alpha level than the Bonferroni-Holm
 method.
 }
+\keyword{internal}

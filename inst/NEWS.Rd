@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 0.99.5}{
+\itemize{
+    \item Fix typo in split_bams that excluded some chromosomes
+}
+}
+
 \section{DAMEfinder VERSION 0.99.3}{
 \itemize{
     \item Change some files to other folders

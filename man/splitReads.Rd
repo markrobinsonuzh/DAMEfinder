@@ -21,3 +21,4 @@ A named list of vectors, each vector containing read names for each
 Takes a GenomicAlignments object and returns a list of read names dividied by
 allele.
 }
+\keyword{internal}
