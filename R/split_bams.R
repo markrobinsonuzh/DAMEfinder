@@ -81,7 +81,7 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
             
             # Ignore non-standard chromosomes
             if (length(grep(t, c(as.character(seq(from = 1, to = 22, 
-                by = 2)), "X", "Y"))) == 0) {
+                by = 1)), "X", "Y"))) == 0) {
                 if (verbose) message("Bad chrom", appendLF = TRUE)
                 return(NULL)
             }

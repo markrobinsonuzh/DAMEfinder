@@ -51,3 +51,4 @@ This function permutes the coefficient of interest and re-runs
 Code for permutations copied from the \code{dmrseq} function from the package
 of the same name.
 }
+\keyword{internal}

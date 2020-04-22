@@ -4,7 +4,8 @@
 \name{extractbams_output}
 \alias{extractbams_output}
 \title{extract_bams() output.}
-\format{A large list with 8 elements. Each element is a list of
+\format{
+A large list with 8 elements. Each element is a list of
   \code{GRanges} for each sample. Each GRanges in the list includes the
   location of the CpG sites contained in the reads for each SNP. The GRanges
   metadata table contains: 
@@ -20,7 +21,8 @@ that SNP}
 
 For further details, 
 see \url{https://www.ebi.ac.uk/arrayexpress/experiments/E-MTAB-6949/}
-sample names in in ArrayExpress do not necessarily match names given here!}
+sample names in in ArrayExpress do not necessarily match names given here!
+}
 \usage{
 extractbams_output
 }
