@@ -23,7 +23,7 @@ score level
 }
 
 \author{
-Stephany Orjuela \email{sorjuela@gmail.com}
+Stephany Orjuela \email{sorjuelal@gmail.com}
 
 Dania Machlab
 

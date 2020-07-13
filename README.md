@@ -14,28 +14,26 @@ Please refer to the vignette for more details on running the pipeline.
 
 ### News:
 
-* Preprint out [here!](https://www.biorxiv.org/content/10.1101/800383v1)
-* Now available on [Bioconductor devel!](https://bioconductor.org/packages/devel/bioc/html/DAMEfinder.html)
+* Preprint out [here](https://www.biorxiv.org/content/10.1101/800383v1)
+* Published version [here](https://epigeneticsandchromatin.biomedcentral.com/articles/10.1186/s13072-020-00346-8)
+* Now available on [Bioconductor](https://bioconductor.org/packages/release/bioc/html/DAMEfinder.html)
 
 ---
 
 ## How do I install it?
 
-DAMEfinder is currently on R-devel 4.0, Bioconductor 3.11.
+A stable version of DAMEfinder is available on Bioconductor.
 
-To install from Bioconductor use:
+To install use:
 
 ```{r}
 if (!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-# The following initializes usage of Bioc devel
-BiocManager::install(version='devel')
-
 BiocManager::install("DAMEfinder")
 ```
 
-Or from the repo:
+Or install directly from the repo:
 
 ```{r}
 BiocManager::install("markrobinsonuzh/DAMEfinder")
