@@ -15,7 +15,7 @@ Please refer to the vignette for more details on running the pipeline.
 ### News:
 
 * Preprint out [here!](https://www.biorxiv.org/content/10.1101/800383v1)
-* Publushed version [here](https://epigeneticsandchromatin.biomedcentral.com/articles/10.1186/s13072-020-00346-8)
+* Published version [here](https://epigeneticsandchromatin.biomedcentral.com/articles/10.1186/s13072-020-00346-8)
 * Now available on [Bioconductor](https://bioconductor.org/packages/release/bioc/html/DAMEfinder.html)
 
 ---

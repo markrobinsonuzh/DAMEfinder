@@ -25,7 +25,7 @@ Imports:
   GenomicAlignments,
   stringr,
   plyr,
-  vcfR,
+  VariantAnnotation,
   parallel,
   ggplot2,
   Rsamtools,
