@@ -12,11 +12,12 @@
 #' @param sampleNames Names of files in the list.
 #' @param referenceFile fasta file used to generate the bam files. Or 
 #'   \code{DNAStringSet} with DNA sequence.
+#' @param build genome reference build. Default = "hg19".
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 2.
 #' @param cores Number of cores to use. See package {parallel} for description
 #'   of core. Default = 1.
-#' @param verbose default = TRUE
+#' @param verbose Default = TRUE
 #'
 #' @return A list of GRanges for each sample. Each list is saved in a separate
 #'   .rds file.
@@ -43,10 +44,12 @@
 #' @importFrom GenomicRanges GRanges
 #' @importFrom IRanges IRanges
 #' @importFrom GenomicAlignments readGAlignmentPairs
+#' @importFrom GenomeInfoDb seqnames
+#' @importFrom BiocGenerics rowSums
 #'
 #' @export
 extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile, 
-    coverage = 4, cores = 1, verbose = TRUE) {
+  build = "hg19", coverage = 4, cores = 1, verbose = TRUE) {
     
     if (verbose) 
         message("Reading reference file", appendLF = TRUE)
@@ -66,13 +69,20 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
         
         if (verbose) 
             message("Reading VCF file", appendLF = TRUE)
-        vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFiles[samp], verbose = verbose))
+        #vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFiles[samp], verbose = verbose))
+        param <- VariantAnnotation::ScanVcfParam(fixed="ALT", info=NA, geno=NA)  
+        vcf <- VariantAnnotation::readVcf(vcfFiles[samp], genome = build, 
+              param = param)
         bam.file <- bamFiles[samp]
         
         # message(sprintf('Processing chromosome %s',chrom))
         if (verbose) 
             message("Extracting methylation per SNP", appendLF = TRUE)
         snp.table <- parallel::mcmapply(function(t, u, v) {
+          
+          #t = vcf[, 1] = CHROM 
+          #u = vcf[, 2] = POS 
+          #v = vcf[, 4] = REF
             
             # Applying to a GRanges takes too long so I create one each
             # time
@@ -115,7 +125,7 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
             # sequence
             left <- min(start(alns))
             right <- max(end(alns))
-            window <- GRanges(GenomeInfoDb::seqnames(snp), IRanges(left, 
+            window <- GRanges(seqnames(snp), IRanges(left, 
                 right))
             
             if (typeof(referenceFile) == "S4") {
@@ -224,12 +234,12 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                 alt.conv <- conversion[, colnames(conversion) %in% 
                   alt.reads]
                 
-                ref.cov <- BiocGenerics::rowSums(!is.na(ref.conv))
-                alt.cov <- BiocGenerics::rowSums(!is.na(alt.conv))
+                ref.cov <- rowSums(!is.na(ref.conv))
+                alt.cov <- rowSums(!is.na(alt.conv))
                 
-                ref.meth <- BiocGenerics::rowSums(!is.na(ref.conv) & 
+                ref.meth <- rowSums(!is.na(ref.conv) & 
                   ref.conv == 2)
-                alt.meth <- BiocGenerics::rowSums(!is.na(alt.conv) & 
+                alt.meth <- rowSums(!is.na(alt.conv) & 
                   alt.conv == 2)
             }
             
@@ -240,12 +250,12 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
             mcols(GR)$cov.alt <- alt.cov
             mcols(GR)$meth.ref <- ref.meth
             mcols(GR)$meth.alt <- alt.meth
-            mcols(GR)$snp <- paste0(GenomeInfoDb::seqnames(snp), 
+            mcols(GR)$snp <- paste0(seqnames(snp), 
                 ".", start(snp))
             
             # Keep CpG sites where each allele has at least 'coverage'
             # reads.
-            filt <- BiocGenerics::rowSums(cbind(GR$cov.ref, GR$cov.alt) >= 
+            filt <- rowSums(cbind(GR$cov.ref, GR$cov.alt) >= 
                 coverage) >= 2
             if (sum(filt) < 2) {
                 if (verbose) 
@@ -257,7 +267,10 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
             gr <- GR[filt]
             return(gr)
             
-        }, t = vcf[, 1], u = vcf[, 2], v = vcf[, 4], SIMPLIFY = FALSE, 
+        #}, t = vcf[, 1], u = vcf[, 2], v = vcf[, 4], SIMPLIFY = FALSE, 
+        }, t = as.character(seqnames(vcf)), 
+           u = start(vcf), 
+           v = as.character(VariantAnnotation::ref(vcf)), SIMPLIFY = FALSE, 
             USE.NAMES = FALSE, mc.cores = cores)
         
         message(sprintf("Done with sample %s", sampleNames[samp]))
