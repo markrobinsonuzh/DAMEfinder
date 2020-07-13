@@ -9,6 +9,7 @@ methyl_circle_plot(
   vcfFile,
   bamFile,
   refFile,
+  build = "hg19",
   dame = NULL,
   letterSize = 2.5,
   pointSize = 3,
@@ -27,6 +28,8 @@ methyl_circle_plot(
 
 \item{refFile}{fasta reference file path. Or \code{DNAStringSet} with DNA
 sequence.}
+
+\item{build}{genome build used. default = "hg19"}
 
 \item{dame}{(optional) GRanges object containing a region to plot.}
 

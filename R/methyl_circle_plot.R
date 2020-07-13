@@ -10,6 +10,7 @@
 #' @param bamFile bismark bam file path.
 #' @param refFile fasta reference file path. Or \code{DNAStringSet} with DNA
 #'  sequence.
+#' @param build genome build used. default = "hg19"
 #' @param dame (optional) GRanges object containing a region to plot.
 #' @param letterSize Size of alleles drawn in plot. Default = 2.5.
 #' @param pointSize Size of methylation circles. Default = 3.
@@ -51,27 +52,30 @@
 #'
 #' @export
 
-methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, 
+methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, build = "hg19",
     dame = NULL, letterSize = 2.5, pointSize = 3, sampleName = "sample1", 
     cpgsite = NULL, sampleReads = FALSE, numReads = 20) {
     
     message("Reading vcf file")
     if (!file.exists(paste0(sampleName, ".RData"))) {
-        vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFile, verbose = FALSE))
+      param <- VariantAnnotation::ScanVcfParam(fixed="ALT", info=NA, geno=NA)  
+      vcf <- VariantAnnotation::readVcf(vcfFile, genome = build, 
+                                        param = param)
         save(vcf, file = paste0(sampleName, ".RData"))
     } else {
         load(paste0(sampleName, ".RData"))
     }
     
-    snp.loc <- which(as.integer(vcf[, 2]) == start(snp) & vcf[, 
-        1] == levels(seqnames(snp)))
+    snp.loc <- which(start(vcf) == start(snp) &  
+                       as.character(seqnames(vcf)) == levels(seqnames(snp)))
     if (length(snp.loc) == 0) {
         message("Sample does not contain SNP")
         return(NULL)
         stop()
     }
-    ref <- vcf[, 4][snp.loc]
-    alt <- vcf[, 5][snp.loc]
+    ref <- as.character(VariantAnnotation::ref(vcf))[snp.loc]
+    alt <- as.character(
+      BiocGenerics::unlist(VariantAnnotation::alt(vcf)))[snp.loc]
     
     message("Getting reads")
     alns.pairs <- GenomicAlignments::readGAlignmentPairs(bamFile, 

@@ -1,7 +1,7 @@
 Package: DAMEfinder
 Type: Package
 Title: Finds DAMEs - Differential Allelicly MEthylated regions
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(person("Stephany", "Orjuela", role = c("aut", "cre"), 
            email = "sorjuelal@gmail.com", comment = c(ORCID = "0000-0002-1508-461X")),
              person("Dania", "Machlab", role = "aut", email = "dania.machlab@gmail.com"),
@@ -11,7 +11,7 @@ Description: 'DAMEfinder' offers functionality for taking methtuple or bismark
         It also offers nice visualization of methyl-circle plots.
 License: MIT + file LICENSE
 LazyData: FALSE
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 biocViews: DNAMethylation, DifferentialMethylation, Coverage
 Depends: R (>= 4.0)
 Imports:
