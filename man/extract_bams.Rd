@@ -9,6 +9,7 @@ extract_bams(
   vcfFiles,
   sampleNames,
   referenceFile,
+  build = "hg19",
   coverage = 4,
   cores = 1,
   verbose = TRUE
@@ -24,13 +25,15 @@ extract_bams(
 \item{referenceFile}{fasta file used to generate the bam files. Or 
 \code{DNAStringSet} with DNA sequence.}
 
+\item{build}{genome reference build. Default = "hg19".}
+
 \item{coverage}{Minimum number of reads covering a CpG site on each allele.
 Default = 2.}
 
 \item{cores}{Number of cores to use. See package {parallel} for description
 of core. Default = 1.}
 
-\item{verbose}{default = TRUE}
+\item{verbose}{Default = TRUE}
 }
 \value{
 A list of GRanges for each sample. Each list is saved in a separate

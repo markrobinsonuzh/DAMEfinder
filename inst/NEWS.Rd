@@ -1,7 +1,14 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
-\section{DAMEfinder VERSION 0.99.5}{
+
+\section{DAMEfinder VERSION 1.1.2}{
+\itemize{
+    \item Remove vcfR dependency and add VariantAnnotation
+}
+}
+
+\section{DAMEfinder VERSION 1.1.1}{
 \itemize{
     \item Fix typo in split_bams that excluded some chromosomes
 }

@@ -15,7 +15,7 @@
 #'   \code{find_dames}, that generates a \code{data.frame} with regions
 #'   exhibiting differential ASM between a number of samples.
 #' 
-#' @author Stephany Orjuela \email{sorjuela@@gmail.com}
+#' @author Stephany Orjuela \email{sorjuelal@@gmail.com}
 #' @author Dania Machlab
 #' @author Mark D Robinson \email{mark.robinson@@imls.uzh.ch}
 #' @name DAMEfinder
