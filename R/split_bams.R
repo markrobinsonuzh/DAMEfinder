@@ -12,7 +12,6 @@
 #' @param sampleNames Names of files in the list.
 #' @param referenceFile fasta file used to generate the bam files. Or 
 #'   \code{DNAStringSet} with DNA sequence.
-#' @param build genome reference build. Default = "hg19".
 #' @param coverage Minimum number of reads covering a CpG site on each allele.
 #'   Default = 2.
 #' @param cores Number of cores to use. See package {parallel} for description
@@ -49,7 +48,7 @@
 #'
 #' @export
 extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile, 
-  build = "hg19", coverage = 4, cores = 1, verbose = TRUE) {
+  coverage = 4, cores = 1, verbose = TRUE) {
     
     if (verbose) 
         message("Reading reference file", appendLF = TRUE)
@@ -69,9 +68,9 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
         
         if (verbose) 
             message("Reading VCF file", appendLF = TRUE)
-        #vcf <- vcfR::getFIX(vcfR::read.vcfR(vcfFiles[samp], verbose = verbose))
         param <- VariantAnnotation::ScanVcfParam(fixed="ALT", info=NA, geno=NA)  
-        vcf <- VariantAnnotation::readVcf(vcfFiles[samp], genome = build, 
+        #vcf <- VariantAnnotation::readVcf(vcfFiles[samp], genome = build,
+        vcf <- VariantAnnotation::readVcf(vcfFiles[samp], 
               param = param)
         bam.file <- bamFiles[samp]
         
@@ -90,11 +89,11 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                 width = 1))
             
             # Ignore non-standard chromosomes
-            if (length(grep(t, c(as.character(seq(from = 1, to = 22, 
-                by = 1)), "X", "Y"))) == 0) {
-                if (verbose) message("Bad chrom", appendLF = TRUE)
-                return(NULL)
-            }
+            # if (length(grep(t, c(as.character(seq(from = 1, to = 22, 
+            #     by = 1)), "X", "Y"))) == 0) {
+            #     if (verbose) message("Bad chrom", appendLF = TRUE)
+            #     return(NULL)
+            # }
             chrom <- t
             
             params <- Rsamtools::ScanBamParam(tag = c("MD", "XM", 
