@@ -396,6 +396,7 @@ provides a higher score the more `MM` and `UU` counts the tuple has, whereas a
 higher `UM` and `MU` would indicate "random" methylation. The weight further
 adds allele-specificity where a rather balanced MM:UU increases the score.
 
+
 \begin{equation}
     ASM^{(i)} = log{ \Big\{ \frac{X_{MM}^{(i)} \cdot X_{UU}^{(i)}}{X_{MU}^{(i)}
     \cdot X_{UM}^{(i)}} \Big\} \cdot w_i }
@@ -636,11 +637,10 @@ methyl_MDS_plot(ASMscore, group = grp)
 
 ```
 
-
-# References
-
 # Session Info
 
 ```{r}
 utils::sessionInfo()
 ```
+
+# References
