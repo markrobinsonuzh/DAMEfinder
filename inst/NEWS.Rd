@@ -2,6 +2,14 @@
 \title{News for Package 'DAMEfinder'}
 
 
+\section{DAMEfinder VERSION 1.1.3}{
+\itemize{
+    \item Add CITATION
+    \item Remove "bad chromosome" filtering
+    \item Argument `build` in extract_bams() removed
+}
+}
+
 \section{DAMEfinder VERSION 1.1.2}{
 \itemize{
     \item Remove vcfR dependency and add VariantAnnotation

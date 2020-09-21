@@ -1,0 +1,18 @@
+
+citHeader("If you use DAMEfinder in published research, please cite the following paper:")
+
+citEntry(entry="Article",
+         title = "DAMEfinder: a method to detect differential allele-specific methylation",
+         author = personList(as.person("Stephany Orjuela"), 
+                             as.person("Dania Machlab") , 
+                             as.person("Mirco Menigatti") , 
+                             as.person("Giancarlo Marra") , 
+                             as.person("Mark D. Robinson")
+                             ),
+         year = "2020",
+         journal = "Epigenetics & Chromatin",
+         volume = "13",
+         number = "25",
+         doi = "https://doi.org/10.1186/s13072-020-00346-8",
+         textVersion = "Orjuela, S., Machlab, D., Menigatti, M. et al. DAMEfinder: a method to detect differential allele-specific methylation. Epigenetics & Chromatin 13, 25 (2020)."
+)

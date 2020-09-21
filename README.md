@@ -14,9 +14,10 @@ Please refer to the vignette for more details on running the pipeline.
 
 ### News:
 
+* Check `NEWS.Rd` [here](https://github.com/markrobinsonuzh/DAMEfinder/blob/master/inst/NEWS.Rd) for latest changes.
 * Preprint out [here](https://www.biorxiv.org/content/10.1101/800383v1)
 * Published version [here](https://epigeneticsandchromatin.biomedcentral.com/articles/10.1186/s13072-020-00346-8)
-* Now available on [Bioconductor](https://bioconductor.org/packages/release/bioc/html/DAMEfinder.html)
+* Available on [Bioconductor](https://bioconductor.org/packages/release/bioc/html/DAMEfinder.html)
 
 ---
 
