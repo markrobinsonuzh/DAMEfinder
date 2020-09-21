@@ -9,7 +9,6 @@ extract_bams(
   vcfFiles,
   sampleNames,
   referenceFile,
-  build = "hg19",
   coverage = 4,
   cores = 1,
   verbose = TRUE
@@ -24,8 +23,6 @@ extract_bams(
 
 \item{referenceFile}{fasta file used to generate the bam files. Or 
 \code{DNAStringSet} with DNA sequence.}
-
-\item{build}{genome reference build. Default = "hg19".}
 
 \item{coverage}{Minimum number of reads covering a CpG site on each allele.
 Default = 2.}
