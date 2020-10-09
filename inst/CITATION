@@ -2,7 +2,7 @@
 citHeader("If you use DAMEfinder in published research, please cite the following paper:")
 
 citEntry(entry="Article",
-         title = "DAMEfinder: a method to detect differential allele-specific",
+         title = "DAMEfinder: a method to detect differential allele-specific methylation",
          author = personList(as.person("Stephany Orjuela"), 
                              as.person("Dania Machlab") , 
                              as.person("Mirco Menigatti") , 

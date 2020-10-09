@@ -28,7 +28,6 @@ calc_derivedasm(sampleList, cores = 1, verbose = TRUE)
 Combines all the \code{GRangeslist} generated in \code{\link{extract_bams}}
 into a \code{\link{RangedSummarizedExperiment}} object, and calculates
 SNP-based allele-specific methylation.
-TODO: Doesn't work for one sample
 }
 \examples{
 data(extractbams_output)

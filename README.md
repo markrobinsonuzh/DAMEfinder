@@ -2,7 +2,6 @@
 # DAMEfinder <img src="inst/figures/damefindersticker.png" width="200" align="right" />
 
 [![platforms](http://bioconductor.org/shields/availability/3.11/DAMEfinder.svg)](https://bioconductor.org/packages/devel/bioc/html/DAMEfinder.html#archives)&nbsp;
-[![posts](http://bioconductor.org/shields/posts/DAMEfinder.svg)](https://support.bioconductor.org/t/DAMEfinder)&nbsp;
 [![build](http://bioconductor.org/shields/build/devel/bioc/DAMEfinder.svg)](http://bioconductor.org/checkResults/devel/bioc-LATEST/DAMEfinder/)
 
 **DAMEfinder** (**D**ifferential **A**llele-specific **ME**thylation **finder**) is an R-package that detects allele-specific methylation (ASM) in a cohort of samples, and detects regions of differential ASM within groups of interest, based on **Bisulfite-sequencing** files.

@@ -232,6 +232,12 @@ allele-specificity. ASM of 1 represents the perfect scenario in which none of
 the reads belonging to one allele are methylated, and the reads of the other
 allele are completely methylated.
 
+* NEW `z.ASM`: SNP-based ASM defined as a Z score in a two-proportions test:
+$abs(\frac{p^{r}-p^{a}} {p(1-p)(1/X^{r} + 1/X^{a})})$, where $p$ is
+$\frac{X_M}{X}$ of either the reference, the alternative or both alleles. This
+score is more sensitive to the coverage at each CpG site, and has no upper
+limit.
+
 * `snp.table`: Location of the SNP associated to the CpG site.
 
 * `ref.cov`: Coverage of the "reference" allele.
@@ -248,16 +254,6 @@ You can access these assays as:
 x <- assay(derASM, "der.ASM")
 head(x)
 ```
-
-<!-- ### Get t-Statistics per site -->
-
-<!-- Next, we obtain a moderated t-statistic per CpG site using `limma`. The -->
-<!-- statistic reflects a measure of difference between the two conditions being
---> <!-- compared, in this case normal Vs cancer. The t-statistic is optionally
-smoothed --> <!-- using `bumphunter`. -->
-<!-- For each condition being compared, we recommend at least three biological
---> <!-- replicates. This ensures enough biological variability to calculate
-residual --> <!-- degrees of freedom in the linear model fit. -->
 
 
 ### Find DAMEs
