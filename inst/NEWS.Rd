@@ -2,6 +2,19 @@
 \title{News for Package 'DAMEfinder'}
 
 
+\section{DAMEfinder VERSION 1.3.0}{
+\itemize{
+    \item update with new Bioc version
+}
+}
+
+
+\section{DAMEfinder VERSION 1.1.4}{
+\itemize{
+    \item Add Z score as an alternative ASMsnp score
+}
+}
+
 \section{DAMEfinder VERSION 1.1.3}{
 \itemize{
     \item Add CITATION

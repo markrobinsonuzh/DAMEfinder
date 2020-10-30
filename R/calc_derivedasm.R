@@ -3,7 +3,6 @@
 #' Combines all the \code{GRangeslist} generated in \code{\link{extract_bams}}
 #' into a \code{\link{RangedSummarizedExperiment}} object, and calculates
 #' SNP-based allele-specific methylation. 
-#' TODO: Doesn't work for one sample
 #'
 #' @param sampleList List of samples returned from \code{\link{extract_bams}}.
 #' @param cores Number of cores to thread.
@@ -45,7 +44,7 @@ calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE) {
         GRlist <- GenomicRanges::GRangesList(snp.table)
         w <- unlist(GRlist)
         
-        # calculate meth.diff
+        # calculate meth.diff (aka derASM)
         prop.alt <- mcols(w)$meth.alt/mcols(w)$cov.alt
         prop.ref <- mcols(w)$meth.ref/mcols(w)$cov.ref
         mcols(w)$meth.diff <- abs(prop.alt - prop.ref)
@@ -73,9 +72,13 @@ calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE) {
         
         # the vapply returns a tranversed matrix with everything as
         # characters, so I have to transform this.
-        mcol <- data.frame(as.numeric(cols[1, ]), as.numeric(cols[2, 
-            ]), as.numeric(cols[3, ]), as.numeric(cols[4, ]), 
-            cols[5, ], as.numeric(cols[6, ]), stringsAsFactors = FALSE)
+        mcol <- data.frame(as.numeric(cols[1, ]), 
+                           as.numeric(cols[2, ]), 
+                           as.numeric(cols[3, ]), 
+                           as.numeric(cols[4, ]), 
+                           cols[5, ], 
+                           as.numeric(cols[6, ]), stringsAsFactors = FALSE)
+        
         colnames(mcol) <- colnames(mcols(w))
         ss <- limma::strsplit2(unique.keys, ".", fixed = TRUE)
         
@@ -135,6 +138,15 @@ calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE) {
         return(mcols(df)$meth.alt[m])
     }, allGR, all_keys)
     
+    #Calculate stat ASM (prop test style)
+    prop <- (ref.meth_table + alt.meth_table) / 
+      (ref.cov_table + alt.cov_table)
+    
+    sigma <- sqrt(prop * (1 - prop) * ((1/ref.cov_table) + 
+                                         (1/alt.cov_table)))
+    
+    zstat <- ((ref.meth_table/ref.cov_table) - 
+                        (alt.meth_table/alt.cov_table)) / sigma
     
     # Get matrix for snp ID
     if (verbose) 
@@ -159,9 +171,13 @@ calc_derivedasm <- function(sampleList, cores = 1, verbose = TRUE) {
     
     ## Put all matrices into S4 vector
     derived_ASM_matrix <- SummarizedExperiment::SummarizedExperiment(
-        assays = S4Vectors::SimpleList(der.ASM = trueASM_table, 
-        snp.table = snp_match_table, ref.cov = ref.cov_table, 
-        alt.cov = alt.cov_table, ref.meth = ref.meth_table, 
+        assays = S4Vectors::SimpleList(
+        der.ASM = trueASM_table, 
+        z.ASM = abs(zstat),                               
+        snp.table = snp_match_table, 
+        ref.cov = ref.cov_table, 
+        alt.cov = alt.cov_table, 
+        ref.meth = ref.meth_table, 
         alt.meth = alt.meth_table), 
         rowRanges = keyGR, 
         colData = S4Vectors::DataFrame(samples = names(allGR)))

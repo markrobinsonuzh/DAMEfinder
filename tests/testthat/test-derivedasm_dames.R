@@ -17,7 +17,7 @@ test_that("end to end calc_derivedasm", {
 
 
 test_that("all assays created", {
-  expect_length(assays(derASM), 6)
+  expect_length(assays(derASM), 7)
 })
 
 # test_that("end to end tstat calc", {
