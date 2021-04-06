@@ -1,6 +1,12 @@
 \name{NEWS}
 \title{News for Package 'DAMEfinder'}
 
+\section{DAMEfinder VERSION 1.3.1}{
+\itemize{
+    \item change cmdscale.out for eigen.vectors in methyl_MDS_plot
+}
+}
+
 
 \section{DAMEfinder VERSION 1.3.0}{
 \itemize{

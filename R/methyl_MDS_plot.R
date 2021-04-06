@@ -37,8 +37,10 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
             assays(x)[["cov"]] >= 
             coverage) == BiocGenerics::ncol(x), ]
         
+        #mds_meth <- limma::plotMDS(asm.red, top = top, 
+        #                            plot = FALSE)$cmdscale.out
         mds_meth <- limma::plotMDS(asm.red, top = top, 
-                                    plot = FALSE)$cmdscale.out
+                                    plot = FALSE)$eigen.vectors
         
     } else {
         
@@ -56,7 +58,7 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
             methsTR <- methsTR[!bad, , drop = FALSE]
         
         mds_meth <- limma::plotMDS(methsTR, top = top, 
-                                    plot = FALSE)$cmdscale.out
+                                    plot = FALSE)$eigen.vectors
     }
     
     df <- data.frame(dim1 = mds_meth[, 1], dim2 = mds_meth[, 
