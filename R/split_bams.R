@@ -69,7 +69,6 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
         if (verbose) 
             message("Reading VCF file", appendLF = TRUE)
         param <- VariantAnnotation::ScanVcfParam(fixed="ALT", info=NA, geno=NA)  
-        #vcf <- VariantAnnotation::readVcf(vcfFiles[samp], genome = build,
         vcf <- VariantAnnotation::readVcf(vcfFiles[samp], 
               param = param)
         bam.file <- bamFiles[samp]
@@ -88,12 +87,6 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
             snp <- GRanges(seqnames = t, IRanges(start = as.integer(u), 
                 width = 1))
             
-            # Ignore non-standard chromosomes
-            # if (length(grep(t, c(as.character(seq(from = 1, to = 22, 
-            #     by = 1)), "X", "Y"))) == 0) {
-            #     if (verbose) message("Bad chrom", appendLF = TRUE)
-            #     return(NULL)
-            # }
             chrom <- t
             
             params <- Rsamtools::ScanBamParam(tag = c("MD", "XM", 
@@ -136,8 +129,9 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
                 dna <- Rsamtools::scanFa(fa, param = window)
             }
             
-            cgsite <- stringr::str_locate_all(dna, "CG")[[1]][, 
-                1]  #also look at GpCs?
+            dna <- as.character(dna)
+            cgsite <- stringr::str_locate_all(dna, "CG")[[1]][,1]  
+            #also look at GpCs?
             
             if (length(cgsite) < 1) {
                 if (verbose) 
