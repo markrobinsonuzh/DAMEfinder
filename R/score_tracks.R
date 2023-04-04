@@ -180,22 +180,35 @@ dame_track <- function(dame, window = 0, positions = 0, derASM = NULL,
         ymin = 0, ymax = Inf)
     
     # plot scores
-    m1 <- ggplot(data = full_long) + geom_line(mapping = aes_(x = ~pos, 
-        y = ~value, group = ~variable, color = ~group), alpha = 0.5) + 
-        geom_point(mapping = aes_(x = ~pos, y = ~value, group = ~variable, 
-            color = ~group)) + geom_rect(data = forect, aes_(xmin = ~xmin, 
-        xmax = ~xmax, ymin = ~ymin, ymax = ~ymax), alpha = 0.1) + 
-        facet_grid(score ~ ., scales = "free_y") + theme_bw() + 
-        xlab("position") + ggtitle("Scores")
+    m1 <- ggplot(data = full_long) +
+      geom_line(mapping = aes(x = .data$pos,
+                              y = .data$value,
+                              group = .data$variable,
+                              color = .data$group), alpha = 0.5) + 
+      geom_point(mapping = aes(x = .data$pos,
+                                 y = .data$value,
+                                 group = .data$variable, 
+                                 color = .data$group)) +
+      geom_rect(data = forect, aes(xmin = .data$xmin, 
+                                   xmax = .data$xmax,
+                                   ymin = .data$ymin,
+                                   ymax = .data$ymax), alpha = 0.1) + 
+      facet_grid(score ~ ., scales = "free_y") +
+      theme_bw() + 
+      xlab("position") +
+      ggtitle("Scores")
     
     cord <- ggplot_build(m1)$layout$panel_scales_x[[1]]$range$range
     
     # plot SNP table
     if (plotSNP) {
         m2 <- ggplot(data = subSNP_long) + 
-            geom_point(aes_(x = ~pos, y = 1, group = ~variable, 
-                        color = ~snp.pos), shape = 8, size = 1, 
-                        fill = "white", stroke = 1) +
+            geom_point(aes(x = .data$pos,
+                           y = 1,
+                           group = .data$variable, 
+                           color = .data$snp.pos),
+                       shape = 8, size = 1, 
+                       fill = "white", stroke = 1) +
             facet_grid(variable ~ .) + 
             theme_bw() + 
             theme(panel.spacing = unit(0, "lines"), 

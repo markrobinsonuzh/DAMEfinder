@@ -50,7 +50,7 @@ dame_track_mean <- function(dame, window = 0, positions = 0,
     summarize_dat <- function(cond, SumExp, scorename, subtab, 
         pos) {
         idx <- colData(SumExp)$group == cond
-        medians <- BiocGenerics::rowMeans(as.matrix(subtab)[, 
+        medians <- rowMeans(as.matrix(subtab)[, 
             idx], na.rm = TRUE)
         mins <- medians - (apply((as.matrix(subtab)[, idx]), 
             1, FUN = sd_rem))
@@ -184,13 +184,19 @@ dame_track_mean <- function(dame, window = 0, positions = 0,
         ymin = 0, ymax = Inf)
     
     # plot scores
-    m1 <- ggplot(data = full_long) + geom_line(mapping = aes_(x = ~pos, 
-        y = ~Means, color = ~Group)) + geom_ribbon(mapping = aes_(x = ~pos, 
-        ymin = ~lower, ymax = ~upper, fill = ~Group), alpha = 0.2) + 
-        geom_rect(data = forect, aes_(xmin = ~xmin, xmax = ~xmax, 
-            ymin = ~ymin, ymax = ~ymax), alpha = 0.1) + facet_grid(Score ~ 
-        ., scales = "free_y") + theme_bw() + xlab("position") + 
-        ggtitle("Summary scores")
+    m1 <- ggplot(data = full_long) + 
+      geom_line(mapping = aes(x = .data$pos, y = .data$Means, color = .data$Group)) +
+      geom_ribbon(mapping = aes(x = .data$pos,
+                                 ymin = .data$lower,
+                                 ymax = .data$upper,
+                                 fill = .data$Group), alpha = 0.2) + 
+        geom_rect(data = forect, aes(xmin = .data$xmin, xmax = .data$xmax,
+                                      ymin = .data$ymin, ymax = .data$ymax),
+                  alpha = 0.1) +
+      facet_grid(Score ~ ., scales = "free_y") +
+      theme_bw() +
+      xlab("position") + 
+      ggtitle("Summary scores")
     
     if (!is.null(colvec)) {
         p <- m1 + scale_color_manual(values = colvec) + 

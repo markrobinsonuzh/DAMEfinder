@@ -44,7 +44,6 @@
 #' @importFrom IRanges IRanges
 #' @importFrom GenomicAlignments readGAlignmentPairs
 #' @importFrom GenomeInfoDb seqnames
-#' @importFrom BiocGenerics rowSums
 #'
 #' @export
 extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile, 
@@ -92,7 +91,7 @@ extract_bams <- function(bamFiles, vcfFiles, sampleNames, referenceFile,
             params <- Rsamtools::ScanBamParam(tag = c("MD", "XM", 
                 "XR", "XG"), which = snp)
             
-            alns.pairs <- readGAlignmentPairs(bam.file, use.names = TRUE, 
+            alns.pairs <- GenomicAlignments::readGAlignmentPairs(bam.file, use.names = TRUE, 
                 param = params)
             
             alns <- unlist(alns.pairs)  #unpaired

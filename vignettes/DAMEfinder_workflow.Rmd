@@ -3,8 +3,7 @@ title: "DAMEfinder Workflow"
 author: 
 - name: Stephany Orjuela
   affiliation:
-    - &IMLS Institute for Molecular Life Sciences, University of Zurich
-    - &IMCR Institute for Molecular Cancer Research, University of Zurich
+    - &Oncobit Oncobit AG
     - &SIB SIB Swiss Institute of Bioinformatics, Switzerland
   email: sorjuelal@gmail.com
 - name: Dania Machlab
@@ -13,7 +12,7 @@ author:
     - *SIB 
 - name: Mark Robinson
   affiliation:
-    - *IMLS 
+    - &DMLS Department of Molecular Life Sciences, University of Zurich 
     - *SIB
 date: "`r Sys.Date()`"
 package: DAMEfinder

@@ -45,7 +45,7 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
     } else {
         
         full.cov <- assays(x)[["ref.cov"]] + assays(x)[["alt.cov"]]
-        filt <- BiocGenerics::rowSums(full.cov >= coverage & 
+        filt <- rowSums(full.cov >= coverage & 
             !is.na(full.cov)) == BiocGenerics::ncol(x)
         xfilt <- x[filt, ]
         
@@ -53,7 +53,7 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
         methsTR <- as.matrix(assays(xfilt)[["der.ASM"]])
         
         methsTR <- asin(2 * methsTR - 1)
-        bad <- BiocGenerics::rowSums(is.finite(methsTR)) < ncol(methsTR)
+        bad <- rowSums(is.finite(methsTR)) < ncol(methsTR)
         if (any(bad)) 
             methsTR <- methsTR[!bad, , drop = FALSE]
         
@@ -64,9 +64,16 @@ methyl_MDS_plot <- function(x, group, top = 1000, coverage = 5,
     df <- data.frame(dim1 = mds_meth[, 1], dim2 = mds_meth[, 
         2], names = colnames(x), treat = group)
     
-    ggplot() + geom_point(data = df, mapping = aes_(x = ~dim1, 
-        y = ~dim2, color = ~treat), size = pointSize) + geom_text(data = df, 
-        mapping = aes_(x = ~dim1, y = ~dim2 - adj, label = ~names)) + 
-        theme_bw()
+    ggplot() +
+      geom_point(data = df,
+                 mapping = aes(x = .data$dim1, 
+                               y = .data$dim2,
+                               color = .data$treat),
+                 size = pointSize) +
+      geom_text(data = df, 
+                mapping = aes(x = .data$dim1,
+                              y = .data$dim2 - adj,
+                              label = .data$names)) + 
+      theme_bw()
     
 }

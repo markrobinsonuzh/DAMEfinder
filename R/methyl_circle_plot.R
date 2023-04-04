@@ -203,7 +203,7 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, build = "hg19",
     }, double(length(cgsite)))
     
     # Remove reads without CpG sites
-    rem <- BiocGenerics::colSums(is.na(conversion)) >= dim(conversion)[1]
+    rem <- colSums(is.na(conversion)) >= dim(conversion)[1]
     conversion <- conversion[, !rem]
     
     alt.reads <- alt.reads[alt.reads %in% colnames(conversion)]
@@ -260,9 +260,14 @@ methyl_circle_plot <- function(snp, vcfFile, bamFile, refFile, build = "hg19",
     mp <- ggplot() + 
         scale_shape_identity() + 
         theme_void() + 
-        geom_segment(data = d2, aes(x = xstart, y = reads, xend = xend, 
-            yend = reads, colour = snp), linewidth = 0.2) + 
-        geom_point(data = d, aes_(x = ~CpG, y = ~read, shape = ~value), 
+        geom_segment(data = d2, aes(x = .data$xstart, 
+                                    y = .data$reads, 
+                                    xend = .data$xend, 
+                                    yend = .data$reads,
+                                    colour = .data$snp), linewidth = 0.2) + 
+        geom_point(data = d, aes(x = .data$CpG,
+                                 y = .data$read,
+                                 shape = .data$value), 
             fill = "white", size = pointSize) + 
         geom_point(aes(x = snp.start, y = seq(from = 1, to = length(alns.pairs),
             by = 1), shape = letter, colour = letter), size = letterSize) + 
@@ -491,9 +496,14 @@ methyl_circle_plotCpG <- function(cpgsite = cpgsite, bamFile = bamFile,
     ggplot() + 
         scale_shape_identity() + 
         theme_void() + 
-        geom_segment(data = d2, aes(x = xstart, y = reads, xend = xend,
-            yend = reads), colour = "grey", linewidth = 0.5) + 
-        geom_point(data = d, aes_(x = ~CpG, y = ~read, shape = ~value), 
+        geom_segment(data = d2, aes(x = .data$xstart,
+                                    y = .data$reads,
+                                    xend = .data$xend,
+                                    yend = .data$reads),
+                     colour = "grey", linewidth = 0.5) + 
+        geom_point(data = d, aes(x = .data$CpG,
+                                 y = .data$read,
+                                 shape = .data$value), 
             fill = "white", size = pointSize) + 
         geom_point(aes(x = cpg.start, y = 0), shape = 24, size = 3, 
             fill = "green") + 
